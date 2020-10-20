@@ -10,6 +10,8 @@
  </div>
 
 <!-- container for static pics -->
+
+
 <b-container>
  <img :src="'https://placehold.it/800x300/?text=' + picturestock" alt="">
 </b-container>
