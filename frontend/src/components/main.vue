@@ -25,16 +25,11 @@
 </b-container>
 
 <!-- Carousel -->
-<style>
-.container{
-padding : 1px;
 
-}
-</style>
 <div class="container">
    <h3> Best sellers </h3>
    <b-row>
-     <b-col  v-for="i in 6" :key="i">
+     <b-col  v-for="i in 6" :key="i" @click = "gotobook()">
        <br>
        <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt="">
        <h6>Llibre</h6>
@@ -50,10 +45,23 @@ padding : 1px;
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
 
+    }
+  },
+  methods: {
+    gotobook () {
+      const path = 'http://127.0.0.1:5000/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/book'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }
