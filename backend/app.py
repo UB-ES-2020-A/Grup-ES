@@ -8,7 +8,7 @@ from model.users import UsersModel
 app = Flask(__name__, static_folder="/home/pau/Escritorio/Grup-ES/frontend/dist/static",
          template_folder="/home/pau/Escritorio/Grup-ES/frontend/dist")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://dqhyckie:SJmnslBWzvqFCra4KAipApYsfIlXoI-m@dumbo.db.elephantsql.com:5432/dqhyckie"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///data.db"
 
 migrate = Migrate(app, db)
 db.init_app(app)
