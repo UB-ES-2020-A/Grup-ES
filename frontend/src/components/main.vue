@@ -3,26 +3,28 @@
  <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
    <b-navbar-brand href="#">NavBar</b-navbar-brand>
+   <b-nav-form>
+      <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+      <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
+   </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-     <li id="menu-item-40" class="nav-item menu-item menu-item-type-post_type menu-item-object-page menu-item-40"><a href="XXX" class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></a></li>
-     <li id="menu-item-42" class="nav-item menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-6 current_page_item menu-item-42"><a href="XXX" class="nav-link"><b-icon icon="basket" font-scale="2.5"></b-icon>
+     <li class="nav-item"><a href="XXX" class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></a></li>
+     <li class="nav-item"><a href="XXX" class="nav-link"><b-icon title="Strikethrough" icon="basket" font-scale="2.5"></b-icon>
 </a></li>
-     <li id="menu-item-963" class="nav-item menu-item menu-item-type-post_type menu-item-object-page menu-item-963"><a href="XXX" class="nav-link"><b-button variant="danger">Log In</b-button>
+     <li class="nav-item"><a href="XXX" class="nav-link"><b-button variant="danger">Log In</b-button>
 </a></li>
-
-     </ul>
+    </ul>
    </b-navbar-nav>
   </b-navbar>
  </div>
-
 <!-- container for static pics -->
 <br>
 <br>
-
 <b-container>
  <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
 </b-container>
+<br>
 
 <!-- Carousel -->
 
