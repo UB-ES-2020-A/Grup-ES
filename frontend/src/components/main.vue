@@ -43,6 +43,30 @@
        <b-button variant="danger">Add to cart</b-button>
    </b-col>
    </b-row>
+   </div>
+   <br>
+   <br>
+   <div class="container">
+      <h3> New releases </h3>
+      <b-row>
+        <b-col  v-for="i in 6" :key="i" @click = "gotobook()">
+          <br>
+          <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt="">
+          <h6>Llibre</h6>
+          <div v-for="j in 1" :key="j">
+             <h5>AUTOR</h5>
+          </div>
+          <h6>Valoració</h6>
+          <h6>PREU</h6>
+          <b-button variant="danger">Add to cart</b-button>
+      </b-col>
+      </b-row>
+      </div>
+      <br>
+      <br>
+   <footer style="height:auto; background-color:black;">
+     <h5 style="color:white; padding:20px; margin:0; text-align:center;">Contact, bla, bla</h5>
+   </footer>
 </div>
 </template>
 
