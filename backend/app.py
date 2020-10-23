@@ -1,12 +1,15 @@
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_restful import Api
+from resources.books import Books
 
 from db import db, secret_key
 from model.books import BooksModel
 
 app = Flask(__name__, static_folder="/home/pau/Escritorio/Grup-ES/frontend/dist/static",
          template_folder="/home/pau/Escritorio/Grup-ES/frontend/dist")
+api = Api(app)
 
 CORS(app, resources={r'/*': {'origins': '*'}})
 
@@ -21,6 +24,7 @@ db.init_app(app)
 def render():
     return render_template("index.html")
 
+api.add_resource(Books, '/book/<int:isbn>', '/book')
 
 if __name__ == '__main__':
     app.run()
