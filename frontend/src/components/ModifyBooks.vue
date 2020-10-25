@@ -40,6 +40,8 @@
                placeholder="YYYY-MM-DD" required autofocus v-model="date" style="margin-top: 15px">
                </b-col>
              </b-row>
+             <b-form-file accept=".jpg, .png, .jpeg" v-model="file1" :state="Boolean(file1)"
+             placeholder="Elige la imagen o dejala aqui..." drop-placeholder="Deja aqui la imagen..." style="margin-top: 15px"></b-form-file>
              <b-form-textarea id="sinopsis" placeholder="Sinopsis" required autofocus v-model="publisher" style="margin-top: 15px"></b-form-textarea>
              </b-container>
              <div class=" row d-flex text-center">
@@ -65,6 +67,7 @@
 export default {
   data () {
     return {
+      file1: null
     }
   },
   methods: {
