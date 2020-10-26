@@ -6,9 +6,6 @@ from flask_migrate import Migrate
 from db import db, secret_key
 from resources.users import Login, Users, UsersList
 
-GOOGLE_CLIENT_ID = 'PUT CLIENT ID'
-GOOGLE_CLIENT_SECRET = 'PUT CLIENT SECRET'
-
 app = Flask(__name__, static_folder="../frontend/dist/static",
             template_folder="../frontend/dist")
 

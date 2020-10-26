@@ -78,4 +78,4 @@ class UsersList(Resource):
 
     def get(self):
         accounts = UsersModel.query.filter_by(state=True).all()
-        return {"accounts": list(map(lambda account: account.json(), accounts)) if accounts else None}, 200
+        return {"users": list(map(lambda account: account.json(), accounts)) if accounts else None}, 200

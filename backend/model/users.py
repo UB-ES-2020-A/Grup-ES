@@ -48,9 +48,6 @@ class UsersModel(db.Model):
         self.state = False
         db.session.commit()
 
-    def verify_password(self, password):
-        return password == self.password
-
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)
@@ -68,7 +65,7 @@ class UsersModel(db.Model):
         return cls.query.all()
 
     def hash_password(self, password):
-        self.password = pwd_context.encrypt(password)
+        self.password = pwd_context.hash(password)
 
     def check_password(self, password):
         return pwd_context.verify(password, self.password)
