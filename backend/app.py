@@ -3,12 +3,17 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 from resources.books import Books
+from resources.users import Login, Users, UsersList
 
 from db import db, secret_key
 from model.books import BooksModel
 
-app = Flask(__name__, static_folder="/home/pau/Escritorio/Grup-ES/frontend/dist/static",
-         template_folder="/home/pau/Escritorio/Grup-ES/frontend/dist")
+GOOGLE_CLIENT_ID = 'PUT CLIENT ID'
+GOOGLE_CLIENT_SECRET = 'PUT CLIENT SECRET'
+
+app = Flask(__name__, static_folder="../frontend/dist/static",
+         template_folder="../frontend/dist")
+app.config.from_object(__name__)
 api = Api(app)
 
 CORS(app, resources={r'/*': {'origins': '*'}})
@@ -26,5 +31,9 @@ def render():
 
 api.add_resource(Books, '/book/<int:isbn>')
 
+api.add_resource(Users, '/user/<string:email>', '/user')
+api.add_resource(UsersList, '/users')
+api.add_resource(Login, '/login')
+
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000, debug=True)
