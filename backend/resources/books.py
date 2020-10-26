@@ -6,9 +6,9 @@ from model.books import BooksModel
 class Books(Resource):
     #@auth.login_required(role='admin')
     def put(self, isbn):
-        book = BooksModel.find_by_isbn(isbn=isbn).first()
+        book = BooksModel.find_by_isbn(isbn) #isbn=isbn
         if book is None:
-            return {"message": "Book with ['isbn': " + str(id) + "] Not Found"}, 404
+            return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
 
         else:
             parser = reqparse.RequestParser()
@@ -29,3 +29,4 @@ class Books(Resource):
             #type= DateTime()
             parser.add_argument('fecha_de_publicacion', type=int, required=True,
                                 help="In this field goes the date of the book, cannot be left blank")
+            return "Atributs del llibre canviats"

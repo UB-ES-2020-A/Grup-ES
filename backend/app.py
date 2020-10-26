@@ -24,7 +24,7 @@ db.init_app(app)
 def render():
     return render_template("index.html")
 
-api.add_resource(Books, '/book/<int:isbn>', '/book')
+api.add_resource(Books, '/book/<int:isbn>')
 
 if __name__ == '__main__':
     app.run()
