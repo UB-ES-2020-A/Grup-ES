@@ -1,3 +1,5 @@
+import datetime as dt
+
 from flask_restful import Resource
 from flask_restful import reqparse
 from model.books import BooksModel
@@ -9,7 +11,6 @@ class Books(Resource):
         book = BooksModel.find_by_isbn(isbn)
         if book is None:
             return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
-
         else:
             parser = reqparse.RequestParser()
             parser.add_argument('isbn', type=int, required=True,
@@ -26,7 +27,22 @@ class Books(Resource):
                                 help="In this field goes the editorial of the book, cannot be left blank")
             parser.add_argument('sinopsis', type=str, required=True,
                                 help="In this field goes the sinopsis of the book, cannot be left blank")
-            #type= DateTime()
-            parser.add_argument('fecha_de_publicacion', type=int, required=True,
-                                help="In this field goes the date of the book, cannot be left blank")
-            return "Atributs del llibre canviats"
+            parser.add_argument('fecha_de_publicacion', type=str, required=True,
+                                help="In this field goes the date of the book in YYYY-MM-DD format, cannot be left blank")
+            data = parser.parse_args()
+            book.isbn = data['isbn']
+            book.stock = data['stock']
+            book.precio = data['precio']
+            book.titulo = data['titulo']
+            book.autor = data['autor']
+            book.editorial = data['editorial']
+            book.sinopsis = data['sinopsis']
+            date_string = data['fecha_de_publicacion']
+            date_time_obj = dt.datetime.strptime(date_string, '%Y-%m-%d')
+            book.fecha_de_publicacion = date_time_obj
+
+            try:
+                book.save_to_db()
+                return {"book": book.json()}, 200
+            except:
+                return {"message": "Error a la hora d'editar un llibre a base de dades"}, 500
