@@ -14,9 +14,10 @@ class BooksModel(db.Model):
     autor = db.Column(db.String())
     editorial = db.Column(db.String())
     sinopsis = db.Column(db.String())
+    url_imagen = db.Column(db.String())
     fecha_de_publicacion = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, isbn, stock, precio, titulo, autor=None, editorial=None, sinopsis=None, fecha_de_publicacion=None):
+    def __init__(self, isbn, stock, precio, titulo, autor=None, editorial=None, sinopsis=None, url_imagen=None, fecha_de_publicacion=None):
         self.isbn = isbn
         self.vendible = True
         self.stock = stock
@@ -25,10 +26,12 @@ class BooksModel(db.Model):
         self.autor = autor
         self.editorial = editorial
         self.sinopsis = sinopsis
+        self.url_imagen = url_imagen
         if fecha_de_publicacion is None:
             self.fecha_de_publicacion = dt.datetime.now()
         else:
             self.fecha_de_publicacion = fecha_de_publicacion
+
     def json(self):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()

@@ -1,11 +1,10 @@
 from flask_restful import Resource
 from flask_restful import reqparse
 from model.books import BooksModel
-from model.users import UsersModel, auth
 
 
 class Books(Resource):
-    @auth.login_required
+
     def put(self, isbn):
         book = BooksModel.find_by_isbn(isbn)
         if book is None:
