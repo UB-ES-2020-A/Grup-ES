@@ -36,6 +36,7 @@ class TestBasicFunction(unittest.TestCase):
             db.drop_all()
             db.session.commit()
 
+    # TEST TASK 2
     def test_basic_put_book(self):
         with self.app.app_context():
             sinopsis = "For twelve thousand years the Galactic Empire has ruled supreme. Now it is dying. But only " \

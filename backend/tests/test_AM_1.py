@@ -1,10 +1,9 @@
 import unittest
 from flask import Flask
-from flask_httpauth import HTTPBasicAuth
 from flask_migrate import Migrate
 from flask_restful import Api
 import json
-import base64
+from datetime import datetime
 
 from model.books import BooksModel
 from db import db
@@ -23,7 +22,7 @@ class TestBasicFunction(unittest.TestCase):
         self.client = self.app.test_client()
         api = Api(self.app)
 
-        api.add_resource(Books, '/book')
+        api.add_resource(Books, '/book/<int:isbn>', '/book')
 
         db.init_app(self.app)
         migrate = Migrate(self.app, db)
@@ -36,6 +35,35 @@ class TestBasicFunction(unittest.TestCase):
             db.drop_all()
             db.session.commit()
 
+    # TEST TASK 1
+    def test_model_add(self):
+        with self.app.app_context():
+            date = datetime.now()
+            book = BooksModel(1, 1, 1.0, "titulo", "autor", "editorial", "sinposis", "url", date)
+
+            book.save_to_db()
+            self.assertEqual(book, BooksModel.find_by_isbn(book.isbn))
+
+    def test_model_add_duplicate(self):
+        with self.app.app_context():
+            date = datetime.now()
+            book = BooksModel(1, 1, 1.0, "titulo", "autor", "editorial", "sinposis", "url", date)
+            book.save_to_db()
+
+            same_book = BooksModel(1, 1, 1.0, "titulo", "autor", "editorial", "sinposis", "url", date)
+            with self.assertRaises(Exception):
+                same_book.save_to_db()
+
+    def test_model_delete(self):
+        with self.app.app_context():
+            date = datetime.now()
+            book = BooksModel(1, 1, 1.0, "titulo", "autor", "editorial", "sinposis", "url", date)
+
+            book.save_to_db()
+            book.delete_from_db()
+            self.assertEqual(False, book.vendible)
+
+    # TEST TASK 2
     def test_post_book(self):
         with self.app.app_context():
             sinopsis = "For twelve thousand years the Galactic Empire has ruled supreme. Now it is dying. But only " \

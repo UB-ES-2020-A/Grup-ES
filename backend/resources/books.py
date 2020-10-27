@@ -36,6 +36,12 @@ def parse_book(minimal=False):
 
 class Books(Resource):
 
+    def get(self, isbn):
+        book = BooksModel.find_by_isbn(isbn)
+        if not book:
+            return {"message": f"Book with ['isbn':{isbn}] not found"}, 404
+        return {"book": book.json()}, 200
+
     def post(self):
         data = parse_book()
         book = BooksModel.find_by_isbn(data["isbn"])
