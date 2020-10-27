@@ -21,6 +21,7 @@ def parse_book():
                         help="In this field goes the editorial of the book, cannot be left blank")
     parser.add_argument('sinopsis', type=str, required=True,
                         help="In this field goes the sinopsis of the book, cannot be left blank")
+    parser.add_argument('fecha_de_publicacion', type=str, required=True,
                         help="In this field goes the date of the book in YYYY-MM-DD format, cannot be left blank")
     return parser.parse_args()
 
@@ -44,24 +45,7 @@ class Books(Resource):
         if book is None:
             return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
         else:
-            parser = reqparse.RequestParser()
-            parser.add_argument('isbn', type=int, required=True,
-                                help="In this field goes the isbn of the book, cannot be left blank")
-            parser.add_argument('stock', type=int, required=True,
-                                help="In this field goes the stock of the book, cannot be left blank")
-            parser.add_argument('precio', type=float, required=True,
-                                help="In this field goes the price of the book, cannot be left blank")
-            parser.add_argument('titulo', type=str, required=True,
-                                help="In this field goes the title of the book, cannot be left blank")
-            parser.add_argument('autor', type=str, required=True,
-                                help="In this field goes the author of the book, cannot be left blank")
-            parser.add_argument('editorial', type=str, required=True,
-                                help="In this field goes the editorial of the book, cannot be left blank")
-            parser.add_argument('sinopsis', type=str, required=True,
-                                help="In this field goes the sinopsis of the book, cannot be left blank")
-            parser.add_argument('fecha_de_publicacion', type=str, required=True,
-                                help="In this field goes the date of the book in YYYY-MM-DD format, cannot be left blank")
-            data = parser.parse_args()
+            data = parse_book()
             book.isbn = data['isbn']
             book.stock = data['stock']
             book.precio = data['precio']
