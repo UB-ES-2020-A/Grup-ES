@@ -4,6 +4,25 @@ from flask_restful import Resource
 from flask_restful import reqparse
 from model.books import BooksModel
 
+def parse_book():
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('isbn', type=int, required=True,
+                        help="In this field goes the isbn of the book, cannot be left blank")
+    parser.add_argument('stock', type=int, required=True,
+                        help="In this field goes the stock of the book, cannot be left blank")
+    parser.add_argument('precio', type=float, required=True,
+                        help="In this field goes the price of the book, cannot be left blank")
+    parser.add_argument('titulo', type=str, required=True,
+                        help="In this field goes the title of the book, cannot be left blank")
+    parser.add_argument('autor', type=str, required=True,
+                        help="In this field goes the author of the book, cannot be left blank")
+    parser.add_argument('editorial', type=str, required=True,
+                        help="In this field goes the editorial of the book, cannot be left blank")
+    parser.add_argument('sinopsis', type=str, required=True,
+                        help="In this field goes the sinopsis of the book, cannot be left blank")
+                        help="In this field goes the date of the book in YYYY-MM-DD format, cannot be left blank")
+    return parser.parse_args()
 
 class Books(Resource):
 

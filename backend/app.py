@@ -9,7 +9,7 @@ from db import db, secret_key
 from model.books import BooksModel
 
 app = Flask(__name__, static_folder="../frontend/dist/static",
-         template_folder="../frontend/dist")
+            template_folder="../frontend/dist")
 app.config.from_object(__name__)
 api = Api(app)
 
@@ -22,10 +22,13 @@ app.config['SECRET_KEY'] = secret_key
 migrate = Migrate(app, db)
 db.init_app(app)
 
+
 @app.route('/')
 def render():
     return render_template("index.html")
 
+
+api.add_resource(Books, '/book')
 api.add_resource(Books, '/book/<int:isbn>')
 
 api.add_resource(Users, '/user/<string:email>', '/user')
