@@ -7,6 +7,19 @@ from model.books import BooksModel
 
 class Books(Resource):
 
+    def post(self):
+        data = parse_book()
+        book = BooksModel.find_by_isbn(data["isbn"])
+        if book:
+            return {"message": f"A book with same isbn {data['isbn']} already exists"}, 409
+        try:
+            book = BooksModel(**data)
+            book.save_to_db()
+        except Exception as e:
+            return {"message": str(e)}, 500
+
+        return book.json(), 201
+
     def put(self, isbn):
         book = BooksModel.find_by_isbn(isbn)
         if book is None:
