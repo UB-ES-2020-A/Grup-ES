@@ -28,8 +28,7 @@ def render():
     return render_template("index.html")
 
 
-api.add_resource(Books, '/book')
-api.add_resource(Books, '/book/<int:isbn>')
+api.add_resource(Books, '/book/<int:isbn>', '/book')
 
 api.add_resource(Users, '/user/<string:email>', '/user')
 api.add_resource(UsersList, '/users')
