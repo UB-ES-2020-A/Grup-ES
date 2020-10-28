@@ -38,6 +38,68 @@ class TestBasicFunction(unittest.TestCase):
             db.drop_all()
             db.session.commit()
 
+    # TEST TASK 1
+    def test_add(self):
+        with self.app.app_context():
+            to_add = UsersModel('test', 'test@email.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
+            self.assertEqual(UsersModel.find_by_username('test').username, to_add.username)
+
+    def test_add_same_username(self):
+        with self.app.app_context():
+            to_add = UsersModel('test', 'test@email.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
+
+            to_add = UsersModel('test', 'test_not_same@email.com')
+            to_add.hash_password('password')
+            with self.assertRaises(Exception):
+                UsersModel.save_to_db(to_add)
+
+    def test_add_same_email(self):
+        with self.app.app_context():
+            to_add = UsersModel('test', 'test@email.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
+
+            to_add = UsersModel('test_not_same', 'test@email.com')
+            to_add.hash_password('password')
+            with self.assertRaises(Exception):
+                UsersModel.save_to_db(to_add)
+
+    def test_delete_but_keep(self):
+        with self.app.app_context():
+            to_add = UsersModel('test', 'test@email.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
+
+            UsersModel.delete_from_db(UsersModel.find_by_username('test'))
+            keeps = len(UsersModel.query.filter_by(username='test', state=False).all())
+            self.assertNotEqual(keeps, 0)
+
+    # TEST TASK 2
+    def test_post_user(self):
+        with self.app.app_context():
+            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            self.assertEqual(201, res.status_code)
+            self.assertEqual(UsersModel.find_by_username("test2").json(), json.loads(res.data))
+
+            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            self.assertEqual(409, res.status_code)
+
+    # TEST TASK 3
+    def test_login_user(self):
+        with self.app.app_context():
+            user = UsersModel("test3", "test3@email.com")
+            user.hash_password("test3")
+            user.save_to_db()
+
+            res = self.client.post("/login", data={"email": "test3@email.com", "password": "test3"})
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(user, UsersModel.verify_auth_token(json.loads(res.data)["token"]))
+
+    # TEST NO TASK
     def test_get_user(self):
         with self.app.app_context():
             user = UsersModel("test", "test@email.com")
@@ -50,25 +112,6 @@ class TestBasicFunction(unittest.TestCase):
 
             res = self.client.get("/user/doesntexist")
             self.assertEqual(404, res.status_code)
-
-    def test_post_user(self):
-        with self.app.app_context():
-            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
-            self.assertEqual(201, res.status_code)
-            self.assertEqual(UsersModel.find_by_username("test2").json(), json.loads(res.data))
-
-            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
-            self.assertEqual(409, res.status_code)
-
-    def test_login_user(self):
-        with self.app.app_context():
-            user = UsersModel("test3", "test3@email.com")
-            user.hash_password("test3")
-            user.save_to_db()
-
-            res = self.client.post("/login", data={"email": "test3@email.com", "password": "test3"})
-            self.assertEqual(200, res.status_code)
-            self.assertEqual(user, UsersModel.verify_auth_token(json.loads(res.data)["token"]))
 
     def test_delete_user(self):
         with self.app.app_context():

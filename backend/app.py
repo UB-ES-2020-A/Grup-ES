@@ -1,14 +1,15 @@
 from flask import Flask, render_template
 from flask_cors import CORS
-from flask_restful import Api
 from flask_migrate import Migrate
+from flask_restful import Api
+from resources.books import Books
+from resources.users import Login, Users, UsersList
 
 from db import db, secret_key
-from resources.users import Login, Users, UsersList
+from model.books import BooksModel
 
 app = Flask(__name__, static_folder="../frontend/dist/static",
             template_folder="../frontend/dist")
-
 app.config.from_object(__name__)
 api = Api(app)
 
@@ -26,6 +27,8 @@ db.init_app(app)
 def render():
     return render_template("index.html")
 
+
+api.add_resource(Books, '/book/<int:isbn>', '/book')
 
 api.add_resource(Users, '/user/<string:email>', '/user')
 api.add_resource(UsersList, '/users')
