@@ -31,20 +31,18 @@
       </b-col>
       <b-col cols="5">
         <br>
-        <h2> TÍTOL LLIBRE </h2>
-        <p> <h4> de Autor X </h4> <p>
+        <h2> {{ this.single_book.titulo }} </h2>
+        <p> <h4> de {{ this.single_book.autor }} </h4> <p>
         <hr/>
         <h5> Sinopsis </h5>
         <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec magna risus, accumsan in finibus nec, varius a mi. Curabitur dapibus suscipit sem pretium elementum. In eget bibendum velit, non mollis dui. Praesent eget lacus vitae turpis consequat finibus in ut ante. In at egestas nunc. Proin ac semper ex. Pellentesque non tincidunt orci. Etiam tristique convallis est non finibus. Aenean ullamcorper hendrerit arcu, at hendrerit ante consequat a. Etiam ullamcorper dapibus erat in laoreet. Suspendisse lorem lacus, facilisis sed lectus ut, ultrices posuere sapien. Vestibulum viverra ac elit nec elementum. Pellentesque ut feugiat ante. Duis ornare purus non tellus vestibulum lobortis. Phasellus efficitur, turpis sit amet laoreet efficitur, metus felis hendrerit leo, sed ultricies odio ex malesuada felis.
-
-        Nam iaculis id magna vitae finibus. Donec at elementum diam, ac fringilla urna. Etiam quis ex euismod, viverra nunc quis, imperdiet nunc. Maecenas in nibh mattis, finibus nisi ac, rhoncus orci. Nulla maximus id nisi et aliquet. Nunc nibh ante, semper vel finibus sed, tempus vel massa. Vestibulum convallis pretium posuere. Cras consectetur vehicula felis, ut dictum justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur accumsan tincidunt tellus. Vivamus arcu eros, congue eu ornare nec, ullamcorper vel odio.
+        {{ this.single_book.sinopsis }}
         <p>
       </b-col>
       <b-col class = "justify-content-center">
       <b-container fluid class = "border bg-light" style="padding:15px">
         <h5> Comprar el llibre </h5>
-        <b>Preu 7.59$<b>
+        <b>{{ this.single_book.precio }} $<b>
         <br>
         <br>
         <b-button style="width:100%" variant="danger">Afegir a la cistella</b-button><br><br>
@@ -59,3 +57,30 @@
  </footer>
  </div>
  </template>
+
+<script>
+import axios from 'axios'
+export default {
+  data () {
+    return {
+      single_book: {}
+    }
+  },
+  created () {
+    this.load_book()
+  },
+  methods: {
+    load_book () {
+      const path = 'http://127.0.0.1:5000/book/' + this.$route.query.bk
+      axios.get(path)
+        .then((res) => {
+          this.single_book = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+
+  }
+}
+</script>

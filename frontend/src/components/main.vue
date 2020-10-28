@@ -2,7 +2,7 @@
 <div id="app">
  <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
-   <b-navbar-brand href="#">NavBar</b-navbar-brand>
+   <b-navbar-brand> NavBar</b-navbar-brand>
    <b-nav-form>
       <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
       <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
@@ -31,8 +31,8 @@
    <b-row>
      <b-col  v-for="(book) in best_sellers" :key="book.isbn">
        <br>
-       <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt=""  @click = "gotobook()">
-       <h6  @click = "gotobook()">{{ book.titulo }}</h6>
+       <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt=""  @click = "gotobook(book)">
+       <h6  @click = "gotobook(book)">{{ book.titulo }}</h6>
        <h5>{{ book.autor }}</h5>
        <h6>Valoració</h6>
        <h6>{{ book.precio }}</h6>
@@ -45,10 +45,10 @@
   <div class="container" v-if= "see_cart === false">
       <h3> New releases </h3>
       <b-row>
-      <b-col  v-for="(book) in new_releases" :key="book.isbn" @click = "gotobook()">
+      <b-col  v-for="(book) in new_releases" :key="book.isbn">
         <br>
         <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt="">
-        <h6> @click = "gotobook()" {{ book.titulo }}</h6>
+        <h6 @click = "gotobook(book)">  {{ book.titulo }}</h6>
         <h5>{{ book.autor }}</h5>
         <h6>Valoració</h6>
         <h6>{{ book.precio }}</h6>
@@ -71,7 +71,7 @@
           <img :src="'https://placehold.it/70x109/?text=' + i + '-' + i" alt="">
           </b-col>
           <b-col>
-          <h6> {{ item.book.titulo }}</h6>
+          <h6 @click = "gotobook(book)"> {{ item.book.titulo }}</h6>
           <h5> {{ item.book.autor }}</h5>
           </b-col>
           <b-col>
@@ -139,15 +139,8 @@ export default {
     this.load_new_releases()
   },
   methods: {
-    gotobook () {
-      const path = 'http://127.0.0.1:5000/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/book'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+    gotobook (book) {
+      this.$router.push({ path: '/book', query: {bk: book.isbn} })
     },
     load_best_sellers () {
       const path = 'http://127.0.0.1:5000/'
