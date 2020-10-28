@@ -70,3 +70,19 @@ class Books(Resource):
             except Exception as e:
                 print(str(e))
                 return {"message": "Error a la hora d'editar un llibre a base de dades"}, 500
+
+    def delete(self, isbn):
+        book = BooksModel.find_by_isbn(isbn)
+
+        if book is None:
+            return {"message": f"Book with ['isbn': {isbn}] Not Found"}, 404
+
+        if not book.vendible:
+            return {"message": f"Book with ['isbn': {isbn}] was previously removed"}, 409
+
+        try:
+            book.delete_from_db()
+        except Exception as e:
+            return {"message": str(e)}, 500
+
+        return {"message": f"Book with ['isbn': {isbn}] deleted"}, 200
