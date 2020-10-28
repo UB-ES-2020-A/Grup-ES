@@ -61,17 +61,19 @@ class TestBasicFunction(unittest.TestCase):
                 "fecha_de_publicacion": "2001-06-01"
             }
 
+            res = self.client.delete(f"/book/{isbn}", data=data)
+            self.assertEqual(404, res.status_code)
+
             res = self.client.post("/book", data=data)
             self.assertEqual(201, res.status_code)
             self.assertEqual(BooksModel.find_by_isbn(isbn).json(), json.loads(res.data))
 
-            res = self.client.delete(f"/book{isbn}", data=data)
+            res = self.client.delete(f"/book/{isbn}", data=data)
             self.assertEqual(200, res.status_code)
             self.assertFalse(BooksModel.find_by_isbn(isbn).vendible)
 
-            res = self.client.delete(f"/book{isbn}", data=data)
-            self.assertEqual(404, res.status_code)
-
+            res = self.client.delete(f"/book/{isbn}", data=data)
+            self.assertEqual(409, res.status_code)
 
 
 if __name__ == '__main__':
