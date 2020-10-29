@@ -1,4 +1,5 @@
 <template>
+  <div id="app">
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-navbar-brand href="#">NavBar</b-navbar-brand>
@@ -6,7 +7,7 @@
     <b-container>
       <div class="row d-flex justify-content-center">
       <div class="col-md">
-      <div class="form-control" style="margin-top: 100px">
+      <div class="form-control  bg-light" style="margin-top: 100px">
       <div class="form-label-group">
               <h5>Crear cuenta</h5>
               <label style="margin-top: 15px">Username</label>
@@ -25,22 +26,45 @@
               <input type="password" id="inputPassword2" class="form-control"
               placeholder="Confirmar contraseña" required v-model="password2">
 
-              <b-button variant="danger" style="margin-top: 20px">Crear usuario</b-button>
+              <b-button variant="danger" style="margin-top: 20px" @click="createUser()">Crear usuario</b-button>
       </div>
       </div>
       </div>
       </div>
     </b-container>
   </div>
+  </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
+      username: '',
+      email: '',
+      password: ''
     }
   },
   methods: {
+    createUser () {
+      const parameters = {
+        username: this.username,
+        email: this.email1,
+        password: this.password1
+      }
+      const path = 'http://127.0.0.1:5000/user'
+      axios.post(path, parameters)
+        .then((res) => {
+          console.log('ACCOUNT CREATED')
+          alert('Account created')
+        })
+        .catch((error) => {
+          console.error(error)
+          this.username = ''
+          alert('Username already in use')
+        })
+    }
   }
 }
 </script>
