@@ -10,13 +10,13 @@ def parse_book(minimal=False):
     parser = reqparse.RequestParser(bundle_errors=True)
 
     parser.add_argument('isbn', type=int, required=not minimal,
-                        help="In this field goes the isbn of the book"+str_variable)
+                        help="In this field goes the isbn of the book" + str_variable)
     parser.add_argument('stock', type=int, required=not minimal,
-                        help="In this field goes the stock of the book"+str_variable)
+                        help="In this field goes the stock of the book" + str_variable)
     parser.add_argument('precio', type=float, required=not minimal,
-                        help="In this field goes the price of the book"+str_variable)
+                        help="In this field goes the price of the book" + str_variable)
     parser.add_argument('titulo', type=str, required=not minimal,
-                        help="In this field goes the title of the book"+str_variable)
+                        help="In this field goes the title of the book" + str_variable)
     parser.add_argument('autor', type=str, required=False,
                         help="In this field goes the author of the book")
     parser.add_argument('editorial', type=str, required=False,
@@ -86,3 +86,10 @@ class Books(Resource):
             return {"message": str(e)}, 500
 
         return {"message": f"Book with ['isbn': {isbn}] deleted"}, 200
+
+
+class BooksList(Resource):
+    # Tots els llibres
+    def get(self):
+        books = BooksModel.query.all()
+        return {'books': [book.json() for book in books]}, 200
