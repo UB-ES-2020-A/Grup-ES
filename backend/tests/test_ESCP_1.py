@@ -5,9 +5,11 @@ from flask_restful import Api
 import json
 from datetime import datetime
 
+from sqlalchemy import asc, desc
+
 from model.books import BooksModel
 from db import db
-from resources.books import Books
+from resources.books import Books, BooksList
 
 
 class TestBasicFunction(unittest.TestCase):
@@ -22,7 +24,7 @@ class TestBasicFunction(unittest.TestCase):
         self.client = self.app.test_client()
         api = Api(self.app)
 
-        api.add_resource(Books, '/books')
+        api.add_resource(BooksList, '/books')
 
         db.init_app(self.app)
         migrate = Migrate(self.app, db)
@@ -39,8 +41,18 @@ class TestBasicFunction(unittest.TestCase):
         with self.app.app_context():
             book = BooksModel(1, 1, 1, "test")
             book.save_to_db()
+            book = BooksModel(2, 1, 1, "as")
+            book.save_to_db()
+            args = {
+                "numBooks": 2,
+                "param": "isbn",
+                "order": "desc"
+            }
+            res = self.client.get('/books', data=args)
+            self.assertEqual(200, res.status_code)
+            list_books = list(map(lambda u: u.json(), BooksModel.query.order_by(desc('isbn')).limit(2).all()))
+            self.assertEqual(list_books, json.loads(res.data)["books"])
 
-            #fins aqui bé, i després?
 
-            res = self.client.get('/book')
+
 
