@@ -2,6 +2,8 @@ import datetime as dt
 
 from flask_restful import Resource
 from flask_restful import reqparse
+from sqlalchemy import desc, asc
+
 from model.books import BooksModel
 
 
@@ -89,7 +91,21 @@ class Books(Resource):
 
 
 class BooksList(Resource):
-    # Tots els llibres
     def get(self):
-        books = BooksModel.query.all()
+        parser = reqparse.RequestParser(bundle_errors=True)
+
+        parser.add_argument('numBooks', type=int, required=False,
+                            help="In this field goes the number of the books to show")
+        parser.add_argument('param', type=str, required=False,
+                            help="In this field goes the param you want to order")
+        parser.add_argument('order', type=str, required=False,
+                            help="In this field goes the order (asc, desc) of what you would like to show")
+        data = parser.parse_args()
+        if data['param'] is None:
+            books = BooksModel.query.limit(data['numBooks']).all()
+        else:
+            if data['order'] == "asc":
+                books = BooksModel.query.order_by(asc(data['param'])).limit(data['numBooks']).all()
+            else:
+                books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
         return {'books': [book.json() for book in books]}, 200
