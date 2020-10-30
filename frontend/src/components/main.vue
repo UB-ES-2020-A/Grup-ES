@@ -10,7 +10,7 @@
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
    <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></a></li>
-   <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart()" icon="basket" font-scale="2.5"></b-icon>
+   <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon>
 </a></li>
    <li class="nav-item"><a class="nav-link"><b-button variant="danger">Log In</b-button>
 </a></li>
@@ -31,7 +31,7 @@
    <b-row>
      <b-col  v-for="(book) in best_sellers" :key="book.isbn">
        <br>
-       <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt=""  @click = "gotobook(book)">
+       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book)">
        <h6  @click = "gotobook(book)">{{ book.titulo }}</h6>
        <h5>{{ book.autor }}</h5>
        <h6>Valoració</h6>
@@ -47,7 +47,7 @@
       <b-row>
       <b-col  v-for="(book) in new_releases" :key="book.isbn">
         <br>
-        <img :src="'https://placehold.it/140x218/?text=' + i + '-' + i" alt="">
+        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book)">
         <h6 @click = "gotobook(book)">  {{ book.titulo }}</h6>
         <h5>{{ book.autor }}</h5>
         <h6>Valoració</h6>
@@ -59,16 +59,16 @@
 <!-- cart -->
 
 <b-container v-if= "see_cart === true">
- <h2> CISTELLA {{ this.cart_items.length }} PRODUCTES </h2>
+ <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
 </b-container>
 <br>
  <b-container v-if= "see_cart === true">
     <b-row>
       <b-col cols="8">
         <b-container fluid style="padding:35px">
-        <b-row class = "border bg-light" v-for="(item) in cart_items" :key="item.book.isbn" style="padding:35px; margin-bottom:10px">
+        <b-row class = "border bg-light" v-for="(item) in cartItems" :key="item.book.isbn" style="padding:35px; margin-bottom:10px">
           <b-col>
-          <img :src="'https://placehold.it/70x109/?text=' + i + '-' + i" alt="">
+          <img :src="getURL(item.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(item.book)">
           </b-col>
           <b-col>
           <h6 @click = "gotobook(book)"> {{ item.book.titulo }}</h6>
@@ -76,7 +76,7 @@
           </b-col>
           <b-col>
           <b-row>
-          <h6>{{ total_amount(item.book.precio, item.quantity) }}</h6>
+          <h6>{{ total_amount(item.book.precio, item.quantity) }} $</h6>
           </b-row>
           <br>
           <b-row>
@@ -115,10 +115,9 @@
 <br>
 <br>
 <footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center;">Contact, bla, bla</h5>
+<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
 </footer>
 </div>
-
 </template>
 
 <script>
@@ -128,14 +127,13 @@ export default {
     return {
       best_sellers: [],
       new_releases: [],
-      cart_items: [],
+      cartItems: [],
       see_cart: false,
       items: 0,
       price: 0.0
     }
   },
   created () {
-    this.load_best_sellers()
     this.load_new_releases()
   },
   methods: {
@@ -143,8 +141,9 @@ export default {
       this.$router.push({ path: '/book', query: {bk: book.isbn} })
     },
     load_best_sellers () {
-      const path = 'http://127.0.0.1:5000/'
-      axios.get(path)
+      const path = 'http://127.0.0.1:5000/books'
+      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
+      axios.get(path, params)
         .then((res) => {
           this.best_sellers = res.data
         })
@@ -153,10 +152,11 @@ export default {
         })
     },
     load_new_releases () {
-      const path = 'http://127.0.0.1:5000/'
-      axios.get(path)
+      const path = 'http://127.0.0.1:5000/books'
+      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
+      axios.get(path, params)
         .then((res) => {
-          this.new_releases = res.data
+          this.new_releases = res.data.books
         })
         .catch((error) => {
           console.error(error)
@@ -165,15 +165,14 @@ export default {
     add_cart (book) {
       var alreadyIn = false
       var i
-      this.tickets += 1
-      for (i = 0; i < this.cart_items.length; i++) {
-        if (book.name === this.cart_items[i].book.name) {
-          this.cart_items[i].quantity += 1
+      for (i = 0; i < this.cartItems.length; i++) {
+        if (book.isbn === this.cartItems[i].book.isbn) {
+          this.cartItems[i].quantity += 1
           alreadyIn = true
         }
       }
       if (!alreadyIn) {
-        this.cart_items.push({'book': book, 'quantity': 1})
+        this.cartItems.push({'book': book, 'quantity': 1})
       }
     },
     show_cart () {
@@ -183,12 +182,16 @@ export default {
       return price * quantity
     },
     calculate_total_price () {
-      var price = 0
+      var price = 0.0
       var i
-      for (i = 0; i < this.cart_items.length; i++) {
-        price += this.total_amount(this.cart_items[i].book.price, this.cart_items[i].quantity)
+      for (i = 0; i < this.cartItems.length; i++) {
+        price += this.total_amount(this.cartItems[i].book.precio, this.cartItems[i].quantity)
       }
       this.price = price
+      return this.price
+    },
+    getURL (book) {
+      return book.url_imagen
     }
   }
 }
