@@ -47,7 +47,7 @@
         <br>
         <b-button style="width:100%" variant="danger">Afegir a la cistella</b-button><br><br>
         <b-button style="width:100%" variant="dark">Comprar ara</b-button><br><br>
-        <b-button style="width:100%" variant="dark">Afegir a la llista de desitjos</b-button>
+        <b-button style="width:100%" variant="dark"> Afegir a la llista de desitjos</b-button>
         </b-container>
       </b-col>
     </b-row>
