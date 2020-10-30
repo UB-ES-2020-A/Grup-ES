@@ -37,7 +37,7 @@ class TestBasicFunction(unittest.TestCase):
             db.drop_all()
             db.session.commit()
 
-    def test_get_book(self):
+    def test_get_book1(self):
         with self.app.app_context():
             book = BooksModel(1, 1, 1, "test")
             book.save_to_db()
@@ -53,6 +53,29 @@ class TestBasicFunction(unittest.TestCase):
             list_books = list(map(lambda u: u.json(), BooksModel.query.order_by(desc('isbn')).limit(2).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
 
+    def test_get_books(self):
+        with self.app.app_context():
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            book = BooksModel(2, 1, 1, "as")
+            book.save_to_db()
+            res = self.client.get('/books')
+            self.assertEqual(200, res.status_code)
+            list_books = list(map(lambda u: u.json(), BooksModel.query.all()))
+            self.assertEqual(list_books, json.loads(res.data)["books"])
 
-
-
+    def test_get_book2(self):
+        with self.app.app_context():
+            book = BooksModel(1, 1, 1, "aaaa")
+            book.save_to_db()
+            book = BooksModel(2, 1, 1, "bbbb")
+            book.save_to_db()
+            args = {
+                "numBooks": 2,
+                "param": "titulo",
+                "order": "asc"
+            }
+            res = self.client.get('/books', data=args)
+            self.assertEqual(200, res.status_code)
+            list_books = list(map(lambda u: u.json(), BooksModel.query.order_by(asc('titulo')).limit(2).all()))
+            self.assertEqual(list_books, json.loads(res.data)["books"])
