@@ -14,7 +14,7 @@
               <b-row align-h="between">
                 <b-col>
                   <input id="isbn" class="form-control"
-                  placeholder="ISBN" required autofocus v-model="isbn" style="margin-top: 15px">
+                  placeholder="ISBN" required autofocus v-model="isbn" type="number" style="margin-top: 15px">
                 </b-col>
               </b-row>
               <b-button v-b-modal.modal-1 variant="primary" style="margin-top: 10px">Borrar libro</b-button>
@@ -26,11 +26,11 @@
       </div>
 
       <!-- modal -->
-      <b-modal id="modal-1" hide-footer title="BootstrapVue">
-        <p class="my-4">¿Estas seguro de borrar el libro: XXXXXX?</p>
+      <b-modal id="modal-1" hide-footer ref="modal-1" title="Borrar Libro">
+        <p class="my-4">¿Estas seguro de borrar el libro con el ISBN: {{isbn}}?</p>
         <b-row align-h="center">
           <b-col cols="2">
-            <b-button @click="$bvModal.hide('modal-1')"> OK </b-button>
+            <b-button @click="deleteBook()"> OK </b-button>
           </b-col>
           <b-col cols="2">
             <b-button @click="$bvModal.hide('modal-1')"> NO </b-button>
@@ -50,12 +50,28 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
+      isbn: ''
     }
   },
   methods: {
+    deleteBook () {
+      const path = 'http://127.0.0.1:5000/book/' + this.isbn
+      axios.delete(path)
+        .then((res) => {
+          console.log('BOOK DELETED')
+          this.isbn = ''
+          alert('Book deleted from db')
+          this.$refs['modal-1'].hide()
+        })
+        .catch((error) => {
+        // eslint-disable-next-line
+          console.log(error)
+        })
+    }
   }
 }
 </script>
