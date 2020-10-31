@@ -10,5 +10,4 @@ install:
   - pip install -r deployment/requirements.txt
 # command to run tests
 script:
-  - cd backend
-  - python3 -m unittest discover -v
+  - python3 -m unittest discover -v backend
