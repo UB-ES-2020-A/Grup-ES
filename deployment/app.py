@@ -9,8 +9,7 @@ from db import db, init_db
 from decouple import config as config_decouple
 from config import config
 
-app = Flask(__name__, static_folder="../frontend/dist/static",
-            template_folder="../frontend/dist")
+app = Flask(__name__)
 environment = config['development']
 if config_decouple('PRODUCTION', cast=bool, default=False):
     environment = config['production']
