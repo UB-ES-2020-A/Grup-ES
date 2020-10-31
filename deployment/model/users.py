@@ -16,7 +16,7 @@ class UsersModel(db.Model):
     username = db.Column(db.String(), nullable=False)
     email = db.Column(db.String(), nullable=False)
     password = db.Column(db.String(), nullable=False)
-    role = db.Column(db.Enum(*ROLES), nullable=False)
+    role = db.Column(db.Enum(*ROLES, name='roles_types'), nullable=False)
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
