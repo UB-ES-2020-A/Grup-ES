@@ -9,10 +9,10 @@
    </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-   <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></a></li>
+   <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
    <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon>
 </a></li>
-   <li class="nav-item"><a class="nav-link"><b-button variant="danger">Log In</b-button>
+   <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">Log In</b-button>
 </a></li>
     </ul>
    </b-navbar-nav>
@@ -57,7 +57,6 @@
       </b-row>
   </div>
 <!-- cart -->
-
 <b-container v-if= "see_cart === true">
  <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
 </b-container>
@@ -84,13 +83,16 @@
           calculate_total_price();" min="1" style="width:45%"></b-form-spinbutton>
           </b-row>
           </b-col>
+          <b-col>
+            <b-button variant="danger" @click="return_book(item)">Eliminar</b-button>
+          </b-col>
           <hr/>
       </b-row>
       </b-container>
       </b-col>
       <b-col>
        <b-container fluid class = "border bg-light" style="padding:15px">
-        <p> Tens un codi de descompte? <p>
+        <p> Tens un codi de descompte? </p>
         <b-nav-form>
            <b-form-input size="sm" class="mr-sm-2" placeholder="Introdueix el teu codi descompte"></b-form-input>
            <b-button size="sm" class="my-2 my-sm-0" type="submit">Validar</b-button>
@@ -192,7 +194,18 @@ export default {
     },
     getURL (book) {
       return book.url_imagen
+    },
+    logIn () {
+      this.$router.push({path: '/userlogin'})
+    },
+    return_book (item) {
+      var deleteIdx = this.cartItems.indexOf(item)
+      this.items -= 1
+      if (deleteIdx !== -1) {
+        this.cartItems.splice(deleteIdx, 1)
+      }
     }
+
   }
 }
 </script>

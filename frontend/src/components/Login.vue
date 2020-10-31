@@ -1,4 +1,5 @@
 <template>
+  <div id="app">
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-navbar-brand href="#">NavBar</b-navbar-brand>
@@ -6,9 +7,9 @@
     <b-container>
       <div class="row d-flex justify-content-center">
       <div class="col-md-4">
-      <div class="form-control" style="margin-top: 150px">
+      <div class="form-control  bg-light" style="margin-top: 150px">
       <div class="form-label-group">
-              <b-button variant="link" style="margin-left: 100px">¿Quieres crear una cuenta?</b-button>
+              <b-button variant="link" style="margin-left: 100px" @click="goRegister()">¿Quieres crear una cuenta?</b-button>
               <br>
               <br>
               <h5>Iniciar Sesión</h5>
@@ -28,6 +29,7 @@
       </div>
       </div>
     </b-container>
+  </div>
   </div>
 </template>
 
@@ -61,10 +63,12 @@ export default {
         .then((res) => {
           this.getAccount()
           this.token = res.data.token
+          this.initForm()
           console.log('ACCOUNT LOGED')
           alert('User loged')
         })
         .catch((error) => {
+          alert('ERROR: Wrong Logged')
           console.error(error)
         })
     },
@@ -78,6 +82,20 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    goRegister () {
+      const path = 'http://127.0.0.1:5000/#/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/userregister'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    initForm () {
+      this.email = ''
+      this.password = ''
     }
   }
 }
