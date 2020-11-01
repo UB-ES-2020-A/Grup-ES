@@ -58,7 +58,7 @@ export default {
         email: this.email,
         password: this.password
       }
-      const path = 'http://127.0.0.1:5000/login'
+      const path = 'https://grup-es.herokuapp.com/login'
       axios.post(path, parameters)
         .then((res) => {
           this.getAccount()
@@ -73,7 +73,7 @@ export default {
         })
     },
     getAccount () {
-      const path = 'http://127.0.0.1:5000/user/' + this.email
+      const path = 'https://grup-es.herokuapp.com/user/' + this.email
       axios.get(path)
         .then((res) => {
           this.role = res.data.role
@@ -84,7 +84,7 @@ export default {
         })
     },
     goRegister () {
-      const path = 'http://127.0.0.1:5000/#/'
+      const path = 'https://grup-es.herokuapp.com/'
       axios.get(path)
         .then((res) => {
           this.$router.push({path: '/userregister'})

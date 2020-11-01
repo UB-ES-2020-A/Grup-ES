@@ -143,7 +143,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: book.isbn} })
     },
     load_best_sellers () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {
@@ -154,7 +154,7 @@ export default {
         })
     },
     load_new_releases () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {

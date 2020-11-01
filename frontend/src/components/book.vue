@@ -130,7 +130,7 @@ export default {
   },
   methods: {
     load_book () {
-      const path = 'http://127.0.0.1:5000/book/' + this.$route.query.bk
+      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk
       axios.get(path)
         .then((res) => {
           this.single_book = res.data.book

@@ -92,7 +92,7 @@ export default {
         url_imagen: this.url,
         sinopsis: this.sinopsis
       }
-      const path = 'http://127.0.0.1:5000/book'
+      const path = 'https://grup-es.herokuapp.com/book'
       axios.post(path, parameters)
         .then((res) => {
           console.log('BOOK ADDED')
