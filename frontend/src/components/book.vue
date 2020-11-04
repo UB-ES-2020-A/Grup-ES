@@ -23,7 +23,7 @@
     <b-row>
       <b-col cols="4">
         <br>
-        <img :src="getURL()" style="height:436px; width:280px;" alt="" >
+        <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
         <br>
         <br>
         <h6> Puntuació </h6>
@@ -73,12 +73,12 @@
           </b-col>
           <b-col>
           <b-row>
-          <h6>{{ total_amount(item.book.precio, item.quantity) }}</h6>
+          <h6>{{ total_amount(item.book, item.quantity) }}</h6>
           </b-row>
           <br>
           <b-row>
-          <b-form-spinbutton id="sb-inline" v-model="item.quantity" @click="total_amount(item.book.precio, item.quantity);
-          calculate_total_price(); add_cart(item.book)"  min="1" style="width:45%"></b-form-spinbutton>
+          <b-form-spinbutton id="sb-inline" v-model="item.quantity" @click="total_amount(item.book, item.quantity);
+          calculate_total_price();"  min="1" style="width:45%"></b-form-spinbutton>
           </b-row>
           </b-col>
           <hr/>
@@ -97,11 +97,11 @@
       <br>
         <h5> Resum </h5>
         <br>
-        <h6> {{ this.price }}$ </h6>
+        <h6> {{ calculate_total_price() }}$ </h6>
         <hr/>
         <h6> Despeses enviament : Gratuït</h6>
         <hr/>
-        <h5> Total : {{ this.price }} $ </h5>
+        <h5> Total : {{ calculate_total_price() }} $ </h5>
         <br>
         <b-button style="width:100%" variant="danger">Finalitzar compra</b-button><br><br>
         </b-container>
@@ -160,21 +160,31 @@ export default {
       }
       localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
     },
-    total_amount (price, quantity) {
-      return price * quantity
+    total_amount (book, quantity) {
+      var i
+      for (i = 0; i < this.cartItems.length; i++) {
+        if (book.isbn === this.cartItems[i].book.isbn) {
+          this.cartItems[i].quantity = quantity
+        }
+      }
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+      return book.precio * quantity
     },
     calculate_total_price () {
       var price = 0
       var i
       for (i = 0; i < this.cartItems.length; i++) {
-        price += this.total_amount(this.cartItems[i].book.precio, this.cartItems[i].quantity)
+        price += this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
       }
       this.price = price
+      return this.price
     },
     fetch_cache () {
-      this.cartItems = JSON.parse(localStorage.getItem('cartItems'))
+      var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
+      if (tmpitems.length !== 0) {
+        this.cartItems = tmpitems
+      }
     }
-
   }
 }
 </script>
