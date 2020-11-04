@@ -78,7 +78,7 @@
           <br>
           <b-row>
           <b-form-spinbutton id="sb-inline" v-model="item.quantity" @click="total_amount(item.book.precio, item.quantity);
-          calculate_total_price();" min="1" style="width:45%"></b-form-spinbutton>
+          calculate_total_price(); add_cart(item.book)"  min="1" style="width:45%"></b-form-spinbutton>
           </b-row>
           </b-col>
           <hr/>
@@ -127,6 +127,7 @@ export default {
   },
   created () {
     this.load_book()
+    this.fetch_cache()
   },
   methods: {
     load_book () {
@@ -139,8 +140,8 @@ export default {
           console.error(error)
         })
     },
-    getURL () {
-      return this.single_book.url_imagen
+    getURL (book) {
+      return book.url_imagen
     },
     show_cart () {
       this.see_cart = !this.see_cart
@@ -157,6 +158,7 @@ export default {
       if (!alreadyIn) {
         this.cartItems.push({'book': book, 'quantity': 1})
       }
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
     },
     total_amount (price, quantity) {
       return price * quantity
@@ -168,6 +170,9 @@ export default {
         price += this.total_amount(this.cartItems[i].book.precio, this.cartItems[i].quantity)
       }
       this.price = price
+    },
+    fetch_cache () {
+      this.cartItems = JSON.parse(localStorage.getItem('cartItems'))
     }
 
   }

@@ -80,7 +80,7 @@
           <br>
           <b-row>
           <b-form-spinbutton id="sb-inline" v-model="item.quantity" @click="total_amount(item.book.precio, item.quantity);
-          calculate_total_price();" min="1" style="width:45%"></b-form-spinbutton>
+          calculate_total_price(); add_cart(item.book)" min="1" style="width:45%"></b-form-spinbutton>
           </b-row>
           </b-col>
           <b-col>
@@ -131,12 +131,12 @@ export default {
       new_releases: [],
       cartItems: [],
       see_cart: false,
-      items: 0,
       price: 0.0
     }
   },
   created () {
     this.load_new_releases()
+    this.fetch_cache()
   },
   methods: {
     gotobook (book) {
@@ -176,6 +176,7 @@ export default {
       if (!alreadyIn) {
         this.cartItems.push({'book': book, 'quantity': 1})
       }
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
     },
     show_cart () {
       this.see_cart = !this.see_cart
@@ -200,9 +201,15 @@ export default {
     },
     return_book (item) {
       var deleteIdx = this.cartItems.indexOf(item)
-      this.items -= 1
       if (deleteIdx !== -1) {
         this.cartItems.splice(deleteIdx, 1)
+      }
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+    },
+    fetch_cache () {
+      var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
+      if (tmpitems.length !== 0){
+        this.cartItems = JSON.parse(localStorage.getItem('cartItems'))
       }
     }
 
