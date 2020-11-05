@@ -57,8 +57,9 @@ class LibraryModel(db.Model):
         """
         for attr, newValue in data.items():
             if newValue is not None:
+                cls = getattr(self, attr)
                 # Checks if value is of the attribute that's trying to be modified is an Enum
-                if isinstance((cls := getattr(self, attr)), Enum):
+                if isinstance(cls, Enum):
                     # Checks if the enum doesn't contain the newValue
                     if newValue not in type(cls).__members__:
                         raise Exception(f"Enum {type(cls).__name__} doesn't have value: {newValue}")
