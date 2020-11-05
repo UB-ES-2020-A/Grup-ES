@@ -131,7 +131,8 @@ export default {
       new_releases: [],
       cartItems: [],
       see_cart: false,
-      price: 0.0
+      price: 0.0,
+      user: {}
     }
   },
   created () {
@@ -215,8 +216,12 @@ export default {
     },
     fetch_cache () {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
-      if (tmpitems.length !== 0) {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpitems !== null) {
         this.cartItems = tmpitems
+      }
+      if (tmpuser !== null) {
+        this.userObj = tmpuser
       }
     }
   }

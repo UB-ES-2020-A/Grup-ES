@@ -2,7 +2,7 @@
   <div id="app">
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
+      <b-navbar-brand >NavBar</b-navbar-brand>
     </b-navbar>
     <b-container>
       <div class="row d-flex justify-content-center">
@@ -18,7 +18,7 @@
               <input type="password" id="inputPassword" class="form-control"
               placeholder="Password" required v-model="password" style="margin-top: 20px">
               <b-form-text style="margin-top: 15px; margin-left: 5px">
-                Al continuar confirmas que aceptas las <a href="#">Condiciones de uso</a> y las <a href="#">Políticas de privacidad</a>
+                Al continuar confirmas que aceptas las <a>Condiciones de uso</a> y las <a>Políticas de privacidad</a>
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
               <b-button block variant="link" style="margin-top: 10px">¿Olvidaste contraseña?</b-button>
@@ -63,14 +63,23 @@ export default {
         .then((res) => {
           this.getAccount()
           this.token = res.data.token
-          this.initForm()
           console.log('ACCOUNT LOGED')
           alert('User loged')
+          var userObj = this.create_user_dict(this.email, this.role, this.token)
+          localStorage.setItem('user_session', JSON.stringify(userObj))
+          this.initForm()
         })
         .catch((error) => {
           alert('ERROR: Wrong Logged')
           console.error(error)
         })
+    },
+    create_user_dict (mail, role, token) {
+      var obj = {}
+      obj.mail = mail
+      obj.role = role
+      obj.token = token
+      return obj
     },
     getAccount () {
       const path = 'https://grup-es.herokuapp.com/user/' + this.email
