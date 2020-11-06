@@ -42,7 +42,8 @@ export default {
     email: '',
     password: '',
     role: '',
-    token: ''
+    token: '',
+    userObject: {username: '', email: '', role: '', token: ''}
   }),
   methods: {
     OnGoogleAuthSuccess (idToken) {
@@ -54,53 +55,44 @@ export default {
     },
     checkLogin () {
       const parameters = {
-        username: this.username,
         email: this.email,
         password: this.password
       }
       const path = 'https://grup-es.herokuapp.com/login'
       axios.post(path, parameters)
         .then((res) => {
-          this.getAccount()
           this.token = res.data.token
           console.log('ACCOUNT LOGED')
           alert('User loged')
-          var userObj = this.create_user_dict(this.email, this.role, this.token)
-          localStorage.setItem('user_session', JSON.stringify(userObj))
-          this.initForm()
         })
         .catch((error) => {
           alert('ERROR: Wrong Logged')
           console.error(error)
         })
-    },
-    create_user_dict (mail, role, token) {
-      var obj = {}
-      obj.mail = mail
-      obj.role = role
-      obj.token = token
-      return obj
-    },
-    getAccount () {
-      const path = 'https://grup-es.herokuapp.com/user/' + this.email
-      axios.get(path)
+      const path2 = 'https://grup-es.herokuapp.com/user/' + this.email
+      axios.get(path2)
         .then((res) => {
-          this.role = res.data.role
-          console.log('ACCOUNT GETTED')
+          this.username = res.data.user.username
+          this.email = res.data.user.email
+          this.role = res.data.user.role
+          this.createUserObject(this.username, this.email, this.role, this.token)
+          this.$router.push({path: '/'})
+          this.initForm()
         })
         .catch((error) => {
           console.error(error)
         })
+    },
+    createUserObject (username, email, role, token) {
+      this.userObject.username = username
+      this.userObject.email = email
+      this.userObject.role = role
+      this.userObject.token = token
+      localStorage.setItem('user_session', JSON.stringify(this.userObject))
+      console.log(this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
     },
     goRegister () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/userregister'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/userregister'})
     },
     initForm () {
       this.email = ''

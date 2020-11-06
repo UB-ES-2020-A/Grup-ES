@@ -11,8 +11,9 @@
   <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
     <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
     <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
-    <li class="nav-item"><a class="nav-link"><b-button variant="danger">Log In</b-button>
-</a></li>
+    <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
+ </a></li>
+<li class="nav-item" v-if= "session_boolean === true"><a class="nav-link"><h4> {{ this.user.username }}</h4></a></li>
    </ul>
   </b-navbar-nav>
  </b-navbar>
@@ -77,8 +78,8 @@
           </b-row>
           <br>
           <b-row>
-          <b-form-spinbutton id="sb-inline" v-model="item.quantity" @click="total_amount(item.book, item.quantity);
-          calculate_total_price();"  min="1" style="width:45%"></b-form-spinbutton>
+          <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)"
+            min="1" style="width:45%"></b-form-spinbutton>
           </b-row>
           </b-col>
           <hr/>
@@ -122,7 +123,10 @@ export default {
       single_book: {},
       see_cart: false,
       cartItems: [],
-      price: 0.0
+      price: 0.0,
+      session_status: 'Log In',
+      session_boolean: false,
+      user: {}
     }
   },
   created () {
@@ -161,14 +165,7 @@ export default {
       localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
     },
     total_amount (book, quantity) {
-      var i
-      for (i = 0; i < this.cartItems.length; i++) {
-        if (book.isbn === this.cartItems[i].book.isbn) {
-          this.cartItems[i].quantity = quantity
-        }
-      }
-      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-      return book.precio * quantity
+      return Number(book.precio * quantity).toFixed(2)
     },
     calculate_total_price () {
       var price = 0
@@ -177,7 +174,18 @@ export default {
         price += this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
       }
       this.price = price
-      return this.price
+      return Number(this.price).toFixed(2)
+    },
+    save_quantity (book, quantity) {
+      var i
+      console.log('hola')
+      for (i = 0; i < this.cartItems.length; i++) {
+        if (book.isbn === this.cartItems[i].book.isbn) {
+          this.cartItems[i].quantity = quantity
+        }
+      }
+      localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+      console.log(quantity)
     },
     fetch_cache () {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
@@ -186,7 +194,21 @@ export default {
         this.cartItems = tmpitems
       }
       if (tmpuser !== null) {
-        this.userObj = tmpuser
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
+    },
+    logIn () {
+      if (this.session_boolean === false) {
+        this.$router.push({path: '/userlogin'})
+      } else {
+        localStorage.removeItem('user_session')
+        localStorage.removeItem('cartItems')
+        this.cartItems.splice(0, this.cartItems.length)
+        this.session_status = 'Log In'
+        this.session_boolean = false
+        alert('Log out successfully')
       }
     }
   }
