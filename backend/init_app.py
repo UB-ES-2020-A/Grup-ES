@@ -6,6 +6,7 @@ from flask_restful import Api
 from resources.books import Books, BooksList
 from resources.users import Login, Users, UsersList
 from model.library import LibraryModel
+from model.transactions import TransactionsModel
 
 from db import db, init_db
 
