@@ -21,7 +21,7 @@
                 Al continuar confirmas que aceptas las <a href="#">Condiciones de uso</a> y las <a href="#">Políticas de privacidad</a>
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
-              <b-button block variant="link" style="margin-top: 10px">¿Olvidaste contraseña?</b-button>
+              <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
               <hr>
               <b-button block variant="primary" v-google-signin-button="clientId" class="google-signin-button"> Continue with Google</b-button>
       </div>
@@ -96,6 +96,16 @@ export default {
     initForm () {
       this.email = ''
       this.password = ''
+    },
+    changePassword () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/change'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }

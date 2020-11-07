@@ -7,6 +7,7 @@ import ModifyBooks from '@/components/ModifyBooks.vue'
 import Login from '@/components/Login.vue'
 import AddBooks from '@/components/AddBooks.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
+import changePassword from '@/components/changePassword.vue'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
       path: '/add',
       name: 'AddBooks',
       component: AddBooks
+    },
+    {
+      path: '/change',
+      name: 'changePassword',
+      component: changePassword
     }
   ]
 })
