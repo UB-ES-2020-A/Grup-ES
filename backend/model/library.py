@@ -17,13 +17,13 @@ class LibraryType(Enum):
 class LibraryModel(db.Model):
     __tablename__ = 'library'
 
-    isbn = db.Column(db.Integer(), db.ForeignKey('books.isbn'), primary_key=True)
+    isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'), primary_key=True)
+    library_type = db.Column(db.Enum(LibraryType, name='library_types'), primary_key=True)
     state = db.Column(db.Enum(State, name='state_types'), nullable=False)
     visible = db.Column(db.Boolean(), nullable=False)
-    library_type = db.Column(db.Enum(LibraryType, name='library_types'), nullable=False)
 
-    def __init__(self, isbn, user_id, library_type, state=State.Pending):
+    def __init__(self, isbn, user_id, library_type=LibraryType.Bought, state=State.Pending):
         self.isbn = isbn
         self.user_id = user_id
         self.state = state
@@ -72,6 +72,10 @@ class LibraryModel(db.Model):
     @classmethod
     def find_by_id_and_isbn(cls, user_id, isbn):
         return cls.query.filter_by(user_id=user_id, isbn=isbn).first()
+
+    @classmethod
+    def find_by_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
 
 
 

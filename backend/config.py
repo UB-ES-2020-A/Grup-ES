@@ -18,8 +18,8 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    STATIC_FOLDER = "/P2_VUE_WEBPACK/frontend/dist/static"
-    TEMPLATE_FOLDER = "/P2_VUE_WEBPACK/frontend/dist"
+    STATIC_FOLDER = "../frontend/dist/static"
+    TEMPLATE_FOLDER = "../frontend/dist"
     SECRET_KEY = "kdsfklsmfakfmafmadslvsdfasdf"
 
 
@@ -29,6 +29,8 @@ class TestConfig(Config):
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = "sqlite:///tests/test_data.db"
+    STATIC_FOLDER = "../../frontend/dist/static"
+    TEMPLATE_FOLDER = "../../frontend/dist"
     SECRET_KEY = "hdoashidhpisapjdioaspjiodpjoa"
 
 

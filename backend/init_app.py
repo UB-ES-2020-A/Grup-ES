@@ -5,10 +5,9 @@ from flask_restful import Api
 
 from resources.books import Books, BooksList
 from resources.users import Login, Users, UsersList
-from model.library import LibraryModel
+from resources.library import Library
 
 from db import db, init_db
-
 
 
 def init_api(api):
@@ -19,9 +18,11 @@ def init_api(api):
     api.add_resource(UsersList, '/users')
     api.add_resource(Login, '/login')
 
+    api.add_resource(Library, '/library/<string:email>', '/library')
+
 
 def init(environment):
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=environment.TEMPLATE_FOLDER, static_folder=environment.STATIC_FOLDER)
     app.config.from_object(environment)
 
     init_db(app)
