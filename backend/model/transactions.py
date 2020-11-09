@@ -6,17 +6,16 @@ from db import db
 class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
 
-    id_transaction = db.Column(db.Integer(), nullable=False, primary_key=True)
-    isbn = db.Column(db.Integer(), primary_key=True)
+    id_transaction = db.Column(db.Integer(), primary_key=True)
+    isbn = db.Column(db.BigInteger())
     price = db.Column(db.Float, nullable=False)
     id_user = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, id_transaction, isbn, price, id_user, quantity, date=None):
-        self.id_transaction = id_transaction
+    def __init__(self, isbn, price, id_user, quantity, date=None):
         self.isbn = isbn
-        self.price = price
+        self.price = float(price)
         self.id_user = id_user
         self.quantity = quantity
         if date is None:
@@ -40,8 +39,13 @@ class TransactionsModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
-        for key in data:
-            setattr(self, key, data[key])
+        for attr, newValue in data.items():
+            if newValue is not None:
+                cls = getattr(self, attr)
+                if isinstance(newValue, type(cls)):
+                    setattr(self, attr, newValue)
+                else:
+                    raise Exception
         db.session.commit()
 
     @classmethod
