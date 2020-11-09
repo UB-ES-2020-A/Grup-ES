@@ -59,6 +59,7 @@ export default {
           this.initForm()
           console.log('ACCOUNT CREATED')
           alert('Account created')
+          this.$router.push({path: '/userlogin'})
         })
         .catch((error) => {
           console.error(error)
