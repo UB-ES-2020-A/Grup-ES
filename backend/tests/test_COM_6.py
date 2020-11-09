@@ -9,13 +9,13 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 1
     def test_model_add(self):
         with self.app.app_context():
-            entry = TransactionsModel(1, 2.2, 1, True, None)
+            entry = TransactionsModel(1, 2.2, 1, 1, None)
             entry.save_to_db()
             self.assertEqual(entry, TransactionsModel.find_by_id(1))
 
     def test_model_delete(self):
         with self.app.app_context():
-            entry = TransactionsModel(1, 2.2, 1, True, None)
+            entry = TransactionsModel(1, 2.2, 1, 1, None)
             entry.save_to_db()
             entry.delete_from_db()
 
@@ -23,7 +23,7 @@ class UnitTestOfUS(BaseTest):
 
     def test_model_update(self):
         with self.app.app_context():
-            entry = TransactionsModel(1, 2, 1, True, None)  # id_transaction = 1 -> es automatica
+            entry = TransactionsModel(1, 2, 1, 1, None)  # id_transaction = 1 -> es automatica
             entry.save_to_db()
 
             data = {"id_transaction": 10}  # id = 10
@@ -32,7 +32,7 @@ class UnitTestOfUS(BaseTest):
 
     def test_model_invalid_update(self):
         with self.app.app_context():
-            entry = TransactionsModel(1, 2.2, 1, True, None)
+            entry = TransactionsModel(1, 2.2, 1, 1, None)
             entry.save_to_db()
 
             with self.assertRaises(Exception):
