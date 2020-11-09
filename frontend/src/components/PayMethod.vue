@@ -80,7 +80,7 @@ export default {
         this.errors.push('És requereix emplenar tots els camps!')
       }
 
-      if (this.card_number > 9999999999999999 || this.card_number < 1000000000000000) {
+      if (this.card_number > 9999999999999999999 || this.card_number < 1000000000000) {
         this.errors.push('Número de targeta no vàlid!')
       }
 
