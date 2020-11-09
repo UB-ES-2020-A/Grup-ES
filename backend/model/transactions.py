@@ -49,5 +49,5 @@ class TransactionsModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_id_and_isbn(cls, id_transaction, isbn):
-        return cls.query.filter_by(id_transaction=id_transaction, isbn=isbn).first()
+    def find_by_id(cls, id_transaction):
+        return cls.query.filter_by(id_transaction=id_transaction).first()
