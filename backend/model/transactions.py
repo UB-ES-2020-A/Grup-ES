@@ -7,7 +7,7 @@ class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
-    isbn = db.Column(db.BigInteger())
+    isbn = db.Column(db.BigInteger(), nullable=False)
     price = db.Column(db.Float, nullable=False)
     id_user = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
