@@ -6,7 +6,7 @@ from model.transactions import TransactionsModel
 
 
 def parse_transaction(minimal=False):
-    str_variable = "" if minimal else ", cannot be left blank"
+    str_variable = ", cannot be left blank"
     parser = reqparse.RequestParser(bundle_errors=True)
 
     parser.add_argument('isbn', type=int, required=not minimal,
@@ -17,11 +17,8 @@ def parse_transaction(minimal=False):
                         help="In this field goes the id of the user" + str_variable)
     parser.add_argument('quantity', type=str, required=not minimal,
                         help="In this field goes the quantity of books")
-    parser.add_argument('date', type=str, required=False,
-                        help="In this field goes the date of the transaction in YYYY-MM-DD format")
+
     data = parser.parse_args()
-    if data["date"] is not None:
-        data["date"] = dt.datetime.strptime(data["date"], '%Y-%m-%d')
 
     return data
 
