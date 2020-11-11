@@ -1,5 +1,4 @@
 from flask_restful import reqparse
-import datetime as dt
 from flask_restful import Resource
 
 from model.transactions import TransactionsModel
