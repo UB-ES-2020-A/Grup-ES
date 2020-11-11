@@ -1,7 +1,4 @@
 import unittest
-from flask import Flask
-from flask_migrate import Migrate
-from flask_restful import Api
 import json
 
 from model.books import BooksModel

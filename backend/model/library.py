@@ -1,6 +1,8 @@
 from db import db
 from enum import Enum
 
+from model.books import BooksModel
+
 
 class State(Enum):
     Pending = 1
@@ -37,10 +39,14 @@ class LibraryModel(db.Model):
         """
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
+        atr['book'] = BooksModel.find_by_isbn(self.isbn).json()
+        del atr['isbn']
         del atr["_sa_instance_state"]
         return {atr: value if not isinstance(value, Enum) else value.name for atr, value in atr.items()}
 
     def save_to_db(self):
+        if BooksModel.find_by_isbn(self.isbn) is None:
+            raise Exception("Book with isbn doesn't exist")
         db.session.add(self)
         db.session.commit()
 
