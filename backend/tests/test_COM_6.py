@@ -1,6 +1,8 @@
 import unittest
 import json
 
+from flask_mail import Mail
+
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
 
@@ -52,6 +54,20 @@ class UnitTestOfUS(BaseTest):
             res = self.client.post("/transaction", data=data)
             self.assertEqual(201, res.status_code)
             self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())  # json.loads(res.data))
+
+    # TEST TASK 3
+    def test_order_mail(self):
+        with self.app.app_context():
+            data = {
+                "isbn": 5,
+                "price": 7.9,
+                "id_user": 1,
+                "quantity": 1
+            }
+            res = self.client.post("/transaction", data=data)
+            self.assertEqual(201, res.status_code)
+            self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())
+            #outbox len?
 
 
 if __name__ == '__main__':

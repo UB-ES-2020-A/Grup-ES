@@ -59,8 +59,11 @@ class TransactionsModel(db.Model):
     def send_confirmation_mail(cls, transaction):
         mail = Mail(db.app)
         msg = Message(
-            'Hello',
+            'Order confirmation ',
             recipients=['frponsll40@alumnes.ub.edu']
         )
-        msg.body = 'Has comprat el llibre amb isbn ' + str(transaction['isbn'])
+        quantity = str(transaction['quantity'])
+        isbn = str(transaction['isbn'])
+        msg.body = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
         mail.send(msg)
+        # print(msg.body)
