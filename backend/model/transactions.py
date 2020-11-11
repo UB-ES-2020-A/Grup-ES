@@ -2,6 +2,7 @@ import datetime as dt
 from flask_mail import Mail, Message
 
 from db import db
+from model.users import UsersModel
 
 
 class TransactionsModel(db.Model):
@@ -58,12 +59,12 @@ class TransactionsModel(db.Model):
     @classmethod
     def send_confirmation_mail(cls, transaction):
         mail = Mail(db.app)
+        recipient = UsersModel.find_by_id(transaction['id_user']).email
         msg = Message(
             'Order confirmation ',
-            recipients=['frponsll40@alumnes.ub.edu']
+            recipients=[recipient]
         )
         quantity = str(transaction['quantity'])
         isbn = str(transaction['isbn'])
         msg.body = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
         mail.send(msg)
-        # print(msg.body)

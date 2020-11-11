@@ -67,7 +67,6 @@ class UnitTestOfUS(BaseTest):
             res = self.client.post("/transaction", data=data)
             self.assertEqual(201, res.status_code)
             self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())
-            #outbox len?
 
 
 if __name__ == '__main__':
