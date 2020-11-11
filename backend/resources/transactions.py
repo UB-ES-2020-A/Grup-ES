@@ -1,6 +1,6 @@
 from flask_restful import reqparse
-import datetime as dt
 from flask_restful import Resource
+from flask_mail import Mail, Message
 
 from model.transactions import TransactionsModel
 
@@ -38,5 +38,4 @@ class Transactions(Resource):
             transaction.save_to_db()
         except Exception as e:
             return {"message": str(e)}, 500
-
         return transaction.json(), 201

@@ -1,4 +1,5 @@
 import datetime as dt
+from flask_mail import Mail, Message
 
 from db import db
 
@@ -32,6 +33,14 @@ class TransactionsModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        mail = Mail(db.app)
+        msg = Message(
+            'Hello',
+            recipients=['frponsll40@alumnes.ub.edu']
+        )
+
+        msg.body = 'Has comprat el llibre amb isbn ' + str(self.isbn)
+        mail.send(msg)
         db.session.commit()
 
     def delete_from_db(self):
