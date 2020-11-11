@@ -33,14 +33,8 @@ class TransactionsModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
-        mail = Mail(db.app)
-        msg = Message(
-            'Hello',
-            recipients=['frponsll40@alumnes.ub.edu']
-        )
-
-        msg.body = 'Has comprat el llibre amb isbn ' + str(self.isbn)
-        mail.send(msg)
+        transaction = self.json()
+        self.send_confirmation_mail(transaction)
         db.session.commit()
 
     def delete_from_db(self):
@@ -60,3 +54,13 @@ class TransactionsModel(db.Model):
     @classmethod
     def find_by_id(cls, id_transaction):
         return cls.query.filter_by(id_transaction=id_transaction).first()
+
+    @classmethod
+    def send_confirmation_mail(cls, transaction):
+        mail = Mail(db.app)
+        msg = Message(
+            'Hello',
+            recipients=['frponsll40@alumnes.ub.edu']
+        )
+        msg.body = 'Has comprat el llibre amb isbn ' + str(transaction['isbn'])
+        mail.send(msg)
