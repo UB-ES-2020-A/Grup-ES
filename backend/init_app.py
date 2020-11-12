@@ -9,6 +9,7 @@ from resources.users import Login, Users, UsersList
 from resources.library import Library
 from resources.transactions import Transactions
 
+from model.recovery import PasswordRecoveryModel
 
 from db import db, init_db
 

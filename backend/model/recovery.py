@@ -1,57 +1,43 @@
+import random
+import string
+from datetime import datetime, timedelta
+
 from db import db
 from enum import Enum
 
-from model.books import BooksModel
 
+class PasswordRecoveryModel(db.Model):
+    __tablename__ = 'password_recovery'
+    __table_args__ = (db.UniqueConstraint('key'),)
 
-class State(Enum):
-    Pending = 1
-    Reading = 2
-    Finished = 3
-    Dropped = 4
+    SIZE = 32
+    VALID_UNTIL = timedelta(hours=1)
 
-
-class LibraryType(Enum):
-    Bought = 1
-    WishList = 2
-
-
-class LibraryModel(db.Model):
-    __tablename__ = 'library'
-
-    isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'), primary_key=True)
-    library_type = db.Column(db.Enum(LibraryType, name='library_types'), primary_key=True)
-    state = db.Column(db.Enum(State, name='state_types'), nullable=False)
-    visible = db.Column(db.Boolean(), nullable=False)
+    key = db.Column(db.Integer(), nullable=False)
+    time = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, isbn, user_id, library_type=LibraryType.Bought, state=State.Pending):
-        self.isbn = isbn
+    def __init__(self, user_id, key=None):
         self.user_id = user_id
-        self.state = state
-        self.visible = True
-        self.library_type = library_type
+        self.time = datetime.now()
+        self.key = self.generate_key() if key is None else key
 
     def json(self):
         """
         Returns a dictionary with paris of string of name of attribute and it's value. In case of Enum it just returns
         the name of the enum object (Enum.name).
         """
-        _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
+        _ignore = self.user_id  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
-        atr['book'] = BooksModel.find_by_isbn(self.isbn).json()
-        del atr['isbn']
         del atr["_sa_instance_state"]
         return {atr: value if not isinstance(value, Enum) else value.name for atr, value in atr.items()}
 
     def save_to_db(self):
-        if BooksModel.find_by_isbn(self.isbn) is None:
-            raise Exception("Book with isbn doesn't exist")
         db.session.add(self)
         db.session.commit()
 
     def delete_from_db(self):
-        self.visible = False
+        db.session.delete(self)
         db.session.commit()
 
     def update_from_db(self, data):
@@ -76,12 +62,18 @@ class LibraryModel(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_id_and_isbn(cls, user_id, isbn):
-        return cls.query.filter_by(user_id=user_id, isbn=isbn).first()
+    def find_by_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).first()
 
     @classmethod
-    def find_by_id(cls, user_id):
-        return cls.query.filter_by(user_id=user_id).all()
-
-
-
+    def generate_key(cls):
+        """
+        Generates a random key avoiding duplicating keys using the most secure random generator of the OS.
+        The key will be made by a combination of uppercase and lowercase letters and numbers.
+        """
+        new_key = ''.join(
+            random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(cls.SIZE))
+        while cls.query.filter_by(key=new_key).count() != 0:
+            new_key = ''.join(
+                random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(cls.SIZE))
+        return new_key
