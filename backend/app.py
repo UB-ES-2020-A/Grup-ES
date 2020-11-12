@@ -16,4 +16,4 @@ def render():
 
 
 if __name__ == '__main__':
-    app.run(port=5050)
+    app.run(port=5000)
