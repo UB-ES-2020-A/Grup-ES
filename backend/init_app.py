@@ -43,4 +43,4 @@ def init(environment):
 
     init_api(api)
 
-    return app, api, migrate
+    return app, api, migrate, mail
