@@ -57,14 +57,20 @@ class TransactionsModel(db.Model):
         return cls.query.filter_by(id_transaction=id_transaction).first()
 
     @classmethod
-    def send_confirmation_mail(cls, transaction):
+    def send_email(cls, recipient, subject, message):
         mail = Mail(db.app)
-        recipient = UsersModel.find_by_id(transaction['id_user']).email
         msg = Message(
-            'Order confirmation ',
+            subject,
             recipients=[recipient]
         )
+        msg.body = message
+        mail.send(msg)
+
+    @classmethod
+    def send_confirmation_mail(cls, transaction):
+        recipient = UsersModel.find_by_id(transaction['id_user']).email
         quantity = str(transaction['quantity'])
         isbn = str(transaction['isbn'])
-        msg.body = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
-        mail.send(msg)
+        subject = 'Order confirmation'
+        message = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
+        cls.send_email(recipient, subject, message)

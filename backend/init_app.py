@@ -30,14 +30,6 @@ def init(environment):
     app = Flask(__name__, template_folder=environment.TEMPLATE_FOLDER, static_folder=environment.STATIC_FOLDER)
     app.config.from_object(environment)
 
-    # configuration of mail
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USERNAME'] = 'bookshelterES@gmail.com'
-    app.config['MAIL_DEFAULT_SENDER'] = 'bookshelterES@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'UB-ES-2020'
-    app.config['MAIL_USE_TLS'] = False
-    app.config['MAIL_USE_SSL'] = True
     mail = Mail(app)
 
     init_db(app)

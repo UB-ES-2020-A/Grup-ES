@@ -2,7 +2,14 @@ from decouple import config
 
 
 class Config:
-    pass
+    # mail configuration
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 465
+    MAIL_USERNAME = 'bookshelterES@gmail.com'
+    MAIL_DEFAULT_SENDER = 'bookshelterES@gmail.com'
+    MAIL_PASSWORD = 'UB-ES-2020'
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
 
 
 class ProductionConfig(Config):
