@@ -3,6 +3,7 @@ import json
 
 from flask_mail import Mail
 
+from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
 
@@ -45,6 +46,9 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 2
     def test_post(self):
         with self.app.app_context():
+            to_add = UsersModel('test', 'bookshelterES@gmail.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
             data = {
                 "isbn": 1,
                 "price": 7.9,
@@ -58,6 +62,9 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 3
     def test_order_mail(self):
         with self.app.app_context():
+            to_add = UsersModel('test', 'bookshelterES@gmail.com')
+            to_add.hash_password('password')
+            UsersModel.save_to_db(to_add)
             data = {
                 "isbn": 5,
                 "price": 7.9,
