@@ -1,42 +1,12 @@
 import unittest
-from flask import Flask
-from flask_httpauth import HTTPBasicAuth
-from flask_migrate import Migrate
-from flask_restful import Api
 import json
 import base64
 
 from model.users import UsersModel
-from db import db
-from resources.users import Users, UsersList, Login
+from tests.base_test import BaseTest
 
 
-class TestBasicFunction(unittest.TestCase):
-
-    def setUp(self):
-        self.app = Flask(__name__)
-        self.app.config['TESTING'] = True
-        self.app.config['WTF_CSRF_ENABLED'] = False
-        self.app.config['DEBUG'] = False
-        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test_data.db"
-        self.client = self.app.test_client()
-        api = Api(self.app)
-
-        api.add_resource(Users, '/user/<string:email>', '/user')
-        api.add_resource(UsersList, '/users')
-        api.add_resource(Login, '/login')
-
-        db.init_app(self.app)
-        migrate = Migrate(self.app, db)
-
-        with self.app.app_context():
-            db.create_all()
-
-    def tearDown(self):
-        with self.app.app_context():
-            db.drop_all()
-            db.session.commit()
+class UnitTestOfUS(BaseTest):
 
     # TEST TASK 1
     def test_add(self):
