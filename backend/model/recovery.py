@@ -63,7 +63,22 @@ class PasswordRecoveryModel(db.Model):
 
     @classmethod
     def find_by_id(cls, user_id):
+        cls.clean_expired_keys()
         return cls.query.filter_by(user_id=user_id).first()
+
+    @classmethod
+    def find_by_key(cls, key):
+        cls.clean_expired_keys()
+        return cls.query.filter_by(key=key).first()
+
+    @classmethod
+    def clean_expired_keys(cls):
+        """
+        Cleans all entries that their time has expired. Will be called everytime a query to the model is made.
+        Expiration time is decided through constant class variable VALID_UNTIL.
+        """
+        now = datetime.now()
+        cls.query.filter(cls.time + cls.VALID_UNTIL >= now).delete()
 
     @classmethod
     def generate_key(cls):

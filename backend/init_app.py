@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from resources.books import Books, BooksList
+from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
 from resources.library import Library
 from resources.transactions import Transactions
@@ -25,6 +26,8 @@ def init_api(api):
     api.add_resource(Library, '/library/<string:email>', '/library')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
+
+    api.add_resource(PasswordRecovery, '/recovery/check/<string:key>')
 
 
 def init(environment):
