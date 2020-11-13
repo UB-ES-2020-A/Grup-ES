@@ -37,7 +37,6 @@ class UsersModel(db.Model):
         self.state = True
         self.date = dt.datetime.today()
 
-
     def save_to_db(self):
         if 0 < self.query.filter_by(username=self.username, state=True).count():
             raise Exception("Username already in use")
