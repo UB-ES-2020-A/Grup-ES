@@ -4,7 +4,12 @@
   <b-navbar toggleable="lg" type="dark" variant="info">
    <b-navbar-brand> NavBar</b-navbar-brand>
    <b-nav-form>
-      <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+      <b-form-input autocomplete="off" v-model="search"  list="booksearch" @change="onInputDataList()" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+      <datalist id="booksearch">
+        <option v-for="book in filteredList" :key="book.isbn" :value="book.titulo" :id="book.isbn">
+          {{ book.autor }}
+        </option>
+      </datalist>
       <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
    </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
@@ -32,8 +37,8 @@
    <b-row>
      <b-col  v-for="(book) in best_sellers" :key="book.isbn">
        <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book)">
-       <h6  @click = "gotobook(book)">{{ book.titulo }}</h6>
+       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
+       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
        <h5>{{ book.autor }}</h5>
        <h6>Valoració</h6>
        <h6>{{ book.precio }}</h6>
@@ -48,8 +53,8 @@
       <b-row>
       <b-col  v-for="(book) in new_releases" :key="book.isbn">
         <br>
-        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book)">
-        <h6 @click = "gotobook(book)">  {{ book.titulo }}</h6>
+        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
+        <h6 @click = "gotobook(book.isbn)">  {{ book.titulo }}</h6>
         <h5>{{ book.autor }}</h5>
         <h6>Valoració</h6>
         <h6>{{ book.precio }}</h6>
@@ -68,10 +73,10 @@
         <b-container fluid style="padding:35px">
         <b-row class = "border bg-light" v-for="(item) in cartItems" :key="item.book.isbn" style="padding:35px; margin-bottom:10px">
           <b-col>
-          <img :src="getURL(item.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(item.book)">
+          <img :src="getURL(item.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(item.book.isbn)">
           </b-col>
           <b-col>
-          <h6 @click = "gotobook(book)"> {{ item.book.titulo }}</h6>
+          <h6 @click = "gotobook(book.isbn)"> {{ item.book.titulo }}</h6>
           <h5> {{ item.book.autor }}</h5>
           </b-col>
           <b-col>
@@ -135,16 +140,19 @@ export default {
       price: 0.0,
       user: {},
       session_status: 'Log In',
-      session_boolean: false
+      session_boolean: false,
+      search: '',
+      booksquery: []
     }
   },
   created () {
     this.load_new_releases()
     this.fetch_cache()
+    this.get_books()
   },
   methods: {
-    gotobook (book) {
-      this.$router.push({ path: '/book', query: {bk: book.isbn} })
+    gotobook (isbn) {
+      this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_best_sellers () {
       const path = 'https://grup-es.herokuapp.com/books'
@@ -241,6 +249,35 @@ export default {
         console.log(this.user.username)
         this.session_status = 'Log Out'
         this.session_boolean = true
+      }
+    },
+    get_books () {
+      const path = 'https://grup-es.herokuapp.com/books'
+      axios.get(path)
+        .then((res) => {
+          this.booksquery = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    onInputDataList () {
+      var datalist = document.getElementById('booksearch').childNodes
+      var input = document.getElementById('inputsearch').value
+      for (var i = 0; i < datalist.length; i++) {
+        if (datalist[i].value === input) {
+          this.gotobook(datalist[i].id)
+          break
+        }
+      }
+    }
+  },
+  computed: {
+    filteredList () {
+      if (this.booksquery.length !== 0 && this.search !== '') {
+        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()))
+      } else {
+        return ''
       }
     }
   }

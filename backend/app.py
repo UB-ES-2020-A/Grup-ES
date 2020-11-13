@@ -9,11 +9,10 @@ if config_decouple('PRODUCTION', cast=bool, default=False):
     environment = config['production']
 app, api, migrate = init(environment)
 
-
-@app.route('/')
-def render():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
     return render_template("index.html")
-
 
 if __name__ == '__main__':
     app.run(port=5000)
