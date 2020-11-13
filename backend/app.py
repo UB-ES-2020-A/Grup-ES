@@ -22,10 +22,11 @@ app.config['SECRET_KEY'] = secret_key
 migrate = Migrate(app, db)
 db.init_app(app)
 
-
-@app.route('/')
-def render():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
     return render_template("index.html")
+
 
 
 api.add_resource(Books, '/book/<int:isbn>', '/book')
