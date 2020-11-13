@@ -7,7 +7,7 @@ from flask_restful import Api
 from resources.books import Books, BooksList
 from resources.users import Login, Users, UsersList
 from resources.library import Library
-from resources.transactions import Transactions
+from resources.transactions import Transactions, TransactionsUser
 
 from model.recovery import PasswordRecoveryModel
 
@@ -25,6 +25,7 @@ def init_api(api):
     api.add_resource(Library, '/library/<string:email>', '/library')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
+    api.add_resource(TransactionsUser, '/transactions/<int:id_user>')
 
 
 def init(environment):

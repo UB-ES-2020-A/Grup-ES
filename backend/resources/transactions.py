@@ -1,6 +1,6 @@
 from flask_restful import reqparse
 from flask_restful import Resource
-from flask_mail import Mail, Message
+from model.users import auth, UsersModel
 
 from model.transactions import TransactionsModel
 
@@ -24,13 +24,14 @@ def parse_transaction(minimal=False):
 
 
 class Transactions(Resource):
-
+    @auth.login_required()
     def get(self, id):
         transaction = TransactionsModel.find_by_id(id)
         if not transaction:
             return {"message": f"Transaction with ['id_transaction':{id}] not found"}, 404
         return {"book": transaction.json()}, 200
 
+    @auth.login_required()
     def post(self):
         data = parse_transaction()
         try:
@@ -39,3 +40,15 @@ class Transactions(Resource):
         except Exception as e:
             return {"message": str(e)}, 500
         return transaction.json(), 201
+
+
+class TransactionsUser(Resource):
+    @auth.login_required()
+    def get(self, id_user):
+        user = UsersModel.find_by_id(id_user)
+        if user is None:
+            return {"message": "User with ['id_user': " + str(id_user) + "] Not Found"}, 404
+        transactions = TransactionsModel.query.filter_by(id_user=id_user).all()
+        if len(transactions) == 0:
+            return {}
+        return {'transactions': [transaction.json() for transaction in transactions]}, 200
