@@ -1,6 +1,8 @@
 import datetime as dt
+from flask_mail import Mail, Message
 
 from db import db
+from model.users import UsersModel
 
 
 class TransactionsModel(db.Model):
@@ -32,6 +34,8 @@ class TransactionsModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        transaction = self.json()
+        self.send_confirmation_mail(transaction)
         db.session.commit()
 
     def delete_from_db(self):
@@ -51,3 +55,22 @@ class TransactionsModel(db.Model):
     @classmethod
     def find_by_id(cls, id_transaction):
         return cls.query.filter_by(id_transaction=id_transaction).first()
+
+    @classmethod
+    def send_email(cls, recipient, subject, message):
+        mail = Mail(db.app)
+        msg = Message(
+            subject,
+            recipients=[recipient]
+        )
+        msg.body = message
+        mail.send(msg)
+
+    @classmethod
+    def send_confirmation_mail(cls, transaction):
+        recipient = UsersModel.find_by_id(transaction['id_user']).email
+        quantity = str(transaction['quantity'])
+        isbn = str(transaction['isbn'])
+        subject = 'Order confirmation'
+        message = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
+        cls.send_email(recipient, subject, message)

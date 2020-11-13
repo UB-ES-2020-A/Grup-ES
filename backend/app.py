@@ -7,7 +7,7 @@ from init_app import init
 environment = config['development']
 if config_decouple('PRODUCTION', cast=bool, default=False):
     environment = config['production']
-app, api, migrate = init(environment)
+app, api, migrate, mail = init(environment)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

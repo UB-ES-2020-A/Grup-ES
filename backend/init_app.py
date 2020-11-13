@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_restful import Api
 
@@ -30,6 +31,8 @@ def init(environment):
     app = Flask(__name__, template_folder=environment.TEMPLATE_FOLDER, static_folder=environment.STATIC_FOLDER)
     app.config.from_object(environment)
 
+    mail = Mail(app)
+
     init_db(app)
 
     api = Api(app)
@@ -41,4 +44,4 @@ def init(environment):
 
     init_api(api)
 
-    return app, api, migrate
+    return app, api, migrate, mail
