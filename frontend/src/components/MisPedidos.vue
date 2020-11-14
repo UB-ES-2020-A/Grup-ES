@@ -19,7 +19,6 @@
 </a></li>
    <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
 </a></li>
-<li class="nav-item" v-if= "session_boolean === true"><a class="nav-link"><h4> {{ this.user.username }}</h4></a></li>
 <li class="nav-item" v-if= "session_boolean === true">
     <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
     <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
@@ -45,17 +44,20 @@
         .id_user,
         .quantity,
         .date-->
-        <br>
-        <h5>Factura: {{ pedido.id_transaction}}</h5>
-        <b-col>
-        <img :src="getURL(pedido.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(pedido.book.isbn)">
-        </b-col>
-        <br>
-        <h6 @click = "gotobook(book.isbn)">Título del libro: {{ pedido.book.titulo }}</h6>
-        <h6>Autor del libro: {{ pedido.book.autor }}</h6>
-        <h6>Precio: {{ pedido.price}}</h6>
-        <h6>Cantidad: {{ pedido.quantity}}</h6>
-        <h6>Fecha de compra: {{ pedido.date}}</h6>
+        <div class="card">
+          <div class="card-header">Factura: {{ pedido.id_transaction}}</div>
+          <div class="card-body">
+            <b-col>
+            <img :src="getURL(pedido.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(pedido.book.isbn)">
+            </b-col>
+            <br>
+            <h6 @click = "gotobook(book.isbn)">Título del libro: {{ pedido.book.titulo }}</h6>
+            <h6>Autor del libro: {{ pedido.book.autor }}</h6>
+            <h6>Precio: {{ pedido.price}}</h6>
+            <h6>Cantidad: {{ pedido.quantity}}</h6>
+            <h6>Fecha de compra: {{ pedido.date}}</h6>
+          </div>
+        </div>
       </b-col>
     </b-row>
   </div>
@@ -161,7 +163,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_pedidos () {
-      const path = 'http://127.0.0.1:5000/transactions/' + this.user.email
+      const path = 'https://grup-es.herokuapp.com/transactions/' + this.user.email
 
       axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {
