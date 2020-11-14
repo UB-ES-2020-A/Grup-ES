@@ -63,6 +63,9 @@ class PasswordRecoveryModel(db.Model):
                   f"a solicitar un canvi en la mateixa compte."
         send_email(email, 'Password recovery', message)
 
+    def has_time_expired(self):
+        return self.time + self.VALID_UNTIL < datetime.now()
+
     @classmethod
     def find_by_id(cls, user_id):
         cls.clean_expired_keys()
