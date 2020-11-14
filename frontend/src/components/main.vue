@@ -19,7 +19,11 @@
 </a></li>
    <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
 </a></li>
-<li class="nav-item" v-if= "session_boolean === true"><a class="nav-link"><h4> {{ this.user.username }}</h4></a></li>
+<li class="nav-item" v-if= "session_boolean === true">
+    <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
+    <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+    </b-nav-item-dropdown>
+</li>
     </ul>
    </b-navbar-nav>
   </b-navbar>
@@ -114,7 +118,7 @@
         <hr/>
         <h5> Total : {{ calculate_total_price() }} $ </h5>
         <br>
-        <b-button style="width:100%" variant="danger">Finalitzar compra</b-button><br><br>
+        <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
         </b-container>
       </b-col>
     </b-row>
@@ -269,6 +273,43 @@ export default {
           this.gotobook(datalist[i].id)
           break
         }
+      }
+    },
+    goLibrary () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/biblioteca'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    addToLibrary (parameters) {
+      const path = 'https://grup-es.herokuapp.com/library'
+      axios.post(path, parameters, {
+        auth: {username: this.user.token}
+      })
+        .then((res) => {
+          console.log('BOOK ADDED TO LIBRARY')
+          this.cartItems.splice(0, this.cartItems.length)
+          alert('Book ADDED correctly to LIBRARY')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    finalizePurchase () {
+      if (this.session_boolean) {
+        for (let i = 0; i < this.cartItems.length; i += 1) {
+          const parameters = {
+            isbn: this.cartItems[i].book.isbn,
+            email: this.user.email
+          }
+          this.addToLibrary(parameters)
+        }
+      } else {
+        alert('You must be logged in to buy tickets')
       }
     }
   },
