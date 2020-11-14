@@ -59,29 +59,20 @@ export default {
         password: this.password
       }
       const path = 'https://grup-es.herokuapp.com/login'
-      axios.post(path, parameters)
-        .then((res) => {
-          this.token = res.data.token
-          console.log('ACCOUNT LOGED')
-          alert('User loged')
-        })
-        .catch((error) => {
-          alert('ERROR: Wrong Logged')
-          console.error(error)
-        })
       const path2 = 'https://grup-es.herokuapp.com/user/' + this.email
-      axios.get(path2)
-        .then((res) => {
-          this.username = res.data.user.username
-          this.email = res.data.user.email
-          this.role = res.data.user.role
+      axios.all([
+        axios.post(path, parameters),
+        axios.get(path2)
+      ])
+        .then(axios.spread((datapost, dataget) => {
+          this.token = datapost.data.token
+          this.username = dataget.data.user.username
+          this.email = dataget.data.user.email
+          this.role = dataget.data.user.role
           this.createUserObject(this.username, this.email, this.role, this.token)
           this.$router.push({path: '/'})
           this.initForm()
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+        }))
     },
     createUserObject (username, email, role, token) {
       this.userObject.username = username

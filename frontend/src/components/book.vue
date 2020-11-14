@@ -4,8 +4,65 @@
  <b-navbar toggleable="lg" type="dark" variant="info">
   <b-navbar-brand href="#">NavBar</b-navbar-brand>
   <b-nav-form>
-     <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+    <b-form-input autocomplete="off" v-model="search"  list="booksearch" @change="onInputDataList()" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+     <datalist id="booksearch">
+       <option v-for="book in filteredList" :key="book.isbn" :value="book.titulo" :id="book.isbn">
+        {{ book.autor }}
+      </option>
+     </datalist>
      <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
+     <b-icon icon="three-dots-vertical" v-b-modal.modal-1 font-scale="2"></b-icon>
+
+     <b-modal
+     id="modal-1"
+     title="Cerca avançada"
+     @ok="handleOk">
+       <form ref="form" @submit.stop.prevent="handleSubmit">
+         <b-form-group
+           :state="isbnState"
+           label="ISBN"
+           label-for="isbn-input"
+           invalid-feedback="ISBN invalid, use a 13 digit number"
+         >
+         <b-form-input
+           id="isbn-input"
+           v-model="isbn"
+           :state="isbnState"
+           required
+         ></b-form-input>
+       </b-form-group>
+       <b-form-group
+         label="Titol"
+         label-for="title-input"
+       >
+       <b-form-input
+         id="title-input"
+         v-model="title"
+       ></b-form-input>
+     </b-form-group>
+
+     <b-form-group
+       label="Autor"
+       label-for="autor-input"
+     >
+       <b-form-input
+         id="autor-input"
+         v-model="autor"
+       ></b-form-input>
+     </b-form-group>
+
+     <b-form-group
+       label="Editorial"
+       label-for="editorial-input"
+     >
+     <b-form-input
+       id="editorial-input"
+       v-model="editorial"
+     ></b-form-input>
+   </b-form-group>
+     </form>
+     <p> Info: Minimum fields required is 1 <p>
+     </b-modal>
   </b-nav-form>
   <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
   <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
@@ -66,10 +123,10 @@
         <b-container fluid style="padding:35px">
         <b-row class = "border bg-light" v-for="(item) in cartItems" :key="item.book.isbn" style="padding:35px; margin-bottom:10px">
           <b-col>
-          <img :src="getURL(item.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(item.book)">
+          <img :src="getURL(item.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(item.book.isbn)">
           </b-col>
           <b-col>
-          <h6 @click = "gotobook(book)"> {{ item.book.titulo }}</h6>
+          <h6 @click = "gotobook(book.isbn)"> {{ item.book.titulo }}</h6>
           <h5> {{ item.book.autor }}</h5>
           </b-col>
           <b-col>
@@ -126,12 +183,21 @@ export default {
       price: 0.0,
       session_status: 'Log In',
       session_boolean: false,
-      user: {}
+      user: {},
+      booksquery: [],
+      search: '',
+      isbn: '',
+      isbnState: null,
+      title: '',
+      autor: '',
+      editorial: '',
+      advancedsearch: []
     }
   },
   created () {
     this.load_book()
     this.fetch_cache()
+    this.get_books()
   },
   methods: {
     load_book () {
@@ -209,6 +275,77 @@ export default {
         this.session_status = 'Log In'
         this.session_boolean = false
         alert('Log out successfully')
+      }
+    },
+    gotobook (isbn) {
+      this.$router.push({ path: '/book', query: {bk: isbn} })
+      this.load_book()
+      this.search = ''
+    },
+    get_books () {
+      const path = 'https://grup-es.herokuapp.com/books'
+      axios.get(path)
+        .then((res) => {
+          this.booksquery = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    onInputDataList () {
+      var datalist = document.getElementById('booksearch').childNodes
+      var input = document.getElementById('inputsearch').value
+      for (var i = 0; i < datalist.length; i++) {
+        if (datalist[i].value === input) {
+          this.gotobook(datalist[i].id)
+          break
+        }
+      }
+    },
+    checkOk () {
+      if (this.isbn.length === 13) {
+        this.isbnState = true
+      } else {
+        this.isbnState = false
+      }
+      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
+        this.$nextTick(() => {
+          this.$bvModal.hide('modal-1')
+        })
+        this.isbnState = true
+        this.clearModal()
+        return true
+      }
+      return false
+    },
+    handleOk (bvModalEvt) {
+      bvModalEvt.preventDefault()
+      this.checkOk()
+    },
+    clearModal () {
+      this.isbn = ''
+      this.title = ''
+      this.autor = ''
+      this.editorial = ''
+      this.isbnState = null
+    },
+    getAdvancedSearch (parameters) {
+      const path = 'https://grup-es.herokuapp.com/search'
+      axios.get(path, parameters)
+        .then((res) => {
+          this.advancedsearch = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+  },
+  computed: {
+    filteredList () {
+      if (this.booksquery.length !== 0 && this.search !== '') {
+        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()))
+      } else {
+        return ''
       }
     }
   }

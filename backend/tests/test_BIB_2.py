@@ -2,10 +2,10 @@ import base64
 import json
 import unittest
 
-from model.books import BooksModel
 from tests.base_test import BaseTest
 from model.library import LibraryModel, LibraryType, State
 from model.users import UsersModel
+from model.books import BooksModel
 
 
 class UnitTestOfUS(BaseTest):
@@ -13,23 +13,29 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 2
     def test_model_add(self):
         with self.app.app_context():
-            entry = LibraryModel(1, 1, LibraryType.Bought, State.Dropped)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            entry = LibraryModel(book.isbn, 1, LibraryType.Bought, State.Dropped)
 
             entry.save_to_db()
             self.assertEqual(entry, LibraryModel.find_by_id_and_isbn(1, 1))
 
     def test_model_add_duplicate(self):
         with self.app.app_context():
-            entry = LibraryModel(1, 1, LibraryType.WishList, State.Reading)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            entry = LibraryModel(book.isbn, 1, LibraryType.WishList, State.Reading)
             entry.save_to_db()
 
-            same_entry = LibraryModel(1, 1, LibraryType.WishList, State.Reading)
+            same_entry = LibraryModel(book.isbn, 1, LibraryType.WishList, State.Reading)
             with self.assertRaises(Exception):
                 same_entry.save_to_db()
 
     def test_model_delete(self):
         with self.app.app_context():
-            entry = LibraryModel(1, 1, LibraryType.Bought)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            entry = LibraryModel(book.isbn, 1, LibraryType.Bought)
             entry.save_to_db()
             entry.delete_from_db()
 
@@ -37,22 +43,39 @@ class UnitTestOfUS(BaseTest):
 
     def test_model_update(self):
         with self.app.app_context():
-            entry = LibraryModel(1, 1, LibraryType.Bought, State.Finished)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            book2 = BooksModel(2, 1, 1, "test2")
+            book2.save_to_db()
+
+            entry = LibraryModel(book.isbn, 1, LibraryType.Bought, State.Finished)
             entry.save_to_db()
 
-            data = {"isbn": 2, "user_id": 2, "state": "Reading", "visible": True, "library_type": "WishList"}
+            data = {"isbn": book2.isbn, "user_id": 2, "state": "Reading", "visible": True, "library_type": "WishList"}
             entry.update_from_db(data)
 
-            self.assertEqual(entry.json(), data)
+            expected_json = data
+            expected_json["book"] = BooksModel.find_by_isbn(book2.isbn).json()
+            del expected_json["isbn"]
+            self.assertEqual(expected_json, entry.json())
 
     def test_model_invalid_update(self):
         with self.app.app_context():
-            entry = LibraryModel(1, 1, LibraryType.WishList, State.Pending)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            entry = LibraryModel(book.isbn, 1, LibraryType.WishList, State.Pending)
             entry.save_to_db()
 
             with self.assertRaises(Exception):
                 data = {"isbn": 1, "user_id": 1, "state": "Pending2", "visible": True, "library_type": "WishList"}
                 entry.update_from_db(data)
+
+    def test_model_book_not_exist(self):
+        with self.app.app_context():
+            entry = LibraryModel(1, 1, LibraryType.WishList, State.Pending)
+
+            with self.assertRaises(Exception):
+                entry.save_to_db()
 
     # TEST TASK 3
     def test_get_entry(self):
@@ -61,11 +84,18 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test")
             user.save_to_db()
 
-            entry = LibraryModel(1, user.id, LibraryType.Bought, State.Pending)
+            book = BooksModel(1, 1, 1, "test")
+            book.save_to_db()
+            book2 = BooksModel(2, 1, 1, "test")
+            book2.save_to_db()
+            book3 = BooksModel(3, 1, 1, "test")
+            book3.save_to_db()
+
+            entry = LibraryModel(book.isbn, user.id, LibraryType.Bought, State.Pending)
             entry.save_to_db()
-            entry2 = LibraryModel(2, user.id, LibraryType.WishList, State.Pending)
+            entry2 = LibraryModel(book2.isbn, user.id, LibraryType.WishList, State.Pending)
             entry2.save_to_db()
-            entry3 = LibraryModel(3, user.id, LibraryType.Bought, State.Reading)
+            entry3 = LibraryModel(book3.isbn, user.id, LibraryType.Bought, State.Reading)
             entry3.save_to_db()
 
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -84,11 +114,18 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test2")
             user.save_to_db()
 
-            entry = LibraryModel(4, user.id, LibraryType.Bought, State.Dropped)
+            book = BooksModel(4, 1, 1, "test")
+            book.save_to_db()
+            book2 = BooksModel(5, 1, 1, "test")
+            book2.save_to_db()
+            book3 = BooksModel(6, 1, 1, "test")
+            book3.save_to_db()
+
+            entry = LibraryModel(book.isbn, user.id, LibraryType.Bought, State.Dropped)
             entry.save_to_db()
-            entry2 = LibraryModel(5, user.id, LibraryType.WishList, State.Pending)
+            entry2 = LibraryModel(book2.isbn, user.id, LibraryType.WishList, State.Pending)
             entry2.save_to_db()
-            entry3 = LibraryModel(6, user.id, LibraryType.Bought, State.Pending)
+            entry3 = LibraryModel(book3.isbn, user.id, LibraryType.Bought, State.Pending)
             entry3.save_to_db()
 
             res = self.client.post("/login", data={"email": user.email, "password": "test2"})
@@ -98,15 +135,15 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
-            expectedRes = list(map(lambda e: e.json(), [entry, entry3]))
-            self.assertEqual(expectedRes, json.loads(res.data)["library"])
+            expected_res = list(map(lambda e: e.json(), [entry, entry3]))
+            self.assertEqual(expected_res, json.loads(res.data)["library"])
 
             res = self.client.get(f"/library/{user.email}", data={"library_type": "WishList"}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
-            expectedRes = list(map(lambda e: e.json(), [entry2]))
-            self.assertEqual(expectedRes, json.loads(res.data)["library"])
+            expected_res = list(map(lambda e: e.json(), [entry2]))
+            self.assertEqual(expected_res, json.loads(res.data)["library"])
 
     def test_get_entry_without_login(self):
         with self.app.app_context():

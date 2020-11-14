@@ -106,3 +106,28 @@ class BooksList(Resource):
             else:
                 books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
         return {'books': [book.json() for book in books]}, 200
+
+
+class SearchBooks(Resource):
+    def get(self):
+        parser = reqparse.RequestParser(bundle_errors=True)
+
+        parser.add_argument('isbn', type=int, required=False,
+                            help="In this field goes the isbn of the book")
+        parser.add_argument('titulo', type=str, required=False,
+                            help="In this field goes the tittle of the book")
+        parser.add_argument('autor', type=str, required=False,
+                            help="In this field goes the author of the book")
+        parser.add_argument('editorial', type=str, required=False,
+                            help="In this field goes the editorial of the book")
+        data = parser.parse_args()
+        if data['isbn']:  # si hi ha isbn només filtrem per isbn
+            books = BooksModel.query.filter_by(isbn=data['isbn'])
+        elif data['titulo']:
+            # posts = Post.query.filter(Post.tags.like(search)).all()
+            books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo'])).all()
+        elif data['autor']:
+            books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
+        elif data['editorial']:
+            books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
+        return {'books': [book.json() for book in books]}, 200
