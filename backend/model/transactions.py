@@ -3,6 +3,7 @@ import datetime as dt
 from db import db
 from utils.mail import send_email
 from model.users import UsersModel
+from model.books import BooksModel
 
 
 class TransactionsModel(db.Model):
@@ -28,6 +29,8 @@ class TransactionsModel(db.Model):
     def json(self):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
+        atr['book'] = BooksModel.find_by_isbn(self.isbn).json()
+        del atr['isbn']
         del atr["_sa_instance_state"]
         atr['date'] = self.date.strftime('%d-%m-%Y')
         return atr
