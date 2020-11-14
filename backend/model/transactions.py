@@ -1,6 +1,8 @@
 import datetime as dt
 
 from db import db
+from utils.mail import send_email
+from model.users import UsersModel
 
 
 class TransactionsModel(db.Model):
@@ -32,6 +34,7 @@ class TransactionsModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        self.send_confirmation_mail()
         db.session.commit()
 
     def delete_from_db(self):
@@ -48,6 +51,16 @@ class TransactionsModel(db.Model):
                     raise Exception
         db.session.commit()
 
+    def send_confirmation_mail(self):
+        recipient = UsersModel.find_by_id(self.id_user).email
+        quantity = str(self.quantity)
+        isbn = str(self.isbn)
+        subject = 'Order confirmation'
+        message = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
+        send_email(recipient, subject, message)
+
     @classmethod
     def find_by_id(cls, id_transaction):
         return cls.query.filter_by(id_transaction=id_transaction).first()
+
+
