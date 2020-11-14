@@ -366,6 +366,11 @@ export default {
       axios.get(path, parameters)
         .then((res) => {
           this.advancedsearch = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
     goLibrary () {
       this.$router.push({path: '/biblioteca'})
     },
