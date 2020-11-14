@@ -9,6 +9,7 @@ import AddBooks from '@/components/AddBooks.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import resetPassword from '@/components/resetPassword.vue'
 import Biblioteca from '@/components/Biblioteca.vue'
+import changePassword from '@/components/changePassword.vue'
 
 Vue.use(Router)
 
@@ -59,6 +60,11 @@ export default new Router({
       path: '/biblioteca',
       name: 'Biblioteca',
       component: Biblioteca
+    },
+    {
+      path: '/change',
+      name: 'changePassword',
+      component: changePassword
     }
   ]
 })
