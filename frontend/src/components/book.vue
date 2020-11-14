@@ -11,6 +11,58 @@
       </option>
      </datalist>
      <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
+     <b-icon icon="three-dots-vertical" v-b-modal.modal-1 font-scale="2"></b-icon>
+
+     <b-modal
+     id="modal-1"
+     title="Cerca avançada"
+     @ok="handleOk">
+       <form ref="form" @submit.stop.prevent="handleSubmit">
+         <b-form-group
+           :state="isbnState"
+           label="ISBN"
+           label-for="isbn-input"
+           invalid-feedback="ISBN invalid, use a 13 digit number"
+         >
+         <b-form-input
+           id="isbn-input"
+           v-model="isbn"
+           :state="isbnState"
+           required
+         ></b-form-input>
+       </b-form-group>
+       <b-form-group
+         label="Titol"
+         label-for="title-input"
+       >
+       <b-form-input
+         id="title-input"
+         v-model="title"
+       ></b-form-input>
+     </b-form-group>
+
+     <b-form-group
+       label="Autor"
+       label-for="autor-input"
+     >
+       <b-form-input
+         id="autor-input"
+         v-model="autor"
+       ></b-form-input>
+     </b-form-group>
+
+     <b-form-group
+       label="Editorial"
+       label-for="editorial-input"
+     >
+     <b-form-input
+       id="editorial-input"
+       v-model="editorial"
+     ></b-form-input>
+   </b-form-group>
+     </form>
+     <p> Info: Minimum fields required is 1 <p>
+     </b-modal>
   </b-nav-form>
   <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
   <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
@@ -133,7 +185,13 @@ export default {
       session_boolean: false,
       user: {},
       booksquery: [],
-      search: ''
+      search: '',
+      isbn: '',
+      isbnState: null,
+      title: '',
+      autor: '',
+      editorial: '',
+      advancedsearch: []
     }
   },
   created () {
@@ -243,6 +301,43 @@ export default {
           break
         }
       }
+    },
+    checkOk () {
+      if (this.isbn.length === 13) {
+        this.isbnState = true
+      } else {
+        this.isbnState = false
+      }
+      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
+        this.$nextTick(() => {
+          this.$bvModal.hide('modal-1')
+        })
+        this.isbnState = true
+        this.clearModal()
+        return true
+      }
+      return false
+    },
+    handleOk (bvModalEvt) {
+      bvModalEvt.preventDefault()
+      this.checkOk()
+    },
+    clearModal () {
+      this.isbn = ''
+      this.title = ''
+      this.autor = ''
+      this.editorial = ''
+      this.isbnState = null
+    },
+    getAdvancedSearch (parameters) {
+      const path = 'https://grup-es.herokuapp.com/search'
+      axios.get(path, parameters)
+        .then((res) => {
+          this.advancedsearch = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   },
   computed: {
