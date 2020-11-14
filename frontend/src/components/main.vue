@@ -392,17 +392,7 @@ export default {
         })
     },
     finalizePurchase () {
-      if (this.session_boolean) {
-        for (let i = 0; i < this.cartItems.length; i += 1) {
-          const parameters = {
-            isbn: this.cartItems[i].book.isbn,
-            email: this.user.email
-          }
-          this.addToLibrary(parameters)
-        }
-      } else {
-        alert('You must be logged in to buy tickets')
-      }
+      this.$router.push({path: '/paymethod'})
     }
   },
   computed: {
