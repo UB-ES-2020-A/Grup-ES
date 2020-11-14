@@ -2,7 +2,6 @@ import base64
 import unittest
 import json
 
-
 from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
@@ -98,8 +97,8 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(201, res.status_code)
             self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())
 
-    # TEST TASK 6
 
+    # TEST TASK 6
     def test_get_transactions_user(self):
         with self.app.app_context():
             user = UsersModel('test', 'bookshelterES@gmail.com')
@@ -119,25 +118,56 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(201, res.status_code)
 
-            res = self.client.get('/transactions/1', headers={
+            res = self.client.get('/transactions/' + user.email, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })  # transactions del user amb id = 1
             self.assertEqual(200, res.status_code)
             self.assertEqual(len(json.loads(res.data)), 1)
 
-    def test_get_zero_transactions_user(self):
+            self.assertEqual([TransactionsModel.find_by_id(1).json()], json.loads(res.data)["transactions"])
+
+    def test_get_transactions_without_login(self):
         with self.app.app_context():
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
+            dataTransaction = {
+                "isbn": 1,
+                "price": 7.9,
+                "id_user": 1,
+                "quantity": 1
+            }
+            res = self.client.post("/transaction", data=dataTransaction)
+            self.assertEqual(401, res.status_code)
+
+    def test_get_transactions_other_user(self):
+        with self.app.app_context():
+            user = UsersModel('test', 'bookshelterES@gmail.com')
+            user.hash_password('test')
+            UsersModel.save_to_db(user)
+
+            user2 = UsersModel('test2', 'mail@gmail.com')
+            user2.hash_password('test2')
+            UsersModel.save_to_db(user2)
+
+            dataTransaction = {
+                "isbn": 1,
+                "price": 7.9,
+                "id_user": 1,
+                "quantity": 1
+            }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
-            res = self.client.get('/transactions/1', headers={
+            res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
-            })  # transactions del user amb id = 1
-            self.assertEqual(200, res.status_code)
-            self.assertEqual(len(json.loads(res.data)), 0)
+            })
+            self.assertEqual(201, res.status_code)
+
+            res = self.client.get('/transactions/2', headers={
+                "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
+            })  # transactions del user amb id = 2
+            self.assertEqual(401, res.status_code)
 
 
 if __name__ == '__main__':

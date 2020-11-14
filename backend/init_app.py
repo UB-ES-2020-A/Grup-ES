@@ -25,7 +25,7 @@ def init_api(api):
     api.add_resource(Library, '/library/<string:email>', '/library')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
-    api.add_resource(TransactionsUser, '/transactions/<int:id_user>')
+    api.add_resource(TransactionsUser, '/transactions/<string:email>')
 
 
 def init(environment):
