@@ -12,6 +12,7 @@
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
 <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
 <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+<b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
 </b-nav-item-dropdown>
     </ul>
    </b-navbar-nav>
@@ -147,6 +148,26 @@ export default {
       axios.get(path)
         .then((res) => {
           this.$router.push({path: '/'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    goLibrary () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/biblioteca'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    goPedidos () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/mispedidos'})
         })
         .catch((error) => {
           console.error(error)

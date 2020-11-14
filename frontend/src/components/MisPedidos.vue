@@ -20,6 +20,12 @@
    <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
 </a></li>
 <li class="nav-item" v-if= "session_boolean === true"><a class="nav-link"><h4> {{ this.user.username }}</h4></a></li>
+<li class="nav-item" v-if= "session_boolean === true">
+    <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
+    <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+    <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
+    </b-nav-item-dropdown>
+</li>
     </ul>
    </b-navbar-nav>
   </b-navbar>
@@ -240,8 +246,28 @@ export default {
         this.session_boolean = true
       }
     },
+    goLibrary () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/biblioteca'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    goPedidos () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
+        .then((res) => {
+          this.$router.push({path: '/mispedidos'})
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
     get_books () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
