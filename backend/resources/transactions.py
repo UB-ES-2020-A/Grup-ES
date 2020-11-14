@@ -1,6 +1,5 @@
 from flask_restful import reqparse
 from flask_restful import Resource
-from flask_mail import Mail, Message
 
 from model.transactions import TransactionsModel
 
