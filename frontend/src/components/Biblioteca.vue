@@ -144,34 +144,13 @@ export default {
       }
     },
     goStart () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/'})
     },
     goLibrary () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/biblioteca'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/biblioteca'})
     },
     goPedidos () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/mispedidos'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/mispedidos'})
     }
   }
 }

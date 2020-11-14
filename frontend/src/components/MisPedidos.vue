@@ -249,24 +249,10 @@ export default {
       }
     },
     goLibrary () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/biblioteca'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/biblioteca'})
     },
     goPedidos () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/mispedidos'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/mispedidos'})
     },
     get_books () {
       const path = 'https://grup-es.herokuapp.com/books'
