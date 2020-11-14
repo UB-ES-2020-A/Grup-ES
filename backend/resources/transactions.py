@@ -21,7 +21,7 @@ def parse_transaction(minimal=False):
     return parser.parse_args()
 
 class Transactions(Resource):
-    @auth.login_required()
+    @auth.login_required
     def get(self, id):
         transaction = TransactionsModel.find_by_id(id)
         if not transaction:
@@ -30,7 +30,7 @@ class Transactions(Resource):
             return {"message": "Invalid transaction, can only be yours"}, 401
         return {"transaction": transaction.json()}, 200
 
-    @auth.login_required()
+    @auth.login_required
     def post(self):
         data = parse_transaction()
         user = UsersModel.find_by_email(data['email'])
@@ -49,7 +49,7 @@ class Transactions(Resource):
 
 
 class TransactionsUser(Resource):
-    @auth.login_required()
+    @auth.login_required
     def get(self, email):
         user = UsersModel.find_by_email(email)
         if user is None:
