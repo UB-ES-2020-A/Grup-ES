@@ -63,11 +63,8 @@ class Books(Resource):
             return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
         else:
             data = parse_book(minimal=True)
-            for key in data:
-                if data[key] is not None:
-                    setattr(book, key, data[key])
             try:
-                book.save_to_db()
+                book.update_from_db(data)
                 return {"book": book.json()}, 200
             except Exception as e:
                 print(str(e))

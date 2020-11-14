@@ -12,6 +12,7 @@ import Biblioteca from '@/components/Biblioteca.vue'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
