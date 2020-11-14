@@ -8,7 +8,7 @@ from init_app import init
 class BaseTest(unittest.TestCase):
 
     def setUp(self):
-        self.app, self.api, self.migrate, self.mail = init(config['test'])
+        self.app, self.api, self.migrate = init(config['test'])
         self.client = self.app.test_client()
 
         with self.app.app_context():

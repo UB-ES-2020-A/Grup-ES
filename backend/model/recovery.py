@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from db import db
 from enum import Enum
 
+from utils.mail import send_email
+
 
 class PasswordRecoveryModel(db.Model):
     __tablename__ = 'password_recovery'
@@ -23,14 +25,8 @@ class PasswordRecoveryModel(db.Model):
         self.key = self.generate_key() if key is None else key
 
     def json(self):
-        """
-        Returns a dictionary with paris of string of name of attribute and it's value. In case of Enum it just returns
-        the name of the enum object (Enum.name).
-        """
-        _ignore = self.user_id  # Forces execution to parse properly the class, fixing the bug of transient data
-        atr = self.__dict__.copy()
-        del atr["_sa_instance_state"]
-        return {atr: value if not isinstance(value, Enum) else value.name for atr, value in atr.items()}
+        return {'user_id': self.user_id,
+                'valid_until': (self.time + self.VALID_UNTIL).strftime('%H:%M:%S')}
 
     def save_to_db(self):
         db.session.add(self)
@@ -60,6 +56,15 @@ class PasswordRecoveryModel(db.Model):
                 else:
                     setattr(self, attr, newValue)
         db.session.commit()
+
+    def send_email(self, email, url_root):
+        message = f"Has sol·licitat una recuperació de contrasenya. Accedeix a {url_root}change?key={self.key} "\
+                  f"per canviar de contrasenya. \n L'enllaç deixarà de ser vàlid en {self.VALID_UNTIL} o si es torna " \
+                  f"a solicitar un canvi en la mateixa compte."
+        send_email(email, 'Password recovery', message)
+
+    def has_time_expired(self):
+        return self.time + self.VALID_UNTIL < datetime.now()
 
     @classmethod
     def find_by_id(cls, user_id):

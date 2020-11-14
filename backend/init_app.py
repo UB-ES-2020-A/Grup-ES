@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_restful import Api
 
@@ -10,9 +9,8 @@ from resources.users import Login, Users, UsersList
 from resources.library import Library
 from resources.transactions import Transactions, TransactionsUser
 
-from model.recovery import PasswordRecoveryModel
-
 from db import db, init_db
+from utils.mail import mail
 
 
 def init_api(api):
@@ -28,14 +26,14 @@ def init_api(api):
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
     api.add_resource(TransactionsUser, '/transactions/<string:email>')
 
-    api.add_resource(PasswordRecovery, '/recovery/check/<string:key>')
+    api.add_resource(PasswordRecovery, '/recovery/<string:key>', '/recovery')
 
 
 def init(environment):
     app = Flask(__name__, template_folder=environment.TEMPLATE_FOLDER, static_folder=environment.STATIC_FOLDER)
     app.config.from_object(environment)
 
-    mail = Mail(app)
+    mail.init_app(app)
 
     init_db(app)
 
@@ -48,4 +46,4 @@ def init(environment):
 
     init_api(api)
 
-    return app, api, migrate, mail
+    return app, api, migrate
