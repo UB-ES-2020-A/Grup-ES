@@ -3,18 +3,16 @@
   <!--navbar-->
  <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
-   <b-navbar-brand> NavBar</b-navbar-brand>
+   <b-navbar-brand @click="goStart()"> NavBar</b-navbar-brand>
    <b-nav-form>
       <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
       <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
    </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-   <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
-   <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon>
-</a></li>
-   <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">Log In</b-button>
-</a></li>
+<b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
+<b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+</b-nav-item-dropdown>
     </ul>
    </b-navbar-nav>
   </b-navbar>
@@ -64,14 +62,14 @@
   <b-row>
     <div class="form-control bg-light">
      <b-row>
-     <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in new_releases" :key="book.isbn">
+     <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(lib) in library" v-bind:key="lib.book.isbn">
        <b-col align-self="center">
-       <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
+       <img :src="getURL(lib)" style="height:409px; width:240px;" alt=""  @click = "gotobook(lib)">
        <b-col align-self="center" style="margin-top: 10px">
-       <h4 @click = "gotobook(book)">  {{ book.titulo }}</h4>
+       <h4 @click = "gotobook(lib)">  {{ lib.book.titulo }} </h4>
        </b-col>
        <b-col align-self="center">
-       <h7>{{ book.autor }}</h7>
+       <h7>{{ lib.book.autor }}</h7>
        </b-col>
        </b-col>
      </div>
@@ -92,12 +90,9 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      best_sellers: [],
-      new_releases: [],
-      cartItems: [],
-      see_cart: false,
-      items: 0,
-      price: 0.0,
+      library: [],
+      user: {},
+      book: {},
       selected: 'A',
       sFilter: 'A',
       options: [
@@ -115,76 +110,48 @@ export default {
     }
   },
   created () {
-    this.load_new_releases()
+    this.fetch_cache()
+    this.load_library()
   },
   methods: {
-    gotobook (book) {
-      this.$router.push({ path: '/book', query: {bk: book.isbn} })
+    gotobook (lib) {
+      this.$router.push({ path: '/book', query: {bk: lib.book.isbn} })
     },
-    load_best_sellers () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+    load_library () {
+      const path = 'https://grup-es.herokuapp.com/library/' + this.user.email
+      axios.get(path, {
+        auth: {username: this.user.token}
+      })
         .then((res) => {
-          this.best_sellers = res.data
+          this.library = res.data.library
+          console.log(this.library)
         })
         .catch((error) => {
           console.error(error)
         })
     },
-    load_new_releases () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+    getURL (lib) {
+      return lib.book.url_imagen
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        console.log(this.user.username)
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
+    },
+    goStart () {
+      const path = 'https://grup-es.herokuapp.com/'
+      axios.get(path)
         .then((res) => {
-          this.new_releases = res.data.books
+          this.$router.push({path: '/'})
         })
         .catch((error) => {
           console.error(error)
         })
-    },
-    add_cart (book) {
-      var alreadyIn = false
-      var i
-      for (i = 0; i < this.cartItems.length; i++) {
-        if (book.isbn === this.cartItems[i].book.isbn) {
-          this.cartItems[i].quantity += 1
-          alreadyIn = true
-        }
-      }
-      if (!alreadyIn) {
-        this.cartItems.push({'book': book, 'quantity': 1})
-      }
-    },
-    show_cart () {
-      this.see_cart = !this.see_cart
-    },
-    total_amount (price, quantity) {
-      return price * quantity
-    },
-    calculate_total_price () {
-      var price = 0.0
-      var i
-      for (i = 0; i < this.cartItems.length; i++) {
-        price += this.total_amount(this.cartItems[i].book.precio, this.cartItems[i].quantity)
-      }
-      this.price = price
-      return this.price
-    },
-    getURL (book) {
-      return book.url_imagen
-    },
-    logIn () {
-      this.$router.push({path: '/userlogin'})
-    },
-    return_book (item) {
-      var deleteIdx = this.cartItems.indexOf(item)
-      this.items -= 1
-      if (deleteIdx !== -1) {
-        this.cartItems.splice(deleteIdx, 1)
-      }
     }
-
   }
 }
 </script>
