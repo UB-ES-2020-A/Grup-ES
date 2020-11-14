@@ -125,9 +125,9 @@ class SearchBooks(Resource):
             books = BooksModel.query.filter_by(isbn=data['isbn'])
         elif data['titulo']:
             # posts = Post.query.filter(Post.tags.like(search)).all()
-            books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo']))
+            books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo'])).all()
         elif data['autor']:
-            books = BooksModel.query.filter(BooksModel.autor.like(data['autor']))
+            books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
         elif data['editorial']:
-            books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial']))
+            books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
         return {'books': [book.json() for book in books]}, 200
