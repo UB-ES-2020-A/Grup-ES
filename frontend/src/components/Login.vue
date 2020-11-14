@@ -2,7 +2,7 @@
   <div id="app">
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
+      <b-navbar-brand >NavBar</b-navbar-brand>
     </b-navbar>
     <b-container>
       <div class="row d-flex justify-content-center">
@@ -18,7 +18,7 @@
               <input type="password" id="inputPassword" class="form-control"
               placeholder="Password" required v-model="password" style="margin-top: 20px">
               <b-form-text style="margin-top: 15px; margin-left: 5px">
-                Al continuar confirmas que aceptas las <a href="#">Condiciones de uso</a> y las <a href="#">Políticas de privacidad</a>
+                Al continuar confirmas que aceptas las <a>Condiciones de uso</a> y las <a>Políticas de privacidad</a>
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
               <b-button block variant="link" style="margin-top: 10px">¿Olvidaste contraseña?</b-button>
@@ -42,7 +42,8 @@ export default {
     email: '',
     password: '',
     role: '',
-    token: ''
+    token: '',
+    userObject: {username: '', email: '', role: '', token: ''}
   }),
   methods: {
     OnGoogleAuthSuccess (idToken) {
@@ -54,44 +55,35 @@ export default {
     },
     checkLogin () {
       const parameters = {
-        username: this.username,
         email: this.email,
         password: this.password
       }
       const path = 'https://grup-es.herokuapp.com/login'
-      axios.post(path, parameters)
-        .then((res) => {
-          this.getAccount()
-          this.token = res.data.token
+      const path2 = 'https://grup-es.herokuapp.com/user/' + this.email
+      axios.all([
+        axios.post(path, parameters),
+        axios.get(path2)
+      ])
+        .then(axios.spread((datapost, dataget) => {
+          this.token = datapost.data.token
+          this.username = dataget.data.user.username
+          this.email = dataget.data.user.email
+          this.role = dataget.data.user.role
+          this.createUserObject(this.username, this.email, this.role, this.token)
+          this.$router.push({path: '/'})
           this.initForm()
-          console.log('ACCOUNT LOGED')
-          alert('User loged')
-        })
-        .catch((error) => {
-          alert('ERROR: Wrong Logged')
-          console.error(error)
-        })
+        }))
     },
-    getAccount () {
-      const path = 'https://grup-es.herokuapp.com/user/' + this.email
-      axios.get(path)
-        .then((res) => {
-          this.role = res.data.role
-          console.log('ACCOUNT GETTED')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+    createUserObject (username, email, role, token) {
+      this.userObject.username = username
+      this.userObject.email = email
+      this.userObject.role = role
+      this.userObject.token = token
+      localStorage.setItem('user_session', JSON.stringify(this.userObject))
+      console.log(this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
     },
     goRegister () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/userregister'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/userregister'})
     },
     initForm () {
       this.email = ''

@@ -8,10 +8,12 @@ import Login from '@/components/Login.vue'
 import AddBooks from '@/components/AddBooks.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import resetPassword from '@/components/resetPassword.vue'
+import Biblioteca from '@/components/Biblioteca.vue'
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -52,6 +54,11 @@ export default new Router({
       path: '/reset',
       name: 'resetPassword',
       component: resetPassword
+    },
+    {
+      path: '/biblioteca',
+      name: 'Biblioteca',
+      component: Biblioteca
     }
   ]
 })
