@@ -55,6 +55,10 @@ class UsersModel(db.Model):
         self.state = False
         db.session.commit()
 
+    def update_from_db(self, password):
+        self.hash_password(password)
+        db.session.commit()
+
     @classmethod
     def find_by_id(cls, id):
         return cls.query.get(id)
