@@ -56,9 +56,9 @@ export default new Router({
       component: MisPedidos
     },
     {
-    path: '/biblioteca',
-    name: 'Biblioteca',
-    component: Biblioteca
+      path: '/biblioteca',
+      name: 'Biblioteca',
+      component: Biblioteca
     }
   ]
 })
