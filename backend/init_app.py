@@ -7,7 +7,7 @@ from resources.books import Books, BooksList
 from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
 from resources.library import Library
-from resources.transactions import Transactions
+from resources.transactions import Transactions, TransactionsUser
 
 from db import db, init_db
 from utils.mail import mail
@@ -24,6 +24,7 @@ def init_api(api):
     api.add_resource(Library, '/library/<string:email>', '/library')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
+    api.add_resource(TransactionsUser, '/transactions/<string:email>')
 
     api.add_resource(PasswordRecovery, '/recovery/<string:key>', '/recovery')
 
