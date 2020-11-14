@@ -50,7 +50,7 @@ def parse_library_type():
 
 class Library(Resource):
 
-    @auth.login_required()
+    @auth.login_required
     def get(self, email):
         user = UsersModel.find_by_email(email)
         if g.user != user:
@@ -64,7 +64,7 @@ class Library(Resource):
         library = LibraryModel.query.filter_by(user_id=user.id, library_type=library_type).all()
         return {"library": list(map(lambda entry: entry.json(), library))}, 200
 
-    @auth.login_required()
+    @auth.login_required
     def post(self):
         data = parse_entry()
         user = UsersModel.find_by_email(data['email'])
