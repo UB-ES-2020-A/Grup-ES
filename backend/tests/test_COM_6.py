@@ -64,7 +64,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
                 "isbn": 1,
                 "price": 7.9,
-                "id_user": 1,
+                "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -85,7 +85,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
                 "isbn": 1,
                 "price": 7.9,
-                "id_user": 1,
+                "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -107,7 +107,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
                 "isbn": 1,
                 "price": 7.9,
-                "id_user": 1,
+                "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -134,7 +134,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
                 "isbn": 1,
                 "price": 7.9,
-                "id_user": 1,
+                "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/transaction", data=dataTransaction)
@@ -153,7 +153,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
                 "isbn": 1,
                 "price": 7.9,
-                "id_user": 1,
+                "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -164,9 +164,9 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(201, res.status_code)
 
-            res = self.client.get('/transactions/2', headers={
+            res = self.client.get('/transactions/' + user2.email, headers={  #user tries to get user2 transactions
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
-            })  # transactions del user amb id = 2
+            })
             self.assertEqual(401, res.status_code)
 
 
