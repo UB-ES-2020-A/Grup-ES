@@ -2,6 +2,7 @@ from flask import g
 from flask_restful import reqparse
 from flask_restful import Resource
 
+from model.users import auth, UsersModel
 from model.transactions import TransactionsModel
 
 
