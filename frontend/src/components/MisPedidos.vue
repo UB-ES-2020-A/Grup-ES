@@ -10,59 +10,7 @@
           {{ book.autor }}
         </option>
       </datalist>
-      <b-button size="md" class="my-2 my-sm-0" @click="onSearch()">Search</b-button>
-      <b-icon icon="three-dots-vertical" v-b-modal.modal-1 font-scale="2"></b-icon>
-
-      <b-modal
-      id="modal-1"
-      title="Cerca avançada"
-      @ok="handleOk">
-        <form ref="form" @submit.stop.prevent="handleSubmit">
-          <b-form-group
-            :state="isbnState"
-            label="ISBN"
-            label-for="isbn-input"
-            invalid-feedback="ISBN invalid, use a 13 digit number"
-          >
-          <b-form-input
-            id="isbn-input"
-            v-model="isbn"
-            :state="isbnState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Titol"
-          label-for="title-input"
-        >
-        <b-form-input
-          id="title-input"
-          v-model="title"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group
-        label="Autor"
-        label-for="autor-input"
-      >
-        <b-form-input
-          id="autor-input"
-          v-model="autor"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group
-        label="Editorial"
-        label-for="editorial-input"
-      >
-      <b-form-input
-        id="editorial-input"
-        v-model="editorial"
-      ></b-form-input>
-    </b-form-group>
-      </form>
-      <p> Info: Minimum fields required is 1 <p>
-      </b-modal>
+      <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
    </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
@@ -81,44 +29,48 @@
    </b-navbar-nav>
   </b-navbar>
  </div>
-<!-- container for static pics -->
-<br>
-<br>
-<b-container v-if= "see_cart === false">
- <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
-</b-container>
-<br>
 
-<div class="container" v-if= "see_cart === false">
-   <h3> Best sellers </h3>
-   <b-row>
-     <b-col  v-for="(book) in best_sellers" :key="book.isbn">
-       <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-       <h5>{{ book.autor }}</h5>
-       <h6>Valoració</h6>
-       <h6>{{ book.precio }}</h6>
-       <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
-       </b-col>
-   </b-row>
-</div>
-   <br>
-   <br>
+<!-- body -->
+<div v-if= "session_boolean === true">
+  <br>
+  <br>
   <div class="container" v-if= "see_cart === false">
-      <h3> New releases </h3>
-      <b-row>
-      <b-col  v-for="(book) in new_releases" :key="book.isbn">
-        <br>
-        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-        <h6 @click = "gotobook(book.isbn)">  {{ book.titulo }}</h6>
-        <h5>{{ book.autor }}</h5>
-        <h6>Valoració</h6>
-        <h6>{{ book.precio }}</h6>
-        <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+    <h3> Mis Pedidos </h3>
+    <b-row>
+      <b-col  v-for="(pedido) in pedidos" :key="pedido.id_transaction">
+        <!-- ATR:
+        .isbn,
+        .price,
+        .id_user,
+        .quantity,
+        .date-->
+        <div class="card">
+          <div class="card-header">Factura: {{ pedido.id_transaction}}</div>
+          <div class="card-body">
+            <b-col>
+            <img :src="getURL(pedido.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(pedido.book.isbn)">
+            </b-col>
+            <br>
+            <h6 @click = "gotobook(book.isbn)">Título del libro: {{ pedido.book.titulo }}</h6>
+            <h6>Autor del libro: {{ pedido.book.autor }}</h6>
+            <h6>Precio: {{ pedido.price}}</h6>
+            <h6>Cantidad: {{ pedido.quantity}}</h6>
+            <h6>Fecha de compra: {{ pedido.date}}</h6>
+          </div>
+        </div>
       </b-col>
-      </b-row>
+    </b-row>
   </div>
+</div>
+<div v-if= "session_boolean === false">
+  <br>
+  <br>
+  <div class="container" v-if= "see_cart === false">
+    <h3> Mis Pedidos </h3>
+    <h5> LogIn para poder ver tus pedidos </h5>
+  </div>
+</div>
+
 <!-- cart -->
 <b-container v-if= "see_cart === true">
  <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
@@ -171,7 +123,7 @@
         <hr/>
         <h5> Total : {{ calculate_total_price() }} $ </h5>
         <br>
-        <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
+        <b-button style="width:100%" variant="danger">Finalitzar compra</b-button><br><br>
         </b-container>
       </b-col>
     </b-row>
@@ -190,8 +142,7 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      best_sellers: [],
-      new_releases: [],
+      pedidos: [],
       cartItems: [],
       see_cart: false,
       price: 0.0,
@@ -199,41 +150,24 @@ export default {
       session_status: 'Log In',
       session_boolean: false,
       search: '',
-      booksquery: [],
-      isbn: '',
-      isbnState: null,
-      title: '',
-      autor: '',
-      editorial: '',
-      advancedsearch: []
+      booksquery: []
     }
   },
   created () {
-    this.load_new_releases()
     this.fetch_cache()
+    this.load_pedidos()
     this.get_books()
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
-    load_best_sellers () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+    load_pedidos () {
+      const path = 'https://grup-es.herokuapp.com/transactions/' + this.user.email
+
+      axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {
-          this.best_sellers = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    load_new_releases () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
-        .then((res) => {
-          this.new_releases = res.data.books
+          this.pedidos = res.data.transactions
         })
         .catch((error) => {
           console.error(error)
@@ -314,6 +248,12 @@ export default {
         this.session_boolean = true
       }
     },
+    goLibrary () {
+      this.$router.push({path: '/biblioteca'})
+    },
+    goPedidos () {
+      this.$router.push({path: '/mispedidos'})
+    },
     get_books () {
       const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
@@ -329,73 +269,10 @@ export default {
       var input = document.getElementById('inputsearch').value
       for (var i = 0; i < datalist.length; i++) {
         if (datalist[i].value === input) {
-          // this.gotobook(datalist[i].id)
+          this.gotobook(datalist[i].id)
           break
         }
       }
-    },
-    checkOk () {
-      if (this.isbn.length === 13) {
-        this.isbnState = true
-      } else {
-        this.isbnState = false
-      }
-      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
-        this.$nextTick(() => {
-          this.$bvModal.hide('modal-1')
-        })
-        this.isbnState = true
-        this.clearModal()
-        return true
-      }
-      return false
-    },
-    handleOk (bvModalEvt) {
-      bvModalEvt.preventDefault()
-      this.checkOk()
-    },
-    clearModal () {
-      this.isbn = ''
-      this.title = ''
-      this.autor = ''
-      this.editorial = ''
-      this.isbnState = null
-    },
-    getAdvancedSearch (parameters) {
-      const path = 'https://grup-es.herokuapp.com/search'
-      axios.get(path, parameters)
-        .then((res) => {
-          this.advancedsearch = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    goLibrary () {
-      this.$router.push({path: '/biblioteca'})
-    },
-    goPedidos () {
-      this.$router.push({path: '/mispedidos'})
-    },
-    addToLibrary (parameters) {
-      const path = 'https://grup-es.herokuapp.com/library'
-      axios.post(path, parameters, {
-        auth: {username: this.user.token}
-      })
-        .then((res) => {
-          console.log('BOOK ADDED TO LIBRARY')
-          this.cartItems.splice(0, this.cartItems.length)
-          alert('Book ADDED correctly to LIBRARY')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    finalizePurchase () {
-      this.$router.push({path: '/paymethod'})
-    },
-    onSearch () {
-      this.$router.push({ path: '/search', query: {titulo: this.search} })
     }
   },
   computed: {

@@ -10,3 +10,14 @@ install:
 # command to run tests
 script:
   - python3 -m unittest discover -v backend
+# deploy
+before-deploy:
+  - npm run build --prefix frontend
+  - build.sh
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: 971389d2-e998-498d-aae7-13524bc96bbf
+  app:
+    main: grup-es

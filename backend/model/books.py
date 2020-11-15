@@ -6,7 +6,7 @@ from db import db
 class BooksModel(db.Model):
     __tablename__ = 'books'
 
-    isbn = db.Column(db.Integer(), nullable=False, primary_key=True)
+    isbn = db.Column(db.BigInteger(), nullable=False, primary_key=True)
     vendible = db.Column(db.Boolean(), nullable=False)
     stock = db.Column(db.Integer(), nullable=False)
     precio = db.Column(db.Float, nullable=False)
@@ -48,8 +48,9 @@ class BooksModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
-        for key in data:
-            setattr(self, key, data[key])
+        for attr, newValue in data.items():
+            if newValue is not None:
+                setattr(self, attr, newValue)
         db.session.commit()
 
     @classmethod

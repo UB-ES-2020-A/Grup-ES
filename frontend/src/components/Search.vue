@@ -84,15 +84,10 @@
 <!-- container for static pics -->
 <br>
 <br>
-<b-container v-if= "see_cart === false">
- <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
-</b-container>
-<br>
-
 <div class="container" v-if= "see_cart === false">
-   <h3> Best sellers </h3>
+   <h3> Resultados de la búsqueda </h3>
    <b-row>
-     <b-col  v-for="(book) in best_sellers" :key="book.isbn">
+     <b-col  v-for="(book) in books" :key="book.isbn">
        <br>
        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
        <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
@@ -103,22 +98,7 @@
        </b-col>
    </b-row>
 </div>
-   <br>
-   <br>
-  <div class="container" v-if= "see_cart === false">
-      <h3> New releases </h3>
-      <b-row>
-      <b-col  v-for="(book) in new_releases" :key="book.isbn">
-        <br>
-        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-        <h6 @click = "gotobook(book.isbn)">  {{ book.titulo }}</h6>
-        <h5>{{ book.autor }}</h5>
-        <h6>Valoració</h6>
-        <h6>{{ book.precio }}</h6>
-        <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
-      </b-col>
-      </b-row>
-  </div>
+
 <!-- cart -->
 <b-container v-if= "see_cart === true">
  <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
@@ -190,8 +170,7 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      best_sellers: [],
-      new_releases: [],
+      books: [],
       cartItems: [],
       see_cart: false,
       price: 0.0,
@@ -209,7 +188,7 @@ export default {
     }
   },
   created () {
-    this.load_new_releases()
+    this.load_search()
     this.fetch_cache()
     this.get_books()
   },
@@ -217,23 +196,11 @@ export default {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
-    load_best_sellers () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+    load_search () {
+      const path = 'https://grup-es.herokuapp.com/search?titulo=' + this.$route.query.titulo
+      axios.get(path)
         .then((res) => {
-          this.best_sellers = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    load_new_releases () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
-        .then((res) => {
-          this.new_releases = res.data.books
+          this.books = res.data.books
         })
         .catch((error) => {
           console.error(error)
@@ -396,6 +363,7 @@ export default {
     },
     onSearch () {
       this.$router.push({ path: '/search', query: {titulo: this.search} })
+      this.load_search()
     }
   },
   computed: {
