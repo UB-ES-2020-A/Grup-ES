@@ -18,5 +18,6 @@ before_deploy:
 deploy:
   provider: heroku
   api_key: 2bbf0692-5e1c-42ca-959c-e200af90f6b6
+  strategy: git
   app:
     main: grup-es
