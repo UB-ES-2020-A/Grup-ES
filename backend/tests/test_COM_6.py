@@ -1,7 +1,9 @@
 import base64
 import unittest
 import json
+from datetime import datetime
 
+from model.books import BooksModel
 from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
@@ -34,13 +36,18 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             to_add = UsersModel('test', 'bookshelterES@gmail.com')
             to_add.hash_password('password')
-            UsersModel.save_to_db(to_add)
-            entry = TransactionsModel(1, 2, 1, 1, None)  # id_transaction = 1 -> es automatica
+            to_add.save_to_db()
+
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
+            entry = TransactionsModel(book.isbn, 2, to_add.id, 1, None)  # id_transaction = 1 -> es automatica
             entry.save_to_db()
 
             data = {"id_transaction": 10}  # id = 10
             entry.update_from_db(data)
-            self.assertEqual(entry.json(), TransactionsModel.find_by_id(10).json())
+
+            self.assertEqual(entry.json(), TransactionsModel.find_by_id(data["id_transaction"]).json())
 
     def test_model_invalid_update(self):
         with self.app.app_context():
@@ -61,8 +68,12 @@ class UnitTestOfUS(BaseTest):
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
+
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
             dataTransaction = {
-                "isbn": 1,
+                "isbn": book.isbn,
                 "price": 7.9,
                 "email": user.email,
                 "quantity": 1
@@ -82,14 +93,19 @@ class UnitTestOfUS(BaseTest):
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
+
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
             dataTransaction = {
-                "isbn": 1,
+                "isbn": book.isbn,
                 "price": 7.9,
                 "email": user.email,
                 "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
+
 
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
@@ -104,12 +120,17 @@ class UnitTestOfUS(BaseTest):
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
+
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
             dataTransaction = {
-                "isbn": 1,
+                "isbn": book.isbn,
                 "price": 7.9,
                 "email": user.email,
                 "quantity": 1
             }
+
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
@@ -131,12 +152,17 @@ class UnitTestOfUS(BaseTest):
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
+
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
             dataTransaction = {
-                "isbn": 1,
+                "isbn": book.isbn,
                 "price": 7.9,
                 "email": user.email,
                 "quantity": 1
             }
+
             res = self.client.post("/transaction", data=dataTransaction)
             self.assertEqual(401, res.status_code)
 
@@ -150,8 +176,11 @@ class UnitTestOfUS(BaseTest):
             user2.hash_password('test2')
             UsersModel.save_to_db(user2)
 
+            book = BooksModel(1, 1, 1.0, "titulo")
+            book.save_to_db()
+
             dataTransaction = {
-                "isbn": 1,
+                "isbn": book.isbn,
                 "price": 7.9,
                 "email": user.email,
                 "quantity": 1

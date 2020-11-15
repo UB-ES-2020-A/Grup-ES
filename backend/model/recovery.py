@@ -58,7 +58,7 @@ class PasswordRecoveryModel(db.Model):
         db.session.commit()
 
     def send_email(self, email, url_root):
-        message = f"Has sol·licitat una recuperació de contrasenya. Accedeix a {url_root}change?key={self.key} "\
+        message = f"Has sol·licitat una recuperació de contrasenya. Accedeix a {url_root}reset?key={self.key} "\
                   f"per canviar de contrasenya. \n L'enllaç deixarà de ser vàlid en {self.VALID_UNTIL} o si es torna " \
                   f"a solicitar un canvi en la mateixa compte."
         send_email(email, 'Password recovery', message)

@@ -53,7 +53,7 @@ export default {
         email: this.email,
         password: this.password1
       }
-      const path = 'https://grup-es.herokuapp.com/user'
+      const path = 'http://127.0.0.1:5000/user'
       axios.post(path, parameters)
         .then((res) => {
           this.initForm()

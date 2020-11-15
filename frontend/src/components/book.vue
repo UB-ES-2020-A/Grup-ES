@@ -201,7 +201,7 @@ export default {
   },
   methods: {
     load_book () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk
+      const path = 'http://127.0.0.1:5000/book/' + this.$route.query.bk
       axios.get(path)
         .then((res) => {
           this.single_book = res.data.book
@@ -283,7 +283,7 @@ export default {
       this.search = ''
     },
     get_books () {
-      const path = 'https://grup-es.herokuapp.com/books'
+      const path = 'http://127.0.0.1:5000/books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
@@ -330,7 +330,7 @@ export default {
       this.isbnState = null
     },
     getAdvancedSearch (parameters) {
-      const path = 'https://grup-es.herokuapp.com/search'
+      const path = 'http://127.0.0.1:5000/search'
       axios.get(path, parameters)
         .then((res) => {
           this.advancedsearch = res.data

@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     deleteBook () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.isbn
+      const path = 'http://127.0.0.1:5000/book/' + this.isbn
       axios.delete(path)
         .then((res) => {
           console.log('BOOK DELETED')

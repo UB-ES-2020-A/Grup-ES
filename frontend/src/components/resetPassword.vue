@@ -17,7 +17,7 @@
         placeholder="Contraseña" autofocus v-model="pwd1" style="margin-top: 15px">
         <input type="password" id="pwd2" class="form-control"
         placeholder="Confirmar contraseña" autofocus v-model="pwd2" style="margin-top: 15px">
-        <b-button block variant="danger" style="margin-top: 20px" @click="goLogin()">Cambiar Contraseña</b-button>
+        <b-button block variant="danger" style="margin-top: 20px" @click="resetPassword()">Cambiar Contraseña</b-button>
         </b-container>
       </div>
       </div>
@@ -32,13 +32,39 @@
 import axios from 'axios'
 export default {
   data: () => ({
+    key: '',
+    user: {},
+    email: '',
+    password: ''
   }),
+  created () {
+    this.key = this.$route.query.key
+    this.load_user()
+    console.log(this.key)
+  },
   methods: {
-    goLogin () {
-      const path = 'https://grup-es.herokuapp.com/'
+    resetPassword () {
+      const path = 'http://127.0.0.1:5000/recovery/' + this.key
+      const parameters = {
+        email: this.user.email,
+        new_password: this.pwd1
+      }
+      console.log(this.pwd1)
+      axios.put(path, parameters)
+        .then((res) => {
+          console.log('PASSWORD UPDATED')
+          alert('Password updated correctly')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    load_user () {
+      const path = 'http://127.0.0.1:5000/recovery/' + this.key
       axios.get(path)
         .then((res) => {
-          this.$router.push({path: '/userlogin'})
+          this.user = res.data.user
+          console.log(this.user)
         })
         .catch((error) => {
           console.error(error)

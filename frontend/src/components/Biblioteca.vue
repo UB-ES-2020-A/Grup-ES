@@ -12,6 +12,7 @@
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
 <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
 <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+<b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
 </b-nav-item-dropdown>
     </ul>
    </b-navbar-nav>
@@ -118,7 +119,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: lib.book.isbn} })
     },
     load_library () {
-      const path = 'https://grup-es.herokuapp.com/library/' + this.user.email
+      const path = 'http://127.0.0.1:5000/library/' + this.user.email
       axios.get(path, {
         auth: {username: this.user.token}
       })
@@ -143,14 +144,13 @@ export default {
       }
     },
     goStart () {
-      const path = 'https://grup-es.herokuapp.com/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/'})
+    },
+    goLibrary () {
+      this.$router.push({path: '/biblioteca'})
+    },
+    goPedidos () {
+      this.$router.push({path: '/mispedidos'})
     }
   }
 }

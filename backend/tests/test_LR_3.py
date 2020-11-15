@@ -25,7 +25,7 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(1, len(outbox))
             self.assertEqual("Password recovery", outbox[0].subject)
             self.assertEqual(user.email, outbox[0].recipients[0])
-            self.assertTrue(f"http://test.com/change?key={recovery.key}" in outbox[0].body)
+            self.assertTrue(f"http://test.com/reset?key={recovery.key}" in outbox[0].body)
 
     def test_post_recovery(self):
         with self.app.app_context(), mail.record_messages() as outbox:

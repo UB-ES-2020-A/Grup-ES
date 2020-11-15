@@ -37,14 +37,28 @@
 import axios from 'axios'
 export default {
   data: () => ({
-    send: false
+    send: false,
+    email: '',
+    password: '',
+    user_id: ''
   }),
   methods: {
     sendEmail () {
-      this.send = true
+      const path = 'http://127.0.0.1:5000/recovery'
+      const parameters = {
+        email: this.email
+      }
+      axios.post(path, parameters)
+        .then((res) => {
+          this.send = true
+          console.log('email sended')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     goLogin () {
-      const path = 'https://grup-es.herokuapp.com/'
+      const path = 'http://127.0.0.1:5000/'
       axios.get(path)
         .then((res) => {
           this.$router.push({path: '/userlogin'})
