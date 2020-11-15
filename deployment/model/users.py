@@ -5,9 +5,18 @@ from passlib.apps import custom_app_context as pwd_context
 
 from db import db, secret_key
 import datetime as dt
+from enum import Enum
 
-ROLES = ['manager','user']
 auth = HTTPBasicAuth()
+
+
+class Roles(Enum):
+    User = 1
+    Admin = 2
+
+    def __str__(self):
+        return self.name
+
 
 class UsersModel(db.Model):
     __tablename__ = 'users'
@@ -16,19 +25,17 @@ class UsersModel(db.Model):
     username = db.Column(db.String(), nullable=False)
     email = db.Column(db.String(), nullable=False)
     password = db.Column(db.String(), nullable=False)
-    role = db.Column(db.Enum(*ROLES, name='roles_types'), nullable=False)
+    role = db.Column(db.Enum(Roles, name='roles_types'), nullable=False)
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
+    library = db.relationship('LibraryModel', backref='library', lazy=True)
 
-    def __init__(self, username, email, role='user'):
+    def __init__(self, username, email, role=Roles.User):
         self.username = username
         self.email = email
         self.role = role
         self.state = True
         self.date = dt.datetime.today()
-
-    def __repr__(self):
-        return f"<{self.username}-{self.email}-{self.role}-{self.date}>"
 
     def save_to_db(self):
         if 0 < self.query.filter_by(username=self.username, state=True).count():
@@ -42,10 +49,14 @@ class UsersModel(db.Model):
     def json(self):
         return {"username": self.username,
                 "email": self.email,
-                "role": self.role}
+                "role": str(self.role)}
 
     def delete_from_db(self):
         self.state = False
+        db.session.commit()
+
+    def update_from_db(self, password):
+        self.hash_password(password)
         db.session.commit()
 
     @classmethod
