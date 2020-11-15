@@ -11,6 +11,7 @@ import resetPassword from '@/components/resetPassword.vue'
 import MisPedidos from '@/components/MisPedidos.vue'
 import Biblioteca from '@/components/Biblioteca.vue'
 import changePassword from '@/components/changePassword.vue'
+import PayMethod from '@/components/PayMethod.vue'
 
 Vue.use(Router)
 
@@ -71,6 +72,11 @@ export default new Router({
       path: '/change',
       name: 'changePassword',
       component: changePassword
+    },
+    {
+      path: '/paymethod',
+      name: 'PayMethod',
+      component: PayMethod
     }
   ]
 })

@@ -11,58 +11,6 @@
         </option>
       </datalist>
       <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
-      <b-icon icon="three-dots-vertical" v-b-modal.modal-1 font-scale="2"></b-icon>
-
-      <b-modal
-      id="modal-1"
-      title="Cerca avançada"
-      @ok="handleOk">
-        <form ref="form" @submit.stop.prevent="handleSubmit">
-          <b-form-group
-            :state="isbnState"
-            label="ISBN"
-            label-for="isbn-input"
-            invalid-feedback="ISBN invalid, use a 13 digit number"
-          >
-          <b-form-input
-            id="isbn-input"
-            v-model="isbn"
-            :state="isbnState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Titol"
-          label-for="title-input"
-        >
-        <b-form-input
-          id="title-input"
-          v-model="title"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group
-        label="Autor"
-        label-for="autor-input"
-      >
-        <b-form-input
-          id="autor-input"
-          v-model="autor"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group
-        label="Editorial"
-        label-for="editorial-input"
-      >
-      <b-form-input
-        id="editorial-input"
-        v-model="editorial"
-      ></b-form-input>
-    </b-form-group>
-      </form>
-      <p> Info: Minimum fields required is 1 <p>
-      </b-modal>
    </b-nav-form>
    <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
@@ -81,44 +29,61 @@
    </b-navbar-nav>
   </b-navbar>
  </div>
-<!-- container for static pics -->
-<br>
-<br>
-<b-container v-if= "see_cart === false">
- <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
-</b-container>
-<br>
 
-<div class="container" v-if= "see_cart === false">
-   <h3> Best sellers </h3>
-   <b-row>
-     <b-col  v-for="(book) in best_sellers" :key="book.isbn">
-       <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-       <h5>{{ book.autor }}</h5>
-       <h6>Valoració</h6>
-       <h6>{{ book.precio }}</h6>
-       <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
-       </b-col>
-   </b-row>
-</div>
-   <br>
-   <br>
-  <div class="container" v-if= "see_cart === false">
-      <h3> New releases </h3>
-      <b-row>
-      <b-col  v-for="(book) in new_releases" :key="book.isbn">
-        <br>
-        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-        <h6 @click = "gotobook(book.isbn)">  {{ book.titulo }}</h6>
-        <h5>{{ book.autor }}</h5>
-        <h6>Valoració</h6>
-        <h6>{{ book.precio }}</h6>
-        <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+<!-- body -->
+<b-container>
+  <div class="row d-flex justify-content-center">
+  <div class="col-lg">
+  <div class="form-control bg-light" style="margin-top: 100px">
+  <div class="form-label-group">
+    <div style="margin-top: 10px" class="row justify-content-center"><h4>Targeta de Crèdit</h4></div>
+
+    <b-row style="margin-top: 15px">
+      <b-col cols="6">
+        <label>Número de Targeta</label>
+        <input id="card_number" class="form-control" type="number"
+        placeholder="#### #### #### ####" required autofocus v-model="card_number">
       </b-col>
-      </b-row>
+      <b-col cols="6">
+        <label>Nom del titular</label>
+        <input id="card_holder_name" class="form-control"
+        placeholder="NOM COGNOM" required autofocus v-model="card_holder_name">
+      </b-col>
+    </b-row>
+
+    <b-row style="margin-top: 15px">
+      <b-col cols="6">
+        <label>Data de caducitat</label>
+        <b-row>
+          <b-col cols="4">
+            <input id="month" class="form-control" type="number"
+            placeholder="01" required autofocus v-model="month">
+          </b-col>
+          <b-col cols="8">
+            <input id="year" class="form-control" type="number"
+            placeholder="2021" required autofocus v-model="year">
+          </b-col>
+        </b-row>
+      </b-col>
+      <b-col cols="6">
+        <label>CVC</label>
+        <input id="card_cvc" class="form-control" type="number"
+        placeholder="0000" required autofocus v-model="card_cvc">
+      </b-col>
+    </b-row>
+    <br>
+    <h5>Total a pagar: {{ calculate_total_price() }}$</h5>
+    <b-col>
+      <b-button size="lg" variant="primary" style="margin-top: 15px" @click="submitCard()">Submit</b-button>
+    </b-col>
+    <b-row style="margin-top: 10px"></b-row>
+    <label v-if="show" style="color: red">{{this.error}}</label>
   </div>
+  </div>
+  </div>
+  </div>
+</b-container>
+
 <!-- cart -->
 <b-container v-if= "see_cart === true">
  <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
@@ -171,7 +136,7 @@
         <hr/>
         <h5> Total : {{ calculate_total_price() }} $ </h5>
         <br>
-        <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
+        <b-button style="width:100%" variant="danger">Finalitzar compra</b-button><br><br>
         </b-container>
       </b-col>
     </b-row>
@@ -190,8 +155,6 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      best_sellers: [],
-      new_releases: [],
       cartItems: [],
       see_cart: false,
       price: 0.0,
@@ -200,44 +163,17 @@ export default {
       session_boolean: false,
       search: '',
       booksquery: [],
-      isbn: '',
-      isbnState: null,
-      title: '',
-      autor: '',
-      editorial: '',
-      advancedsearch: []
+      error: '',
+      show: false
     }
   },
   created () {
-    this.load_new_releases()
     this.fetch_cache()
     this.get_books()
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
-    },
-    load_best_sellers () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
-        .then((res) => {
-          this.best_sellers = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    load_new_releases () {
-      const path = 'https://grup-es.herokuapp.com/books'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
-        .then((res) => {
-          this.new_releases = res.data.books
-        })
-        .catch((error) => {
-          console.error(error)
-        })
     },
     add_cart (book) {
       var alreadyIn = false
@@ -314,6 +250,12 @@ export default {
         this.session_boolean = true
       }
     },
+    goLibrary () {
+      this.$router.push({path: '/biblioteca'})
+    },
+    goPedidos () {
+      this.$router.push({path: '/mispedidos'})
+    },
     get_books () {
       const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
@@ -334,48 +276,32 @@ export default {
         }
       }
     },
-    checkOk () {
-      if (this.isbn.length === 13) {
-        this.isbnState = true
-      } else {
-        this.isbnState = false
+    checkForm: function (e) {
+      this.errors = []
+
+      if (!this.card_number || !this.card_holder_name || !this.card_cvc || !this.year || !this.month) {
+        this.errors.push('És requereix emplenar tots els camps!')
       }
-      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
-        this.$nextTick(() => {
-          this.$bvModal.hide('modal-1')
-        })
-        this.isbnState = true
-        this.clearModal()
+
+      if (this.card_number > 9999999999999999999 || this.card_number < 1000000000000) {
+        this.errors.push('Número de targeta no vàlid!')
+      }
+
+      if (this.year > 2026 || this.year < 2020 || this.month < 1 || this.month > 12) {
+        this.errors.push('Data de caducitat no vàlida!')
+      }
+
+      if (this.card_cvc < 100 || this.card_cvc > 9999) {
+        this.errors.push('CVC no vàlid!')
+      }
+
+      if (!this.errors.length) {
+        this.show = false
         return true
       }
+      this.show = true
+      this.error = this.errors[0]
       return false
-    },
-    handleOk (bvModalEvt) {
-      bvModalEvt.preventDefault()
-      this.checkOk()
-    },
-    clearModal () {
-      this.isbn = ''
-      this.title = ''
-      this.autor = ''
-      this.editorial = ''
-      this.isbnState = null
-    },
-    getAdvancedSearch (parameters) {
-      const path = 'https://grup-es.herokuapp.com/search'
-      axios.get(path, parameters)
-        .then((res) => {
-          this.advancedsearch = res.data
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    goLibrary () {
-      this.$router.push({path: '/biblioteca'})
-    },
-    goPedidos () {
-      this.$router.push({path: '/mispedidos'})
     },
     addToLibrary (parameters) {
       const path = 'https://grup-es.herokuapp.com/library'
@@ -384,15 +310,41 @@ export default {
       })
         .then((res) => {
           console.log('BOOK ADDED TO LIBRARY')
-          this.cartItems.splice(0, this.cartItems.length)
-          alert('Book ADDED correctly to LIBRARY')
         })
         .catch((error) => {
           console.error(error)
         })
     },
-    finalizePurchase () {
-      this.$router.push({path: '/paymethod'})
+    post_transaction (book, quantity) {
+      const parameters = {
+        isbn: book.isbn,
+        price: book.precio,
+        email: this.user.email,
+        quantity: quantity
+      }
+      const path = 'https://grup-es.herokuapp.com/transaction'
+      axios.post(path, parameters, {auth: {username: this.user.token}})
+        .then((res) => {
+          console.log('PAID SUCCESSFULLY')
+          alert('Transaction correctly realized!')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    submitCard () {
+      if (this.checkForm()) {
+        for (var i = 0; i < this.cartItems.length; i++) {
+          this.post_transaction(this.cartItems[i].book, this.cartItems[i].quantity)
+          const parameters = {
+            isbn: this.cartItems[i].book.isbn,
+            email: this.user.email
+          }
+          this.addToLibrary(parameters)
+        }
+        this.cartItems = []
+        localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
+      }
     }
   },
   computed: {
