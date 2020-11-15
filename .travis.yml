@@ -15,7 +15,7 @@ before_deploy:
   - cd deployment
   - git add *
   - git add .
-  - git commit -a
+  - git commit -a -m "Deployment"
 
 deploy:
   provider: heroku
