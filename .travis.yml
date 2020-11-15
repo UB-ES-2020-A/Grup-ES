@@ -11,13 +11,14 @@ install:
 script:
   - python3 -m unittest discover -v backend
 # deploy
-before-deploy:
+before_deploy:
+  - npm install
   - npm run build --prefix frontend
   - build.sh
 
 deploy:
   provider: heroku
   api_key:
-    secure: 971389d2-e998-498d-aae7-13524bc96bbf
+    secure: "JSzAqdYrKswffNsQrEZbRXENqucx+uprin3ptHPhwOhNdD5h+2EosyUPWIfq9a7D9Sw3davKf3lgWV9Qs7gocbDp49VPjUAMzc4D7FkF8p26IpVQCNACM/1TnWfyNDHqfliXTE+F3F/NH73blB1sgx+aEXc6iGxLL2x0jyCed+zFM2f9KGN9pAcNJgR7LrpJ9Owj7yeiWLwws/zCACWyuN1MVuKFxbd9KByJ9OgjA9CxK+FuSZPYZZM1N/4tquPbBxTGkfIelKAeYWczHqcO/Cqk4L+Nx4wMPK6yAQYES7WfWHuhdlSQBMsRrNIdcTyWXDCiUTu1Z+RcFdWDTHHaquJ26u3GJlO1XU0MqW3nVLZtdYs8NjQwSSbtu3VUuS8C7zByUACLKR3KOlE4BpLogiEKeNaxTvHNmGJcaCVQDRgqssKwCpNb9zCZ14NakUVONwoF0Br2bRJLXsSVjO23TRtKdLXTh2N/IvHCJesu1zzpTonyjOp6Z2hH5Ufdh6m7JJzq0oEP5yne7W3bW9K8V6TfuphURsG7mEeoJDyfXrH+Hre5RqATqpA0+nKCdV6F0vo4NFe7u9FWd1xNLHeiWZx3FixCOiSQaKMm9ZUfHM+9lbuabrdnXYly10T8gRTZtpeWYQrD8hCQ9sTHaggAVSnTadK4xrW1He9ueoTzuJI="
   app:
     main: grup-es
