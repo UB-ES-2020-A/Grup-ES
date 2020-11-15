@@ -15,10 +15,10 @@ before_deploy:
   - npm install --prefix frontend
   - npm run build --prefix frontend
   - bash build.sh
+  - cd deployment
 
 deploy:
   provider: heroku
-  api_key:
-    secure: hZIblIT/iri/aIwbPHxQe/ZZKBym/Jsrz5RW9h2kSjWK2HSb53oG4NZBuZVIltKWhxnuJWSvlBVtWHKm/s8mnGQFksFtmfBDbSaWmaEUr/znLbKwChpseNIUGF/xg3lSNyseaYBJpo9zzE+q8dTuAAHLQ3AQC5ZmrjQfym2MgJ3Yba7w5XM3Zdd5w9rP1lFEylJNVtYcKqc++CJMKZ2SsooSJo3E8kKphCpXZjUv+ag3N1zG+7OEdu5BKtI7Pr8eKExa1z7i5GQwmzEqblgggDXvd58K9Q9DTifmVkoIvtmQGeS7LicF51gqA8F5BTQZtsKRCJwshbD9XB+N3bMoQF3VU27NXBG5qmuVkJ0ltuA517SWDyPzVkosrxMLDQcviWZ05pP57vwCAmnRq9U5nZKNPzgIocfIOeFStM2X4N6gdmWv2D40kJNI4txctQHwe4fvSlswMJDT6arA1Ja455FKKumxVWbmGN9ZM9zFBdiVB3rvCe3sHJFtq7U/hQMCzTV7pC6BWpfYfDgLMfzjsgNAJsPf48/QDChYHOk3zDtYygi9G0+SvYCTXo9lX+M2mf/45ZyFpi4ZLNsXLWguP1oJJVSYx/o8jpHF3NXcPs53PFGiVuLBN8Uh/eLX5/SSpPjKyRubbbfG0jcfqDRop8Cw4zoHpuU9u1f/77uWCFM=
+  api_key: 2bbf0692-5e1c-42ca-959c-e200af90f6b6
   app:
     main: grup-es
