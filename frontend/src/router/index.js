@@ -12,6 +12,7 @@ import MisPedidos from '@/components/MisPedidos.vue'
 import Biblioteca from '@/components/Biblioteca.vue'
 import changePassword from '@/components/changePassword.vue'
 import PayMethod from '@/components/PayMethod.vue'
+import Search from '@/components/Search.vue'
 
 Vue.use(Router)
 
@@ -77,6 +78,11 @@ export default new Router({
       path: '/paymethod',
       name: 'PayMethod',
       component: PayMethod
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: Search
     }
   ]
 })
