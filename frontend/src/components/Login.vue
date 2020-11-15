@@ -21,7 +21,7 @@
                 Al continuar confirmas que aceptas las <a>Condiciones de uso</a> y las <a>Políticas de privacidad</a>
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
-              <b-button block variant="link" style="margin-top: 10px">¿Olvidaste contraseña?</b-button>
+              <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
               <hr>
               <b-button block variant="primary" v-google-signin-button="clientId" class="google-signin-button"> Continue with Google</b-button>
       </div>
@@ -88,6 +88,9 @@ export default {
     initForm () {
       this.email = ''
       this.password = ''
+    },
+    changePassword () {
+      this.$router.push({path: '/change'})
     }
   }
 }

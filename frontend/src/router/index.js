@@ -7,8 +7,10 @@ import ModifyBooks from '@/components/ModifyBooks.vue'
 import Login from '@/components/Login.vue'
 import AddBooks from '@/components/AddBooks.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
+import resetPassword from '@/components/resetPassword.vue'
 import MisPedidos from '@/components/MisPedidos.vue'
 import Biblioteca from '@/components/Biblioteca.vue'
+import changePassword from '@/components/changePassword.vue'
 import PayMethod from '@/components/PayMethod.vue'
 
 Vue.use(Router)
@@ -52,6 +54,11 @@ export default new Router({
       component: AddBooks
     },
     {
+      path: '/reset',
+      name: 'resetPassword',
+      component: resetPassword
+    },
+    {
       path: '/mispedidos',
       name: 'MisPedidos',
       component: MisPedidos
@@ -60,6 +67,11 @@ export default new Router({
       path: '/biblioteca',
       name: 'Biblioteca',
       component: Biblioteca
+    },
+    {
+      path: '/change',
+      name: 'changePassword',
+      component: changePassword
     },
     {
       path: '/paymethod',

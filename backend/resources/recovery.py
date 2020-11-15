@@ -45,7 +45,7 @@ class PasswordRecovery(Resource):
         return {"recovery": recovery.json()}, 201
 
     def put(self, key):
-        data = parse_data()
+        data = parse_data(True)
 
         user = UsersModel.find_by_email(data['email'])
         if user is None:
