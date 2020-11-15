@@ -9,6 +9,7 @@ import AddBooks from '@/components/AddBooks.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import MisPedidos from '@/components/MisPedidos.vue'
 import Biblioteca from '@/components/Biblioteca.vue'
+import PayMethod from '@/components/PayMethod.vue'
 
 Vue.use(Router)
 
@@ -59,6 +60,11 @@ export default new Router({
       path: '/biblioteca',
       name: 'Biblioteca',
       component: Biblioteca
+    },
+    {
+      path: '/paymethod',
+      name: 'PayMethod',
+      component: PayMethod
     }
   ]
 })
