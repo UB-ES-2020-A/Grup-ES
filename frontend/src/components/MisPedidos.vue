@@ -163,7 +163,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_pedidos () {
-      const path = 'http://127.0.0.1:5000/transactions/' + this.user.email
+      const path = 'https://grup-es.herokuapp.com/transactions/' + this.user.email
 
       axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {
@@ -255,7 +255,7 @@ export default {
       this.$router.push({path: '/mispedidos'})
     },
     get_books () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data

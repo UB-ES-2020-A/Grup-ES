@@ -44,7 +44,7 @@ export default {
   }),
   methods: {
     sendEmail () {
-      const path = 'http://127.0.0.1:5000/recovery'
+      const path = 'https://grup-es.herokuapp.com/recovery'
       const parameters = {
         email: this.email
       }
@@ -58,14 +58,7 @@ export default {
         })
     },
     goLogin () {
-      const path = 'http://127.0.0.1:5000/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/userlogin'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/userlogin'})
     }
   }
 }

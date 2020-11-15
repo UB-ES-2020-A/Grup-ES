@@ -218,7 +218,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_best_sellers () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {
@@ -229,7 +229,7 @@ export default {
         })
     },
     load_new_releases () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {
@@ -315,7 +315,7 @@ export default {
       }
     },
     get_books () {
-      const path = 'http://127.0.0.1:5000/books'
+      const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
@@ -362,7 +362,7 @@ export default {
       this.isbnState = null
     },
     getAdvancedSearch (parameters) {
-      const path = 'http://127.0.0.1:5000/search'
+      const path = 'https://grup-es.herokuapp.com/search'
       axios.get(path, parameters)
         .then((res) => {
           this.advancedsearch = res.data
@@ -378,7 +378,7 @@ export default {
       this.$router.push({path: '/mispedidos'})
     },
     addToLibrary (parameters) {
-      const path = 'http://127.0.0.1:5000/library'
+      const path = 'https://grup-es.herokuapp.com/library'
       axios.post(path, parameters, {
         auth: {username: this.user.token}
       })

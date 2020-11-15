@@ -92,7 +92,7 @@ export default {
         url_imagen: this.url,
         sinopsis: this.sinopsis
       }
-      const path = 'http://127.0.0.1:5000/book/' + this.isbn
+      const path = 'https://grup-es.herokuapp.com/book/' + this.isbn
       axios.put(path, parameters)
         .then((res) => {
           console.log('BOOK MODIFIED')

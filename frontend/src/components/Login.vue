@@ -58,8 +58,8 @@ export default {
         email: this.email,
         password: this.password
       }
-      const path = 'http://127.0.0.1:5000/login'
-      const path2 = 'http://127.0.0.1:5000/user/' + this.email
+      const path = 'https://grup-es.herokuapp.com/login'
+      const path2 = 'https://grup-es.herokuapp.com/user/' + this.email
       axios.all([
         axios.post(path, parameters),
         axios.get(path2)
@@ -90,14 +90,7 @@ export default {
       this.password = ''
     },
     changePassword () {
-      const path = 'http://127.0.0.1:5000/'
-      axios.get(path)
-        .then((res) => {
-          this.$router.push({path: '/change'})
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      this.$router.push({path: '/change'})
     }
   }
 }

@@ -40,27 +40,26 @@ export default {
   created () {
     this.key = this.$route.query.key
     this.load_user()
-    console.log(this.key)
   },
   methods: {
     resetPassword () {
-      const path = 'http://127.0.0.1:5000/recovery/' + this.key
+      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
       const parameters = {
         email: this.user.email,
         new_password: this.pwd1
       }
-      console.log(this.pwd1)
       axios.put(path, parameters)
         .then((res) => {
           console.log('PASSWORD UPDATED')
           alert('Password updated correctly')
+          this.goLogin()
         })
         .catch((error) => {
           console.error(error)
         })
     },
     load_user () {
-      const path = 'http://127.0.0.1:5000/recovery/' + this.key
+      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
       axios.get(path)
         .then((res) => {
           this.user = res.data.user
@@ -69,6 +68,9 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    goLogin () {
+      this.$router.push({path: '/userlogin'})
     }
   }
 }
