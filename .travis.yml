@@ -13,10 +13,11 @@ before_deploy:
   - npm run build --prefix frontend
   - bash build.sh
   - cd deployment
-  - git add .
+  - git add *
 
 deploy:
   provider: heroku
-  api_key: 2bbf0692-5e1c-42ca-959c-e200af90f6b6
+  api_key:
+    secure: "c9MsiWES2xFo8HnSNUF/7X+sCxPo5bruLfte/+YxcOxEDENx1hKq6RzXxwQhG152m1kbrd2k8PtfOMkCVCgUayWxcsM+cxQV1x/MAHW3oelTRlWFV5aYvu9pyf4xcV6LqcbZPj3e4iIu3McyMVjw4zSpKwiHOx5R0dpb1BmhAmo08uUnoL379K2/meuP2A+uSXi9xz+Qv579SHp8SssRsnyA1laYAfmRs8ABWYLwNoYxxGREiDtBupTFwJgms98Muo1MtbmOCmWcN/jO/UBbNfC06Dh8UGwESObt45afeRHGSuyWK/cSlRbH1bYmtvmJhT4SW3gE4tMQt/kwA+DofX9DObW136BRVIlY23PTEM2AypVtz7o4LujaR1VnoVISg6fSttheX4u2F4pxdLdRuwFZiS18wKzbifV7XYjsiXM1IK+l63yUyY6BJTrtrq3DjBcV+DqvXFXNzs7sAKgAo3QS+FWlU7tFzoG/fFxktg9QWG+Aer1axQ1Ws3oBdECXi7SXMBFhi5isYSL8VcYuT5LFL1ScsEAFa+v8GxmuGHWa3AyYbp8xX62HpSvWg21xvXfiFRYC7M9axBlknwETreYLAGlCKh08tR3F8KHEZ51UPCP3kemT7v7IaeuyhoX1AjU4sqdHT7jOybIhh9+7VBvmc3X9xOnL/7pLGU9tXQ8="
   app:
     main: grup-es
