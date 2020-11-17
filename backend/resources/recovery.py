@@ -6,7 +6,7 @@ from model.users import UsersModel
 
 
 def parse_data(required=False):
-    parser = reqparse.RequestParser()
+    parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('email', required=True, type=str, help="Password Recovery entry not valid: 'email' not provided")
     parser.add_argument('new_password', required=required, type=str,
                         help="Password Recovery entry not valid: 'new_password' not provided")

@@ -16,7 +16,7 @@ class PasswordRecoveryModel(db.Model):
     VALID_UNTIL = timedelta(hours=1)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'), primary_key=True)
-    key = db.Column(db.Integer(), nullable=False)
+    key = db.Column(db.String(SIZE), nullable=False)
     time = db.Column(db.DateTime(), nullable=False)
 
     def __init__(self, user_id, key=None):
