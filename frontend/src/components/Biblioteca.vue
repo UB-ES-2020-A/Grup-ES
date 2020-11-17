@@ -64,10 +64,10 @@
   </b-container>
   <br>
   <br>
-  <footer style="height:auto; background-color:black;">
-  <h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-  </footer>
 </div>
+<footer style="height:auto; background-color:black;">
+  <h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
+</footer>
 </div>
 </template>
 

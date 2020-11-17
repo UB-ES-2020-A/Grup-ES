@@ -169,7 +169,6 @@ export default {
     }
   },
   created () {
-    console.log('NAVBAR created')
     this.fetch_cache()
     this.get_books()
   },
