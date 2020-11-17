@@ -37,19 +37,17 @@
     </b-col>
 </b-row>
 </b-container>
-
+<br>
+<br>
 <b-container>
-<b-row align-v="center">
-  <b-col  v-for="(book) in filteredList" :key="book.isbn" sm="6" md="4" lg="3" xl="2">
-    <br>
-    <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-    <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-    <h5>{{ book.autor }}</h5>
-    <h6>Valoració</h6>
-    <h6>{{ book.precio }}</h6>
-    <b-button variant="danger" >Add to cart</b-button>
-  </b-col>
-</b-row>
+ <b-card-group deck v-for="(book) in filteredList" :key="book.isbn">
+  <b-card bg-variant="light" text-variant="dark">
+  <b-card-title> {{ book.titulo }} - {{ book.isbn }}</b-card-title>
+  <b-card-sub-title class="mb-2">{{ book.autor }}</b-card-sub-title>
+  <b-card-text>Stock: {{ book.stock }}</b-card-text>
+  <b-card-text>PVP: {{ book.precio }} $</b-card-text>
+</b-card>
+</b-card-group>
 </b-container>
 <!-- footer -->
 <br>
