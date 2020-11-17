@@ -3,7 +3,7 @@
    <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand @click="goStart()">BookShelter</b-navbar-brand>
     <b-nav-form>
-       <b-form-input autocomplete="off" v-model="search"  list="booksearch" @change="onInputDataList()" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+       <b-form-input autocomplete="off" v-model="search" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
        <datalist id="booksearch">
          <option v-for="book in filteredList" :key="book.isbn" :value="book.titulo" :id="book.isbn">
            {{ book.autor }}
@@ -64,25 +64,29 @@
        </b-modal>
     </b-nav-form>
     <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
-    <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-    <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
-    <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon>
-  </a></li>
-    <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
-  </a></li>
-  <li class="nav-item" v-if= "session_boolean === true">
-     <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
-     <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
-     <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
-     </b-nav-item-dropdown>
-  </li>
-     </ul>
+      <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
+        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
+        <li class="nav-item" v-if= "session_boolean === true">
+          <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
+            <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
+            <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
+            <div class="dropdown-divider"></div>
+            <b-dropdown-item @click="goAddBook()">Añadir libro</b-dropdown-item>
+            <b-dropdown-item @click="goModBook()">Modificar libro</b-dropdown-item>
+            <b-dropdown-item @click="goDelBook()">Eliminar libro</b-dropdown-item>
+          </b-nav-item-dropdown>
+        </li>
+       </ul>
     </b-navbar-nav>
    </b-navbar>
 
    <!-- cart -->
    <b-container v-if= "see_cart === true">
-    <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
+     <br>
+     <br>
+     <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
    </b-container>
    <br>
     <b-container v-if= "see_cart === true">
@@ -267,6 +271,15 @@ export default {
     },
     goPedidos () {
       this.$router.push({path: '/mispedidos'})
+    },
+    goAddBook () {
+      this.$router.push({path: '/add'})
+    },
+    goDelBook () {
+      this.$router.push({path: '/delete'})
+    },
+    goModBook () {
+      this.$router.push({path: '/modify'})
     },
     onSearch () {
       this.$router.push({ path: '/search', query: {titulo: this.search} })
