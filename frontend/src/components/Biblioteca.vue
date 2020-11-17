@@ -34,7 +34,15 @@
   </b-container>
   <!--select biblio-->
   <b-row>
-    <b-col cols="2">
+    <b-col cols="3">
+     <b-nav tabs style="margin-top: 40px">
+       <b-nav-item @click="choose_bought()" v-on:click="archived = false">Mis Libros</b-nav-item>
+       <b-nav-item @click="choose_archive()">Archivo</b-nav-item>
+      </b-nav>
+    </b-col>
+  </b-row>
+  <b-row align-h="between" style="margin-top: 20px">
+    <b-col cols="3">
     <b-form-select
       v-model="selected"
       :options="options"
@@ -42,12 +50,10 @@
       value-field="value"
       text-field="text"
       disabled-field="notEnabled"
-      style="margin-top: 20px"
+      @change="getItem($event)"
+      v-if="archived === false"
     ></b-form-select>
     </b-col>
-  </b-row>
-  <hr>
-  <b-row align-h="end">
     <b-col cols="3">
     <b-form-select
       v-model="sFilter"
@@ -63,14 +69,14 @@
   <b-row>
     <div class="form-control bg-light">
      <b-row>
-     <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(lib) in library" v-bind:key="lib.book.isbn">
+     <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
        <b-col align-self="center">
-       <img :src="getURL(lib)" style="height:409px; width:240px;" alt=""  @click = "gotobook(lib)">
+       <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
        <b-col align-self="center" style="margin-top: 10px">
-       <h4 @click = "gotobook(lib)">  {{ lib.book.titulo }} </h4>
+       <h4 @click = "gotobook(book)">  {{ book.titulo }} </h4>
        </b-col>
        <b-col align-self="center">
-       <h7>{{ lib.book.autor }}</h7>
+       <h7>{{ book.autor }}</h7>
        </b-col>
        </b-col>
      </div>
@@ -91,14 +97,23 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      list: [],
       library: [],
+      bought: [],
+      archive: [],
+      pending: [],
+      reading: [],
+      finished: [],
       user: {},
       book: {},
+      archived: false,
+      show: 'A',
       selected: 'A',
       sFilter: 'A',
       options: [
-        { value: 'A', text: 'Mis Libros' },
-        { value: 'B', text: 'Sin Leer' }
+        { value: 'A', text: 'Libros' },
+        { value: 'B', text: 'Sin Leer' },
+        { value: 'C', text: 'Leidos' }
       ],
       filters: [
         { value: 'A', filter: 'Fecha de inclusión: Más reciente' },
@@ -113,10 +128,11 @@ export default {
   created () {
     this.fetch_cache()
     this.load_library()
+    this.list = this.bought
   },
   methods: {
-    gotobook (lib) {
-      this.$router.push({ path: '/book', query: {bk: lib.book.isbn} })
+    gotobook (book) {
+      this.$router.push({ path: '/book', query: {bk: book.isbn} })
     },
     load_library () {
       const path = 'https://grup-es.herokuapp.com/library/' + this.user.email
@@ -126,13 +142,14 @@ export default {
         .then((res) => {
           this.library = res.data.library
           console.log(this.library)
+          this.manage_library()
         })
         .catch((error) => {
           console.error(error)
         })
     },
-    getURL (lib) {
-      return lib.book.url_imagen
+    getURL (book) {
+      return book.url_imagen
     },
     fetch_cache () {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))
@@ -151,6 +168,53 @@ export default {
     },
     goPedidos () {
       this.$router.push({path: '/mispedidos'})
+    },
+    manage_library () {
+      var i
+      for (i = 0; i < this.library.length; i++) {
+        if (this.library[i].library_type === 'Bought') {
+          this.bought.push(this.library[i].book)
+          switch (this.library[i].state) {
+            case 'Pending':
+              this.pending.push(this.library[i].book)
+              break
+            case 'Reading':
+              this.reading.push(this.library[i].book)
+              break
+            case 'Finished':
+              this.finished.push(this.library[i].book)
+              break
+          }
+        }
+      }
+      console.log(this.bought)
+    },
+    choose_bought () {
+      this.list = this.bought
+    },
+    choose_archive () {
+      this.list = this.archive
+      this.archived = true
+    },
+    choose_pending () {
+      this.list = this.pending
+    },
+    choose_finished () {
+      this.list = this.finished
+    },
+    getItem (event) {
+      console.log(this.selected)
+      switch (this.selected) {
+        case 'A':
+          this.choose_bought()
+          break
+        case 'B':
+          this.choose_pending()
+          break
+        case 'C':
+          this.choose_finished()
+          break
+      }
     }
   }
 }
