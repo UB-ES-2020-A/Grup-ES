@@ -1,10 +1,9 @@
 <template>
   <div id="app">
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand >NavBar</b-navbar-brand>
-    </b-navbar>
-    <b-container>
+    <navbar @changeShowState="show = !show"/>
+
+    <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
       <div class="col-md-4">
       <div class="form-control  bg-light" style="margin-top: 150px">
@@ -35,8 +34,15 @@
 
 <script>
 import axios from 'axios'
+import navbar from './subcomponents/navbar'
+
 export default {
+  components: {
+    navbar
+  },
   data: () => ({
+    show: true,
+
     clientId: '374016962135-l70k72dvqf1ugd3pirf58ti292v8gk1a.apps.googleusercontent.com',
     username: '',
     email: '',
