@@ -8,15 +8,17 @@ from model.books import BooksModel
 
 class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
+    __id_transaction = 0
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
-    isbn = db.Column(db.BigInteger(), nullable=False)
+    isbn = db.Column(db.BigInteger(), primary_key=True)
     price = db.Column(db.Float, nullable=False)
     id_user = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
     def __init__(self, isbn, price, id_user, quantity, date=None):
+        self.id_transaction = self.__id_transaction
         self.isbn = isbn
         self.price = float(price)
         self.id_user = id_user
@@ -64,6 +66,6 @@ class TransactionsModel(db.Model):
 
     @classmethod
     def find_by_id(cls, id_transaction):
-        return cls.query.filter_by(id_transaction=id_transaction).first()
+        return cls.query.filter_by(id_transaction=id_transaction).all()
 
 

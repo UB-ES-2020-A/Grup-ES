@@ -9,16 +9,12 @@ from model.transactions import TransactionsModel
 def parse_transaction(minimal=False):
     parser = reqparse.RequestParser(bundle_errors=True)
 
-    parser.add_argument('isbn', type=int, required=not minimal,
-                        help="In this field goes the isbn of the book, cannot be left blank")
-    parser.add_argument('price', type=float, required=not minimal,
-                        help="In this field goes the price of the book, cannot be left blank")
     parser.add_argument('email', type=str, required=not minimal,
                         help="In this field goes the email of the user, cannot be left blank")
-    parser.add_argument('quantity', type=str, required=not minimal,
-                        help="In this field goes the quantity of books")
-
+    parser.add_argument('books', type=list, location='json', action='append',
+                        help="In this field goes the books, cannot be left blank")
     return parser.parse_args()
+
 
 class Transactions(Resource):
     @auth.login_required
@@ -41,7 +37,9 @@ class Transactions(Resource):
         data['id_user'] = user.id
         del data['email']
         try:
+            # data['id_transaction'] = TransactionsModel.__id_transaction
             transaction = TransactionsModel(**data)
+            TransactionsModel.__id_transaction += 1
             transaction.save_to_db()
         except Exception as e:
             return {"message": str(e)}, 500

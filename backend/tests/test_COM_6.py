@@ -1,7 +1,6 @@
 import base64
 import unittest
 import json
-from datetime import datetime
 
 from model.books import BooksModel
 from model.users import UsersModel
@@ -17,20 +16,29 @@ class UnitTestOfUS(BaseTest):
             to_add = UsersModel('test', 'bookshelterES@gmail.com')
             to_add.hash_password('password')
             UsersModel.save_to_db(to_add)
-            entry = TransactionsModel(1, 2.2, 1, 1, None)
-            entry.save_to_db()
-            self.assertEqual(entry, TransactionsModel.find_by_id(1))
+            id_user = UsersModel.find_by_email(to_add.email).id
+
+            books = {'isbn': 1, 'price': 10, 'quantity': 1}, {'isbn': 2, 'price': 2, 'quantity': 2}
+            for book in books:
+                isbn = book['isbn']
+                price = book['price']
+                quantity = book['quantity']
+                entry = TransactionsModel(isbn, price, id_user, quantity, None)
+                entry.save_to_db()
+            self.assertEqual(2, len(TransactionsModel.query.all()))
+            self.assertEqual(2, len(TransactionsModel.find_by_id(0)))
 
     def test_model_delete(self):
         with self.app.app_context():
             to_add = UsersModel('test', 'bookshelterES@gmail.com')
             to_add.hash_password('password')
             UsersModel.save_to_db(to_add)
+
             entry = TransactionsModel(1, 2.2, 1, 1, None)
             entry.save_to_db()
             entry.delete_from_db()
 
-            self.assertEqual(TransactionsModel.find_by_id(1), None)
+            self.assertEqual(0, len(TransactionsModel.query.all()))
 
     def test_model_update(self):
         with self.app.app_context():
@@ -72,11 +80,11 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(1, 1, 1.0, "titulo")
             book.save_to_db()
 
+            books = [{'isbn': 1, 'price': 10, 'quantity': 1}, {'isbn': 2, 'price': 2, 'quantity': 2}]
+
             dataTransaction = {
-                "isbn": book.isbn,
-                "price": 7.9,
+                "books": books,
                 "email": user.email,
-                "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
@@ -106,13 +114,11 @@ class UnitTestOfUS(BaseTest):
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
-
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
             self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())
-
 
     # TEST TASK 6
     def test_get_transactions_user(self):
@@ -193,7 +199,7 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(201, res.status_code)
 
-            res = self.client.get('/transactions/' + user2.email, headers={  #user tries to get user2 transactions
+            res = self.client.get('/transactions/' + user2.email, headers={  # user tries to get user2 transactions
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(401, res.status_code)
