@@ -38,7 +38,6 @@ class TransactionsModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
-        # self.send_confirmation_mail()
         db.session.commit()
 
     def delete_from_db(self):

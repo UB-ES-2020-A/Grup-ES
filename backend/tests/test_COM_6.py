@@ -102,20 +102,24 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]", TransactionsModel.find_isbns_by_id(1))
 
     # TEST TASK 3
+    # test manual: posar variable config TESTING = False i veure com es reb el mail correctament.
     def test_order_mail(self):
         with self.app.app_context():
             user = UsersModel('test', 'bookshelterES@gmail.com')
             user.hash_password('test')
             UsersModel.save_to_db(user)
 
-            book = BooksModel(1, 1, 1.0, "titulo")
+            book = BooksModel(1, 1, 1.0, "book1")
+            book.save_to_db()
+            book = BooksModel(2, 2, 13.1, "book2")
             book.save_to_db()
 
+            isbns = [1, 2]
+            quantities = [1, 1]
             dataTransaction = {
-                "isbn": book.isbn,
-                "price": 7.9,
+                "isbns": isbns,
+                'quantities': quantities,
                 "email": user.email,
-                "quantity": 1
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
@@ -124,7 +128,8 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())
+            self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]", TransactionsModel.find_isbns_by_id(1))
+
 
     # TEST TASK 6
     def test_get_transactions_user(self):

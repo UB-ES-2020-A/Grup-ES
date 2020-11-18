@@ -5,6 +5,7 @@ from flask_restful import Resource
 from model.books import BooksModel
 from model.users import auth, UsersModel
 from model.transactions import TransactionsModel
+from utils.mail import send_email
 
 
 def parse_transaction():
@@ -41,6 +42,7 @@ class Transactions(Resource):
         dataTransaction['id_user'] = user.id
 
         __it = 0
+        transactions = ''
         for isbn in data['isbns']:
             book = BooksModel.find_by_isbn(isbn)
             if book is None:
@@ -52,10 +54,12 @@ class Transactions(Resource):
             try:
                 transaction = TransactionsModel(**dataTransaction)
                 transaction.save_to_db()
+                transactions += str(transaction.json())
                 __it += 1
             except Exception as e:
                 return {"message": str(e)}, 500
         TransactionsModel.it_transaction += 1
+        send_email(user.email, 'Order confirmation', transactions)
         return {'message': str(__it) + ' transactions added with id ' + str(TransactionsModel.it_transaction-1)}, 201
 
 
