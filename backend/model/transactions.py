@@ -8,7 +8,7 @@ from model.books import BooksModel
 
 class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
-    __id_transaction = 0
+    it_transaction = 1
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
     isbn = db.Column(db.BigInteger(), primary_key=True)
@@ -18,7 +18,7 @@ class TransactionsModel(db.Model):
     date = db.Column(db.DateTime(), nullable=False)
 
     def __init__(self, isbn, price, id_user, quantity, date=None):
-        self.id_transaction = self.__id_transaction
+        self.id_transaction = self.it_transaction
         self.isbn = isbn
         self.price = float(price)
         self.id_user = id_user
@@ -31,15 +31,14 @@ class TransactionsModel(db.Model):
     def json(self):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
-        atr['book'] = BooksModel.find_by_isbn(self.isbn).json()
-        del atr['isbn']
+        atr['isbn'] = BooksModel.find_by_isbn(self.isbn).isbn
         del atr["_sa_instance_state"]
         atr['date'] = self.date.strftime('%d-%m-%Y')
         return atr
 
     def save_to_db(self):
         db.session.add(self)
-        self.send_confirmation_mail()
+        # self.send_confirmation_mail()
         db.session.commit()
 
     def delete_from_db(self):
@@ -67,5 +66,12 @@ class TransactionsModel(db.Model):
     @classmethod
     def find_by_id(cls, id_transaction):
         return cls.query.filter_by(id_transaction=id_transaction).all()
+
+    @classmethod
+    def find_isbn_by_id(cls, id_transaction):
+        isbns = []
+        for transaction in cls.find_by_id(id_transaction):
+            isbns.append(transaction.isbn)
+        return isbns
 
 

@@ -77,13 +77,16 @@ class UnitTestOfUS(BaseTest):
             user.hash_password('test')
             UsersModel.save_to_db(user)
 
-            book = BooksModel(1, 1, 1.0, "titulo")
+            book = BooksModel(1, 1, 1.0, "book1")
+            book.save_to_db()
+            book = BooksModel(2, 2, 13.1, "book2")
             book.save_to_db()
 
-            books = [{'isbn': 1, 'price': 10, 'quantity': 1}, {'isbn': 2, 'price': 2, 'quantity': 2}]
-
+            isbns = [1, 2]
+            quantities = [1, 1]
             dataTransaction = {
-                "books": books,
+                "isbns": isbns,
+                'quantities': quantities,
                 "email": user.email,
             }
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
@@ -93,7 +96,7 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            self.assertEqual(json.loads(res.data), TransactionsModel.query.first().json())  # json.loads(res.data))
+            self.assertEqual("Isbns of books in transaction with id=1 are [1, 2]", TransactionsModel.find_isbns_by_id(1))  # json.loads(res.data))
 
     # TEST TASK 3
     def test_order_mail(self):
