@@ -29,8 +29,8 @@ class ReviewsModel(db.Model):
         return atr
 
     def save_to_db(self):
-        if ReviewsModel.query.get(self.isbn, self.user_id) is not None:
-            raise Exception("Given user already posted a review. Did you meant to update it?")
+        if ReviewsModel.find_by_isbn_user_id(self.isbn, self.user_id) is not None:
+            raise Exception(f"Given user already posted a review. Did you meant to update it?")
         if UsersModel.find_by_id(self.user_id) is None:
             raise Exception("User with given id doesn't exist")
         if BooksModel.find_by_isbn(self.isbn) is None:
@@ -44,7 +44,7 @@ class ReviewsModel(db.Model):
             raise Exception("User with given id doesn't exist")
         if BooksModel.find_by_isbn(self.isbn) is None:
             raise Exception("Book with given isbn doesn't exist")
-        if ReviewsModel.query.get(self.isbn, self.user_id) is None:
+        if ReviewsModel.find_by_isbn_user_id(self.isbn, self.user_id) is None:
             raise Exception("Given user has no posted yet a review with given isbn.")
         ScoresModel.remove_review(self)
         db.session.delete(self)
@@ -52,7 +52,7 @@ class ReviewsModel(db.Model):
 
     @classmethod
     def find_by_isbn_user_id(cls, isbn, user_id):
-        return cls.query.get((isbn, user_id))
+        return cls.query.filter_by(isbn=isbn, user_id=user_id).first()
 
     @classmethod
     def find_by_isbn(cls, isbn):
@@ -68,7 +68,7 @@ class ScoresModel(db.Model):
 
     isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
     n_reviews = db.Column(db.Integer(), nullable=False)
-    score = db.Column(db.Integer(), nullable=False)
+    score = db.Column(db.Float(), nullable=False)
 
     def __init__(self, isbn):
         self.isbn = isbn
@@ -90,7 +90,7 @@ class ScoresModel(db.Model):
 
     @classmethod
     def find_by_isbn(cls, isbn):
-        return cls.query.get(isbn)
+        return cls.query.filter_by(isbn=isbn).first()
 
     @classmethod
     def add_review(cls, review: ReviewsModel):
@@ -106,11 +106,9 @@ class ScoresModel(db.Model):
         score = cls.find_by_isbn(review.isbn)
         if score is None:
             raise Exception("No review to remove.")
-        elif score.n_reviews == 0:
-            raise Exception("No review to remove.")
         elif score.n_reviews == 1:
-            score.score = 0
+            score.delete_from_db()
         else:
             score.score = (score.n_reviews * score.score - review.score) / (score.n_reviews - 1)
-        score.n_reviews -= 1
-        score.save_to_db()
+            score.n_reviews -= 1
+            score.save_to_db()
