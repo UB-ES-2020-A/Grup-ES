@@ -1,34 +1,18 @@
 <template>
 <div id="app">
- <div>
-  <b-navbar toggleable="lg" type="dark" variant="info">
-   <b-navbar-brand> NavBar</b-navbar-brand>
-   <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
-   <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-   <li class="nav-item"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
-   <li class="nav-item"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon>
-</a></li>
-   <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button>
-</a></li>
-<li class="nav-item" v-if= "session_boolean === true">
-    <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
-    <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
-    <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
-    </b-nav-item-dropdown>
-</li>
-    </ul>
-   </b-navbar-nav>
-  </b-navbar>
- </div>
+<navbar @changeShowState="show = !show"/>
 <br>
-
 <b-container>
   <b-row>
     <b-col sm="6" md="4" lg="4" xl="4">
     <h4> Llibres en stock : {{ booksquery.books.length }} </h4>
     </b-col>
+    <b-col sm="3" md="2" lg="2" xl="2" align-v="left">
+      <b-button v-b-modal.addboks variant="success">Afegir llibre</b-button>
+    </b-col>
   </b-row>
 </b-container>
+<addbooks/>
 <br>
 <b-container>
 <b-row align-v="center">
@@ -60,9 +44,16 @@
 
 <script>
 import axios from 'axios'
+import navbar from './subcomponents/navbar'
+import addbooks from './subcomponents/AddBooks'
 export default {
+  components: {
+    navbar,
+    addbooks
+  },
   data () {
     return {
+      showadd: false,
       booksquery: [],
       search: ''
     }
