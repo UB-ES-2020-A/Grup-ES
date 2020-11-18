@@ -13,6 +13,8 @@ class ReviewsModel(db.Model):
     review = db.Column(db.String())
 
     def __init__(self, isbn, user_id, score, review=None):
+        if score < 1 or score > 5:
+            raise ValueError("Invalid value for score attribute: Value must be an integer from 1 to 5, both included.")
         self.isbn = isbn
         self.user_id = user_id
         self.score = score
