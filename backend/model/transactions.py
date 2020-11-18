@@ -10,15 +10,17 @@ class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
+    isbn = db.Column(db.BigInteger(), nullable=False)
     price = db.Column(db.Float, nullable=False)
     id_user = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
-    books = db.relationship('BooksModel', backref=db.backref('books', lazy='dynamic'))
 
-    def __init__(self, price, id_user, date=None):
-        if price is None:
-            self.price = 0
+    def __init__(self, isbn, price, id_user, quantity, date=None):
+        self.isbn = isbn
+        self.price = float(price)
         self.id_user = id_user
+        self.quantity = quantity
         if date is None:
             self.date = dt.datetime.now()
         else:
@@ -27,9 +29,8 @@ class TransactionsModel(db.Model):
     def json(self):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
-        if self.books is not None:
-            books = [book.json() for book in self.books]
-        atr['books'] = books
+        atr['book'] = BooksModel.find_by_isbn(self.isbn).json()
+        del atr['isbn']
         del atr["_sa_instance_state"]
         atr['date'] = self.date.strftime('%d-%m-%Y')
         return atr

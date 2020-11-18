@@ -29,7 +29,6 @@ class UsersModel(db.Model):
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
     library = db.relationship('LibraryModel', backref='library', lazy=True)
-    transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
