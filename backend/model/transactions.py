@@ -68,10 +68,10 @@ class TransactionsModel(db.Model):
         return cls.query.filter_by(id_transaction=id_transaction).all()
 
     @classmethod
-    def find_isbn_by_id(cls, id_transaction):
+    def find_isbns_by_id(cls, id_transaction):
         isbns = []
         for transaction in cls.find_by_id(id_transaction):
             isbns.append(transaction.isbn)
-        return isbns
+        return 'ISBNs of books in transaction with id = ' + str(id_transaction) + ' are ' + str(isbns)
 
 

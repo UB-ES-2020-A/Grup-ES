@@ -18,26 +18,29 @@ class UnitTestOfUS(BaseTest):
             UsersModel.save_to_db(to_add)
             id_user = UsersModel.find_by_email(to_add.email).id
 
-            books = {'isbn': 1, 'price': 10, 'quantity': 1}, {'isbn': 2, 'price': 2, 'quantity': 2}
-            for book in books:
-                isbn = book['isbn']
-                price = book['price']
-                quantity = book['quantity']
-                entry = TransactionsModel(isbn, price, id_user, quantity, None)
-                entry.save_to_db()
-            self.assertEqual(2, len(TransactionsModel.query.all()))
-            self.assertEqual(2, len(TransactionsModel.find_by_id(0)))
+            book = BooksModel(1, 1, 1.0, "book1")
+            book.save_to_db()
+
+            entry = TransactionsModel(book.isbn, book.precio, id_user, 1, None)
+            entry.save_to_db()
+            self.assertEqual(1, len(TransactionsModel.query.all()))
+            self.assertEqual(1, len(TransactionsModel.find_by_id(1)))
 
     def test_model_delete(self):
         with self.app.app_context():
             to_add = UsersModel('test', 'bookshelterES@gmail.com')
             to_add.hash_password('password')
             UsersModel.save_to_db(to_add)
+            id_user = UsersModel.find_by_email(to_add.email).id
 
-            entry = TransactionsModel(1, 2.2, 1, 1, None)
+            book = BooksModel(1, 1, 1.0, "book1")
+            book.save_to_db()
+
+            entry = TransactionsModel(book.isbn, book.precio, id_user, 1, None)
             entry.save_to_db()
-            entry.delete_from_db()
+            self.assertEqual(1, len(TransactionsModel.query.all()))
 
+            entry.delete_from_db()
             self.assertEqual(0, len(TransactionsModel.query.all()))
 
     def test_model_update(self):
@@ -55,7 +58,7 @@ class UnitTestOfUS(BaseTest):
             data = {"id_transaction": 10}  # id = 10
             entry.update_from_db(data)
 
-            self.assertEqual(entry.json(), TransactionsModel.find_by_id(data["id_transaction"]).json())
+            self.assertEqual(entry.json(), TransactionsModel.find_by_id(data["id_transaction"])[0].json())
 
     def test_model_invalid_update(self):
         with self.app.app_context():
@@ -96,7 +99,7 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            self.assertEqual("Isbns of books in transaction with id=1 are [1, 2]", TransactionsModel.find_isbns_by_id(1))  # json.loads(res.data))
+            self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]", TransactionsModel.find_isbns_by_id(1))
 
     # TEST TASK 3
     def test_order_mail(self):
