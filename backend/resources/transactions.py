@@ -48,7 +48,6 @@ class Transactions(Resource):
             if book is None:
                 return {"message": "Book with ['isbn': " + isbn + "] Not Found"}, 404
             dataTransaction['quantity'] = data['quantities'][__it]
-            dataTransaction['price'] = 10
             dataTransaction['isbn'] = isbn
             dataTransaction['date'] = None
             try:

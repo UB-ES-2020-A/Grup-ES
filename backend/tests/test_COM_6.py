@@ -18,10 +18,10 @@ class UnitTestOfUS(BaseTest):
             UsersModel.save_to_db(to_add)
             id_user = UsersModel.find_by_email(to_add.email).id
 
-            book = BooksModel(1, 1, 1.0, "book1")
+            book = BooksModel(1, 1, 1, "book1")
             book.save_to_db()
 
-            entry = TransactionsModel(book.isbn, book.precio, id_user, 1, None)
+            entry = TransactionsModel(book.isbn, id_user, 1, None)
             entry.save_to_db()
             self.assertEqual(1, len(TransactionsModel.query.all()))
             self.assertEqual(1, len(TransactionsModel.find_by_id(1)))
@@ -33,10 +33,10 @@ class UnitTestOfUS(BaseTest):
             UsersModel.save_to_db(to_add)
             id_user = UsersModel.find_by_email(to_add.email).id
 
-            book = BooksModel(1, 1, 1.0, "book1")
+            book = BooksModel(1, 1, 1, "book1")
             book.save_to_db()
 
-            entry = TransactionsModel(book.isbn, book.precio, id_user, 1, None)
+            entry = TransactionsModel(book.isbn, id_user, 1, None)
             entry.save_to_db()
             self.assertEqual(1, len(TransactionsModel.query.all()))
 
@@ -49,10 +49,10 @@ class UnitTestOfUS(BaseTest):
             to_add.hash_password('password')
             to_add.save_to_db()
 
-            book = BooksModel(1, 1, 1.0, "titulo")
+            book = BooksModel(1, 1, 1, "titulo")
             book.save_to_db()
 
-            entry = TransactionsModel(book.isbn, 2, to_add.id, 1, None)  # id_transaction = 1 -> es automatica
+            entry = TransactionsModel(book.isbn, to_add.id, 1, None)  # id_transaction = 1 -> es automatica
             entry.save_to_db()
 
             data = {"id_transaction": 10}  # id = 10
@@ -66,7 +66,7 @@ class UnitTestOfUS(BaseTest):
             to_add.hash_password('password')
             UsersModel.save_to_db(to_add)
 
-            entry = TransactionsModel(1, 2.2, 1, 1, None)
+            entry = TransactionsModel(1, 1, 1, None)
             entry.save_to_db()
 
             with self.assertRaises(Exception):
@@ -141,20 +141,13 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(1, 1, 1.0, "titulo")
             book.save_to_db()
 
-            dataTransaction = {
-                "isbn": book.isbn,
-                "price": 7.9,
-                "email": user.email,
-                "quantity": 1
-            }
-
             res = self.client.post("/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
-            res = self.client.post("/transaction", data=dataTransaction, headers={
-                "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
-            })
-            self.assertEqual(201, res.status_code)
+            transaction = TransactionsModel(1, 1, 2, None)
+            transaction.save_to_db()
+            transaction = TransactionsModel(1, 1, 2, None)
+            transaction.save_to_db()
 
             res = self.client.get('/transactions/' + user.email, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
@@ -162,7 +155,7 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
             self.assertEqual(len(json.loads(res.data)), 1)
 
-            self.assertEqual([TransactionsModel.find_by_id(1).json()], json.loads(res.data)["transactions"])
+            self.assertEqual(1, len(json.loads(res.data)["transactions"]))
 
     def test_get_transactions_without_login(self):
         with self.app.app_context():
@@ -174,10 +167,6 @@ class UnitTestOfUS(BaseTest):
             book.save_to_db()
 
             dataTransaction = {
-                "isbn": book.isbn,
-                "price": 7.9,
-                "email": user.email,
-                "quantity": 1
             }
 
             res = self.client.post("/transaction", data=dataTransaction)

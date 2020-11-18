@@ -17,10 +17,11 @@ class TransactionsModel(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, isbn, price, id_user, quantity, date=None):
+    def __init__(self, isbn, id_user, quantity, date=None):
         self.id_transaction = self.it_transaction
         self.isbn = isbn
-        self.price = float(price)
+        book = BooksModel.find_by_isbn(isbn)
+        self.price = book.precio
         self.id_user = id_user
         self.quantity = quantity
         if date is None:
@@ -53,14 +54,6 @@ class TransactionsModel(db.Model):
                 else:
                     raise Exception
         db.session.commit()
-
-    def send_confirmation_mail(self):
-        recipient = UsersModel.find_by_id(self.id_user).email
-        quantity = str(self.quantity)
-        isbn = str(self.isbn)
-        subject = 'Order confirmation'
-        message = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
-        send_email(recipient, subject, message)
 
     @classmethod
     def find_by_id(cls, id_transaction):
