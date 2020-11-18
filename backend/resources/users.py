@@ -6,7 +6,7 @@ from model.users import UsersModel, auth
 def parse_user(required_username=True):
     parser = reqparse.RequestParser(bundle_errors=True)
 
-    parser.add_argument('username',  required=required_username, type=str, help="User not valid: 'username' not provided")
+    parser.add_argument('username', required=required_username, type=str, help="User not valid: 'username' not provided")
     parser.add_argument('email', required=True, type=str, help="User not valid: 'email' not provided")
     parser.add_argument('password', required=True, type=str, help="User not valid: 'password' not provided")
 
@@ -39,6 +39,19 @@ class Users(Resource):
             return {"message": str(e)}, 500
 
         return user.json(), 201
+
+    @auth.login_required
+    def put(self, email):
+        user = UsersModel.find_by_email(email)
+        data = parse_user(False)
+        if not user.check_password(data['password']):
+            return "Contrasenya incorrecta, no s'han guardat els canvis", 401
+        try:
+            user.update_from_db(data)
+            return {"user": user.json()}, 200
+        except Exception as e:
+            print(str(e))
+            return {"message": "Error a la hora d'editar un usuari a base de dades"}, 500
 
     @auth.login_required
     def delete(self, email):

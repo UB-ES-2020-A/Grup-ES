@@ -55,8 +55,14 @@ class UsersModel(db.Model):
         self.state = False
         db.session.commit()
 
-    def update_from_db(self, password):
+    def update_password_from_db(self, password):
         self.hash_password(password)
+        db.session.commit()
+
+    def update_from_db(self, data):
+        for attr, newValue in data.items():
+            if newValue is not None:
+                setattr(self, attr, newValue)
         db.session.commit()
 
     @classmethod
