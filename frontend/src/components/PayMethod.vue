@@ -2,7 +2,7 @@
 <div id="app">
  <navbar @changeShowState="show_c = !show_c"/>
 <!-- body -->
-<div style="display: flex; min-height: 100vh; flex-direction: column;">
+<div class="body">
 <b-container v-if= "show_c === true">
   <div class="row d-flex justify-content-center">
   <div class="col-lg">

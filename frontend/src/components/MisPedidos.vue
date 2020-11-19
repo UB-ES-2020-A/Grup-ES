@@ -2,7 +2,7 @@
 <div id="app">
  <navbar @changeShowState="show = !show"/>
 <!-- body -->
-<div style="display: flex; min-height: 100vh; flex-direction: column;">
+<div class="body">
   <div v-if="show === true">
     <div v-if= "session_boolean === true">
       <br>

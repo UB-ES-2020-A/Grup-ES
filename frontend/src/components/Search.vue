@@ -1,7 +1,7 @@
 <template>
 <div id="app">
  <navbar @changeShowState="show = !show"/>
-<div style="display: flex; min-height: 100vh; flex-direction: column;">
+<div class="body">
 <div class="container" v-if= "show === true">
   <br>
   <br>

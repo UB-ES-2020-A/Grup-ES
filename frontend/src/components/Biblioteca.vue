@@ -2,7 +2,7 @@
 <div id="app">
 <navbar @changeShowState="show = !show"/>
 <!--body-->
-<div style="display: flex; min-height: 100vh; flex-direction: column;">
+<div class="body">
 <div v-if= "show === true">
   <b-container fluid="sm" style="margin-left:100px; margin-right:50px">
   <b-container fluid style="height: 100px; background: #808080;" >

@@ -21,7 +21,7 @@
   </b-navbar>
  </div>
 <br>
-<div style="display: flex; min-height: 100vh; flex-direction: column;">
+<div class="body">
 <b-container>
   <b-row>
     <b-col sm="6" md="4" lg="4" xl="4">

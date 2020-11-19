@@ -4,7 +4,7 @@
 <navbar @changeShowState="show = !show"/>
 <br>
 <br>
-<b-container style="display:flex; flex-direction: column">
+<div class="body">
 <b-container v-if= "show === true">
  <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
 </b-container>
@@ -41,7 +41,7 @@
       </b-row>
   </div>
 <!-- footer -->
-</b-container>
+</div>
 <br>
 <br>
 <foot/>
