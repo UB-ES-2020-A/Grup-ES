@@ -1,7 +1,7 @@
 <template>
 <div>
   <!-- Footer -->
-  <footer class="page-footer font-small pt-4" style="background-color:black; bottom:0; position:sticky; width:100%;">
+  <footer class="page-footer font-small pt-4" style="background-color:#e0dede; bottom:0; position:sticky; width:100%;">
     <b-container>
     <b-row align-h="center">
       <b-col cols="3">
@@ -11,12 +11,17 @@
           sed eiusmod tempor incidunt ut labore et dolore magna aliqua.</p>
         </b-container>
       </b-col>
-      <b-col cols="3">
+      <b-col cols="2">
         <b-container style="margin-left:20px">
-        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Link</h5>
+        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Info</h5>
         <b-row>
         <b-link>About</b-link>
         </b-row>
+        </b-container>
+      </b-col>
+      <b-col cols="2">
+        <b-container style="margin-left:20px">
+        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Terms</h5>
         <b-row>
         <b-link>Terms of use</b-link>
         </b-row>
@@ -42,6 +47,8 @@
         </b-container>
       </b-col>
     </b-row>
+    <hr>
+    <p> © 2020 Bookshelter, Inc. </p>
     </b-container>
     <br>
     <br>
