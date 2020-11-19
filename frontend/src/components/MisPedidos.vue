@@ -2,6 +2,7 @@
 <div id="app">
  <navbar @changeShowState="show = !show"/>
 <!-- body -->
+<div style="display: flex; min-height: 100vh; flex-direction: column;">
   <div v-if="show === true">
     <div v-if= "session_boolean === true">
       <br>
@@ -47,19 +48,20 @@
 <!-- footer -->
 <br>
 <br>
-<footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-</footer>
+</div>
+<foot/>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
+import foot from './subcomponents/foot'
 
 export default {
   components: {
-    navbar
+    navbar,
+    foot
   },
   data () {
     return {

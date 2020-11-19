@@ -1,0 +1,62 @@
+<template>
+<div>
+  <!-- Footer -->
+  <footer class="page-footer font-small pt-4" style="background-color:black; bottom:0; position:sticky; width:100%;">
+    <b-container>
+    <b-row align-h="center">
+      <b-col cols="3">
+        <b-container>
+        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Bookshelter</h5>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisici elit,
+          sed eiusmod tempor incidunt ut labore et dolore magna aliqua.</p>
+        </b-container>
+      </b-col>
+      <b-col cols="3">
+        <b-container style="margin-left:20px">
+        <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Link</h5>
+        <b-row>
+        <b-link>About</b-link>
+        </b-row>
+        <b-row>
+        <b-link>Terms of use</b-link>
+        </b-row>
+        <b-row>
+        <b-link>Privacy Policy</b-link>
+        </b-row>
+        </b-container>
+      </b-col>
+      <b-col cols="4">
+        <b-container>
+        <b-row>
+         <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Location</h5>
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+        </b-row>
+        <b-row>
+          <b-icon icon="envelope"></b-icon>
+          <p style="margin-left:5px">bookshelter@info.com</p>
+        </b-row>
+        <b-row>
+          <b-icon icon="telephone"></b-icon>
+          <p style="margin-left:5px">(+34) 999 777 666</p>
+        </b-row>
+        </b-container>
+      </b-col>
+    </b-row>
+    </b-container>
+    <br>
+    <br>
+  </footer>
+  <!-- Footer -->
+</div>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+    }
+  },
+  methods: {
+  }
+}
+</script>

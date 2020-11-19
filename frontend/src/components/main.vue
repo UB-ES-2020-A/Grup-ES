@@ -4,6 +4,7 @@
 <navbar @changeShowState="show = !show"/>
 <br>
 <br>
+<b-container style="display:flex; flex-direction: column">
 <b-container v-if= "show === true">
  <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
 </b-container>
@@ -40,21 +41,22 @@
       </b-row>
   </div>
 <!-- footer -->
+</b-container>
 <br>
 <br>
-<footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-</footer>
+<foot/>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
+import foot from './subcomponents/foot'
 
 export default {
   components: {
-    navbar
+    navbar,
+    foot
   },
   data () {
     return {

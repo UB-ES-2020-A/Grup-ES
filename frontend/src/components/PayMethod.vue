@@ -2,6 +2,7 @@
 <div id="app">
  <navbar @changeShowState="show_c = !show_c"/>
 <!-- body -->
+<div style="display: flex; min-height: 100vh; flex-direction: column;">
 <b-container v-if= "show_c === true">
   <div class="row d-flex justify-content-center">
   <div class="col-lg">
@@ -57,19 +58,20 @@
 <!-- footer -->
 <br>
 <br>
-<footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-</footer>
+</div>
+<foot/>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
+import foot from './subcomponents/foot'
 
 export default {
   components: {
-    navbar
+    navbar,
+    foot
   },
   data () {
     return {

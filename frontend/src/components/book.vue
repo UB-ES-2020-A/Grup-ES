@@ -1,6 +1,7 @@
 <template>
   <div id="app">
    <navbar @changeShowState="show = !show"/>
+  <div style="display: flex; min-height: 100vh; flex-direction: column;">
    <div v-if="show === true">
    <br>
    <br>
@@ -39,20 +40,20 @@
   <br>
   <br>
   </div>
-
-  <footer style="height:auto; background-color:black; bottom:0;">
-    <h5 style="color:white; padding:20px; margin:0; text-align:center;">Contact, bla, bla</h5>
-  </footer>
+  </div>
+  <foot/>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
+import foot from './subcomponents/foot'
 
 export default {
   components: {
-    navbar
+    navbar,
+    foot
   },
   data () {
     return {
