@@ -83,3 +83,16 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(401, res.status_code)
             self.assertEqual(json.loads(res.data)["message"], "Contrasenya incorrecta, no s'han guardat els canvis")
+
+    def test_modify_without_login(self):
+        with self.app.app_context():
+            user = UsersModel("test", "test@gmail.com")
+            user.hash_password("test")
+            user.save_to_db()
+
+            data_new = {
+                'username': 'asdf',
+                'password': 'wrong'
+            }
+            res = self.client.put(f"/user/{user.email}", data=data_new)
+            self.assertEqual(401, res.status_code)
