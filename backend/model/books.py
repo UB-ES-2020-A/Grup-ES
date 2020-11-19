@@ -17,6 +17,9 @@ class BooksModel(db.Model):
     url_imagen = db.Column(db.String())
     fecha_de_publicacion = db.Column(db.DateTime(), nullable=False)
 
+    reviews = db.relationship('ReviewsModel', backref='book', lazy=True)
+    score = db.relationship('ScoresModel', backref='book', lazy=True)
+
     def __init__(self, isbn, stock, precio, titulo, autor=None, editorial=None, sinopsis=None, url_imagen=None, fecha_de_publicacion=None):
         self.isbn = isbn
         self.vendible = True
