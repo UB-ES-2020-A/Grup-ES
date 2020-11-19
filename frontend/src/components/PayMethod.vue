@@ -44,7 +44,6 @@
       </b-col>
     </b-row>
     <br>
-    <h5>Total a pagar: {{ calculate_total_price() }}$</h5>
     <b-col>
       <b-button size="lg" variant="primary" style="margin-top: 15px" @click="submitCard()">Submit</b-button>
     </b-col>
