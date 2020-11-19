@@ -13,8 +13,6 @@ class ReviewsModel(db.Model):
     review = db.Column(db.String())
 
     def __init__(self, isbn, user_id, score, review=None):
-        if score < 1 or score > 5:
-            raise ValueError("Invalid value for score attribute: Value must be an integer from 1 to 5, both included.")
         self.isbn = isbn
         self.user_id = user_id
         self.score = score
@@ -29,6 +27,8 @@ class ReviewsModel(db.Model):
         return atr
 
     def save_to_db(self):
+        if self.score < 1 or self.score > 5:
+            raise ValueError("Invalid value for score attribute: Value must be an integer from 1 to 5, both included.")
         if ReviewsModel.find_by_isbn_user_id(self.isbn, self.user_id) is not None:
             raise Exception(f"Given user already posted a review. Did you meant to update it?")
         if UsersModel.find_by_id(self.user_id) is None:

@@ -74,11 +74,11 @@ class UnitTestOfUS(BaseTest):
             user.save_to_db()
 
             with self.assertRaises(ValueError):
-                ReviewsModel(book.isbn, user.id, 0, "Wow such book should not exist")
+                ReviewsModel(book.isbn, user.id, 0, "Wow such book should not exist").save_to_db()
             with self.assertRaises(ValueError):
-                ReviewsModel(book.isbn, user.id, -5, "Go to hell you BOOK!")
+                ReviewsModel(book.isbn, user.id, -5, "Go to hell you BOOK!").save_to_db()
             with self.assertRaises(ValueError):
-                ReviewsModel(book.isbn, user.id, 10, "This shit is like crack!")
+                ReviewsModel(book.isbn, user.id, 10, "This shit is like crack!").save_to_db()
 
     def test_model_score_add(self):
         with self.app.app_context():
