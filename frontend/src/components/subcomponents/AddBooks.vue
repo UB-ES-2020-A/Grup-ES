@@ -164,7 +164,6 @@ export default {
       const path = 'https://grup-es.herokuapp.com/book'
       axios.post(path, parameters)
         .then((res) => {
-          console.log('BOOK ADDED')
           alert('Book ADDED correctly')
           this.clearModal()
         })

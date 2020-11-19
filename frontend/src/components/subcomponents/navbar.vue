@@ -73,7 +73,6 @@
             <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
             <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
             <div class="dropdown-divider"></div>
-            <b-dropdown-item @click="goAddBook()">Añadir libro</b-dropdown-item>
             <b-dropdown-item @click="goModBook()">Modificar libro</b-dropdown-item>
             <b-dropdown-item @click="goDelBook()">Eliminar libro</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -271,9 +270,6 @@ export default {
     },
     goPedidos () {
       this.$router.push({path: '/mispedidos'})
-    },
-    goAddBook () {
-      this.$router.push({path: '/add'})
     },
     goDelBook () {
       this.$router.push({path: '/delete'})
