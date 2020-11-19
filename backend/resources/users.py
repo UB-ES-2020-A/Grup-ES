@@ -57,7 +57,9 @@ class Users(Resource):
         data = parse_modify_user()
         password = data['password']
         if not user.check_password(password):
-            return {'message': "Contrasenya incorrecta, no s'han guardat els canvis"}, 401
+            return {'message': "Contrasenya incorrecta, torna a provar"}, 401
+        if UsersModel.find_by_email(data['email']) is not None:
+            return {"message": f"An user with same email {data['email']} already exists"}, 409
         try:
             data['password'] = data['new_password']
             user.update_from_db(data)

@@ -46,6 +46,28 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
             self.assertEqual((json.loads(res.data)["user"])['email'], data_new['email'])
 
+    def test_modify_email_already_used(self):
+        with self.app.app_context():
+            user = UsersModel("test", "test@gmail.com")
+            user.hash_password("test")
+            user.save_to_db()
+            user2 = UsersModel("patata", "patata@gmail.com")
+            user2.hash_password("patata")
+            user2.save_to_db()
+
+            res = self.client.post("/login", data={"email": user.email, "password": "test"})
+            token = json.loads(res.data)["token"]
+
+            data_new = {
+                'email': 'patata@gmail.com',
+                'password': 'test'
+            }
+            res = self.client.put(f"/user/{user.email}", data=data_new, headers={
+                "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(409, res.status_code)
+            self.assertEqual(json.loads(res.data)["message"], 'An user with same email ' + data_new['email'] + ' already exists')
+
     def test_modify_password(self):
         with self.app.app_context():
             user = UsersModel("test", "test@gmail.com")
@@ -82,7 +104,7 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(401, res.status_code)
-            self.assertEqual(json.loads(res.data)["message"], "Contrasenya incorrecta, no s'han guardat els canvis")
+            self.assertEqual(json.loads(res.data)["message"], "Contrasenya incorrecta, torna a provar")
 
     def test_modify_without_login(self):
         with self.app.app_context():
