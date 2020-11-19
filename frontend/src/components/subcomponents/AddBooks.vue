@@ -8,7 +8,6 @@
        <b-row>
        <b-col>
         <b-form-group
-          :state="isbnState"
           label="ISBN"
           label-for="isbn-input"
           invalid-feedback="ISBN invalid, use a 13 digit number"
@@ -18,7 +17,6 @@
           v-model="isbn"
           :state="isbnState"
           type="number"
-          required
         ></b-form-input>
       </b-form-group>
       <b-form-group
@@ -70,6 +68,7 @@
       id="price-input"
       :state="precioState"
       v-model="precio"
+      type = "number"
     ></b-form-input>
   </b-form-group>
   <b-form-group
@@ -80,6 +79,7 @@
     id="year-input"
     v-model="date"
     type="date"
+    format= 'yyyy-mm-dd'
   ></b-form-input>
   </b-form-group>
   <b-form-group
@@ -116,9 +116,9 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      isbn: '',
-      stock: '',
-      precio: '',
+      isbn: null,
+      stock: null,
+      precio: null,
       titulo: '',
       author: '',
       editorial: '',
@@ -147,12 +147,12 @@ export default {
       axios.post(path, parameters)
         .then((res) => {
           console.log('BOOK ADDED')
-          this.initForm()
           alert('Book ADDED correctly')
+          this.clearModal()
         })
         .catch((error) => {
-          this.initForm()
           console.error(error)
+          this.clearModal()
         })
     },
     clearModal () {
@@ -162,7 +162,7 @@ export default {
       this.titulo = ''
       this.autor = ''
       this.editorial = ''
-      this.date = ''
+      this.date = null
       this.url = ''
       this.sinopsis = ''
       this.isbnState = null
@@ -176,34 +176,30 @@ export default {
       return 'https://placehold.it/240x340/'
     },
     checkOk () {
-      if (this.isbn.length === 13 && Number.isInteger(this.isbn)) {
+      if (this.isbn.length === 13) {
         this.isbnState = true
       } else {
         this.isbnState = false
-      }
-      if (Number.isInteger(this.stock)) {
-        this.stockState = true
-      } else {
-        this.stockState = false
       }
       if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1) {
         this.precioState = true
       } else {
         this.precioState = false
       }
-      if (this.isbnState && this.stockState && this.precioState && this.titulo.length > 0 &&
+      if (this.isbnState && this.precioState && this.titulo.length > 0 &&
         this.autor.length > 0 && this.editorial.length > 0 &&
         this.precio.length > 0 && this.stock.length > 0) {
         this.$nextTick(() => {
+          this.addBook()
           this.$bvModal.hide('addboks')
         })
-        this.clearModal()
         return true
       }
       return false
     },
     handleOk (bvModalEvt) {
       bvModalEvt.preventDefault()
+      console.log(this.date)
       this.checkOk()
     }
   }
