@@ -40,12 +40,6 @@ class ReviewsModel(db.Model):
         db.session.commit()
 
     def delete_from_db(self):
-        if UsersModel.find_by_id(self.user_id) is None:
-            raise Exception("User with given id doesn't exist")
-        if BooksModel.find_by_isbn(self.isbn) is None:
-            raise Exception("Book with given isbn doesn't exist")
-        if ReviewsModel.find_by_isbn_user_id(self.isbn, self.user_id) is None:
-            raise Exception("Given user has no posted yet a review with given isbn.")
         ScoresModel.remove_review(self)
         db.session.delete(self)
         db.session.commit()
