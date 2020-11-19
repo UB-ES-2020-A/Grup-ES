@@ -83,7 +83,6 @@ export default new Router({
       path: '/shopstock',
       name: 'Stock',
       component: Stock
-
     }
   ]
 })

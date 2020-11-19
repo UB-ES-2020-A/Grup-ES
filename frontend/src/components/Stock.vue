@@ -2,6 +2,7 @@
 <div id="app">
 <navbar @changeShowState="show = !show"/>
 <br>
+<div class="body">
 <b-container>
   <b-row>
     <b-col sm="6" md="4" lg="4" xl="4">
@@ -36,9 +37,8 @@
 <!-- footer -->
 <br>
 <br>
-<footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-</footer>
+</div>
+<foot/>
 </div>
 </template>
 
@@ -46,10 +46,13 @@
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
 import addbooks from './subcomponents/AddBooks'
+import foot from './subcomponents/foot'
+
 export default {
   components: {
     navbar,
-    addbooks
+    addbooks,
+    foot
   },
   data () {
     return {

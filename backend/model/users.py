@@ -28,7 +28,9 @@ class UsersModel(db.Model):
     role = db.Column(db.Enum(Roles, name='roles_types'), nullable=False)
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
+
     library = db.relationship('LibraryModel', backref='library', lazy=True)
+    reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
