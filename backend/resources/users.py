@@ -13,6 +13,7 @@ def parse_user(required_username=True):
 
     return parser.parse_args()
 
+
 def parse_modify_user():
     parser = reqparse.RequestParser(bundle_errors=True)
 
@@ -54,18 +55,22 @@ class Users(Resource):
     @auth.login_required
     def put(self, email):
         user = UsersModel.find_by_email(email)
+        if not user:
+            return {"message": f"User with ['email':{email}] not found"}, 404
         data = parse_modify_user()
         password = data['password']
         if not user.check_password(password):
             return {'message': "Contrasenya incorrecta, torna a provar"}, 401
         if UsersModel.find_by_email(data['email']) is not None:
             return {"message": f"An user with same email {data['email']} already exists"}, 409
+        if UsersModel.find_by_username(data['username']) is not None:
+            return {"message": f"An user with same username {data['username']} already exists"}, 409
         try:
             data['password'] = data['new_password']
+            data['id'] = user.id
             user.update_from_db(data)
             return {"user": user.json()}, 200
         except Exception as e:
-            print(str(e))
             return {"message": "Error a la hora d'editar un usuari a base de dades"}, 500
 
     @auth.login_required

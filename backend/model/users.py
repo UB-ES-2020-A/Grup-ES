@@ -62,6 +62,11 @@ class UsersModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
+        if 0 < self.query.filter_by(username=self.username and id != data['id'], state=True).count():
+            raise Exception("Username already in use")
+        elif 0 < self.query.filter_by(email=self.email and id != data['id'], state=True).count():
+            raise Exception("Email already in use")
+
         for attr, newValue in data.items():
             if newValue is not None:
                 setattr(self, attr, newValue)
