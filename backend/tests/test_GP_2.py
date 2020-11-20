@@ -42,6 +42,23 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
             self.assertEqual((json.loads(res.data)["user"])['email'], data_new['email'])
 
+
+    def test_modify_username_already_used(self):
+        with self.app.app_context():
+            self.basic_setup()
+            user2 = UsersModel("patata", "patata@gmail.com")
+            user2.hash_password("patata")
+            user2.save_to_db()
+
+            data_new = {
+                'username': user2.username,
+                'password': 'test'
+            }
+            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(409, res.status_code)
+
     def test_modify_email_already_used(self):
         with self.app.app_context():
             self.basic_setup()
