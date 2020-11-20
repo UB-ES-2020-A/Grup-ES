@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import DeleteBooks from '@/components/DeleteBooks.vue'
 import main from '@/components/main.vue'
 import book from '@/components/book.vue'
-import ModifyBooks from '@/components/ModifyBooks.vue'
 import Login from '@/components/Login.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import resetPassword from '@/components/resetPassword.vue'
@@ -30,19 +28,9 @@ export default new Router({
       component: book
     },
     {
-      path: '/modify',
-      name: 'modify_books',
-      component: ModifyBooks
-    },
-    {
       path: '/userregister',
       name: 'RegisterForm',
       component: RegisterForm
-    },
-    {
-      path: '/delete',
-      name: 'delete_books',
-      component: DeleteBooks
     },
     {
       path: '/userlogin',

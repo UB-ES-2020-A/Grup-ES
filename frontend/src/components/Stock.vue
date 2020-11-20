@@ -24,6 +24,8 @@
 </b-container>
 <br>
 <br>
+<modifybooks :isbnNum = "bookIsbn"/>
+<deletebooks :isbnNum = "bookIsbn"/>
 <b-container>
  <b-card-group deck v-for="(book) in filteredList" :key="book.isbn">
   <b-card bg-variant="light" text-variant="dark">
@@ -31,6 +33,8 @@
   <b-card-sub-title class="mb-2">{{ book.autor }}</b-card-sub-title>
   <b-card-text>Stock: {{ book.stock }}</b-card-text>
   <b-card-text>PVP: {{ book.precio }} $</b-card-text>
+  <b-button v-b-modal.modifybooks @click="getisbn(book)" variant="primary">Modificar llibre</b-button>
+  <b-button v-b-modal.deletebooks @click="getisbn(book)" variant="danger">Eliminar llibre</b-button>
 </b-card>
 </b-card-group>
 </b-container>
@@ -46,20 +50,25 @@
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
 import addbooks from './subcomponents/AddBooks'
+import modifybooks from './subcomponents/ModifyBooks'
+import deletebooks from './subcomponents/DeleteBooks'
 import foot from './subcomponents/foot'
 
 export default {
   components: {
     navbar,
     addbooks,
-    foot
+    foot,
+    modifybooks,
+    deletebooks
   },
   data () {
     return {
       showadd: false,
       booksquery: [],
       search: '',
-      show: true
+      show: true,
+      bookIsbn: 0
     }
   },
   created () {
@@ -81,6 +90,9 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    getisbn (book) {
+      this.bookIsbn = book.isbn
     }
   },
   computed: {
