@@ -73,6 +73,7 @@
             <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
             <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
             <div class="dropdown-divider"></div>
+            <b-dropdown-item v-if="user.role === adminRole" @click="goStock()">Stock</b-dropdown-item>
             <b-dropdown-item @click="goModBook()">Modificar libro</b-dropdown-item>
             <b-dropdown-item @click="goDelBook()">Eliminar libro</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -80,7 +81,6 @@
        </ul>
     </b-navbar-nav>
    </b-navbar>
-
    <!-- cart -->
    <b-container v-if= "see_cart === true">
      <br>
@@ -152,7 +152,7 @@ export default {
       user: {},
       session_status: 'Log In',
       session_boolean: false,
-
+      adminRole: 'Admin',
       // Search
       search: '',
       booksquery: [],
@@ -280,7 +280,9 @@ export default {
     onSearch () {
       this.$router.push({ path: '/search', query: {titulo: this.search} })
     },
-
+    goStock () {
+      this.$router.push({path: '/shopstock'})
+    },
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart

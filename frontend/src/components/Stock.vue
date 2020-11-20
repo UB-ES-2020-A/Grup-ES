@@ -2,7 +2,7 @@
 <div id="app">
 <navbar @changeShowState="show = !show"/>
 <br>
-<div class="body">
+<div class="body" v-if="show === true">
 <b-container>
   <b-row>
     <b-col sm="6" md="4" lg="4" xl="4">
@@ -58,7 +58,8 @@ export default {
     return {
       showadd: false,
       booksquery: [],
-      search: ''
+      search: '',
+      show: true
     }
   },
   created () {
