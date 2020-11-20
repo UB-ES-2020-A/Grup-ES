@@ -54,6 +54,10 @@ class LibraryModel(db.Model):
         self.visible = False
         db.session.commit()
 
+    def change_visible_db(self, state):
+        self.visible = state
+        db.session.commit()
+
     def update_from_db(self, data):
         """
         Updates through a dictionary with paris of string of name of attribute and it's value. Following same structure

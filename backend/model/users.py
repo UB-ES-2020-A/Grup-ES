@@ -2,10 +2,11 @@ from flask import g
 from flask_httpauth import HTTPBasicAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from passlib.apps import custom_app_context as pwd_context
-
-from db import db, secret_key
 import datetime as dt
 from enum import Enum
+
+
+from db import db, secret_key
 
 auth = HTTPBasicAuth()
 

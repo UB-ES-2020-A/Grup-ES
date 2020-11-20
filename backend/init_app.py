@@ -6,7 +6,7 @@ from flask_restful import Api
 from resources.books import Books, BooksList, SearchBooks
 from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
-from resources.library import Library
+from resources.library import Library, LibraryVisibility
 from resources.transactions import Transactions, TransactionsUser
 
 from db import db, init_db
@@ -23,6 +23,7 @@ def init_api(api):
     api.add_resource(Login, '/login')
 
     api.add_resource(Library, '/library/<string:email>', '/library')
+    api.add_resource(LibraryVisibility, '/library/<string:email>/<string:isbn>')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
     api.add_resource(TransactionsUser, '/transactions/<string:email>')

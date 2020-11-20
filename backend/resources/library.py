@@ -88,4 +88,50 @@ class Library(Resource):
         return entry.json(), 201
 
 
+class LibraryVisibility(Resource):
 
+    @staticmethod
+    def check_keys(email, isbn):
+        user = UsersModel.find_by_email(email)
+        if user is None:
+            abort(404, message={"message": f"User with ['email': {email}] Not Found"})
+
+        if g.user != user:
+            abort(401, message={"message": "Invalid user to remove, can only be yourself"})
+
+        book = BooksModel.find_by_isbn(isbn)
+        if book is None:
+            abort(404, message={"message": f"Book with ['isbn': {email}] Not Found"})
+
+        library = LibraryModel.find_by_id_and_isbn(user.id, isbn)
+        if library is None:
+            abort(404, message={"message": f"Entry with ['email': {email}, 'isbn': {isbn}] Not Found"})
+        return library
+
+    @auth.login_required
+    def post(self, email, isbn):
+        library = self.check_keys(email, isbn)
+
+        if library.visible is True:
+            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already visible"}, 404
+
+        try:
+            library.change_visible_db(True)
+        except Exception as e:
+            return {"message": str(e)}, 500
+
+        return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made visible"}, 200
+
+    @auth.login_required
+    def delete(self, email, isbn):
+        library = self.check_keys(email, isbn)
+
+        if library.visible is False:
+            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already not visible"}, 404
+
+        try:
+            library.change_visible_db(False)
+        except Exception as e:
+            return {"message": str(e)}, 500
+
+        return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made not visible"}, 200
