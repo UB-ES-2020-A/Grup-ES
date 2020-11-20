@@ -101,7 +101,7 @@ class LibraryVisibility(Resource):
 
         book = BooksModel.find_by_isbn(isbn)
         if book is None:
-            abort(404, message={"message": f"Book with ['isbn': {email}] Not Found"})
+            abort(404, message={"message": f"Book with ['isbn': {isbn}] Not Found"})
 
         library = LibraryModel.find_by_id_and_isbn(user.id, isbn)
         if library is None:
