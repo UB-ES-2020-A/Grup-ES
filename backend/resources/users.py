@@ -6,10 +6,21 @@ from model.users import UsersModel, auth
 def parse_user(required_username=True):
     parser = reqparse.RequestParser(bundle_errors=True)
 
-    parser.add_argument('username',  required=required_username, type=str, help="User not valid: 'username' not provided")
+    parser.add_argument('username', required=required_username, type=str,
+                        help="User not valid: 'username' not provided")
     parser.add_argument('email', required=True, type=str, help="User not valid: 'email' not provided")
     parser.add_argument('password', required=True, type=str, help="User not valid: 'password' not provided")
 
+    return parser.parse_args()
+
+def parse_modify_user():
+    parser = reqparse.RequestParser(bundle_errors=True)
+
+    parser.add_argument('username', required=False, type=str)
+    parser.add_argument('email', required=False, type=str)
+    parser.add_argument('new_password', required=False, type=str)
+    parser.add_argument('password', required=True, type=str, help="You must enter the password in order to modify "
+                                                                  "this field")
     return parser.parse_args()
 
 
@@ -39,6 +50,23 @@ class Users(Resource):
             return {"message": str(e)}, 500
 
         return user.json(), 201
+
+    @auth.login_required
+    def put(self, email):
+        user = UsersModel.find_by_email(email)
+        data = parse_modify_user()
+        password = data['password']
+        if not user.check_password(password):
+            return {'message': "Contrasenya incorrecta, torna a provar"}, 401
+        if UsersModel.find_by_email(data['email']) is not None:
+            return {"message": f"An user with same email {data['email']} already exists"}, 409
+        try:
+            data['password'] = data['new_password']
+            user.update_from_db(data)
+            return {"user": user.json()}, 200
+        except Exception as e:
+            print(str(e))
+            return {"message": "Error a la hora d'editar un usuari a base de dades"}, 500
 
     @auth.login_required
     def delete(self, email):
