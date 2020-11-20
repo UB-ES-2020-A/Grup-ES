@@ -113,7 +113,7 @@ class LibraryVisibility(Resource):
         library = self.check_keys(email, isbn)
 
         if library.visible is True:
-            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already visible"}, 404
+            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already visible"}, 409
 
         try:
             library.change_visible_db(True)
@@ -127,7 +127,7 @@ class LibraryVisibility(Resource):
         library = self.check_keys(email, isbn)
 
         if library.visible is False:
-            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already not visible"}, 404
+            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already not visible"}, 409
 
         try:
             library.change_visible_db(False)
