@@ -23,7 +23,7 @@ def init_api(api):
     api.add_resource(Login, '/login')
 
     api.add_resource(Library, '/library/<string:email>', '/library')
-    api.add_resource(LibraryVisibility, '/library/<string:email>/<string:isbn>')
+    api.add_resource(LibraryVisibility, '/library/<string:email>/visibility/<string:isbn>')
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
     api.add_resource(TransactionsUser, '/transactions/<string:email>')
