@@ -32,7 +32,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/library/{self.user.email}/{self.book.isbn}", headers={
+            res = self.client.delete(f"/library/{self.user.email}/visibility/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -44,7 +44,7 @@ class UnitTestOfUS(BaseTest):
             self.basic_setup()
             self.entry.change_visible_db(False)
 
-            res = self.client.post(f"/library/{self.user.email}/{self.book.isbn}", headers={
+            res = self.client.post(f"/library/{self.user.email}/visibility/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -56,7 +56,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/library/fails/{self.book.isbn}", headers={
+            res = self.client.delete(f"/library/fails/visibility/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -68,7 +68,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/library/{self.user.email}/fails", headers={
+            res = self.client.delete(f"/library/{self.user.email}/visibility/fails", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -87,7 +87,7 @@ class UnitTestOfUS(BaseTest):
             library = self.entry = LibraryModel(self.book.isbn, user2.id, LibraryType.Bought)
             library.save_to_db()
 
-            res = self.client.delete(f"/library/{user2.email}/{self.book.isbn}", headers={
+            res = self.client.delete(f"/library/{user2.email}/visibility/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -99,7 +99,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/library/{self.user.email}/{self.book.isbn}")
+            res = self.client.delete(f"/library/{self.user.email}/visibility/{self.book.isbn}")
 
             self.assertEqual(401, res.status_code)
             # Checks visibility doesn't change
