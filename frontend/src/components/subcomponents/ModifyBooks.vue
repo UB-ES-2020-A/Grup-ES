@@ -164,7 +164,7 @@ export default {
       const path = 'https://grup-es.herokuapp.com/book/' + this.$props.isbnNum
       axios.put(path, parameters)
         .then((res) => {
-          alert('Book ADDED correctly')
+          alert('Book Modified correctly')
           this.clearModal()
         })
         .catch((error) => {
@@ -245,7 +245,7 @@ export default {
     this.sinopsisState && this.dateState && this.urlState) {
         this.$nextTick(() => {
           this.addBook()
-          this.$bvModal.hide('addboks')
+          this.$bvModal.hide('modifybooks')
         })
         return true
       }

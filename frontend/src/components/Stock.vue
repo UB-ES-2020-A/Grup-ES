@@ -33,8 +33,10 @@
   <b-card-sub-title class="mb-2">{{ book.autor }}</b-card-sub-title>
   <b-card-text>Stock: {{ book.stock }}</b-card-text>
   <b-card-text>PVP: {{ book.precio }} $</b-card-text>
-  <b-button v-b-modal.modifybooks @click="getisbn(book)" variant="primary">Modificar llibre</b-button>
-  <b-button v-b-modal.deletebooks @click="getisbn(book)" variant="danger">Eliminar llibre</b-button>
+  <b-card-text>Current Status: {{ bookStatus(book) }} </b-card-text>
+  <b-button :disabled = "book.vendible == false" v-b-modal.modifybooks @click="getisbn(book)" variant="primary">Modificar llibre</b-button>
+  <b-button :disabled = "book.vendible == false" v-b-modal.deletebooks @click="getisbn(book)" variant="danger">Eliminar llibre</b-button>
+  <b-button v-if = "book.vendible == false" variant="success" @click="reactivateBook(book)">Reactivar llibre</b-button>
 </b-card>
 </b-card-group>
 </b-container>
@@ -75,12 +77,6 @@ export default {
     this.get_books()
   },
   methods: {
-    gotobook (isbn) {
-      this.$router.push({ path: '/book', query: {bk: isbn} })
-    },
-    getURL (book) {
-      return book.url_imagen
-    },
     get_books () {
       const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
@@ -93,6 +89,25 @@ export default {
     },
     getisbn (book) {
       this.bookIsbn = book.isbn
+    },
+    bookStatus (book) {
+      if (book.vendible) {
+        return "Disponible a l'stock"
+      }
+      return "No disponible a l'stock"
+    },
+    reactivateBook (book) {
+      const path = 'https://grup-es.herokuapp.com/book/' + book.isbn
+      const parameters = {
+        vendible: true
+      }
+      axios.put(path, parameters)
+        .then((res) => {
+          alert('Book Reactivated correctly')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   },
   computed: {
