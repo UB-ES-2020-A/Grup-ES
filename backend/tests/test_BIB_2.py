@@ -183,10 +183,9 @@ class UnitTestOfUS(BaseTest):
 
             parameters = {
                 'isbn': book.isbn,
-                'email': user.email
             }
 
-            res = self.client.post("/library", data=parameters, headers={
+            res = self.client.post(f"/library/{user.email}", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -198,7 +197,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test2")
             user.save_to_db()
 
-            res = self.client.post(f"/library")
+            res = self.client.post(f"/library/{user.email}")
             self.assertEqual(401, res.status_code)
 
     def test_post_entry_invalid_parameter(self):
