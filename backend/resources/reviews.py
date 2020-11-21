@@ -27,11 +27,11 @@ class Reviews(Resource):
     def post(self):
         data = parse_review()
         user = UsersModel.find_by_email(data['email'])
-        if g.user != user:
-            return {"message": "Invalid user to remove, can only be yourself"}, 401
-
         if not user:
             return {"message": f"User with ['email': {data['email']}] Not Found"}, 404
+
+        if g.user != user:
+            return {"message": "Invalid user to remove, can only be yourself"}, 401
 
         if not BooksModel.find_by_isbn(data['isbn']):
             return {"message": f"Book with ['isbn': {data['isbn']}] Not Found"}, 404
