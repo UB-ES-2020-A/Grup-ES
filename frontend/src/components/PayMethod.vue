@@ -12,14 +12,35 @@
 
     <b-row style="margin-top: 15px">
       <b-col cols="6">
-        <label>Número de Targeta</label>
-        <input id="card_number" class="form-control" type="number"
-        placeholder="#### #### #### ####" required autofocus v-model="card_number">
+        <b-form-group
+        label="Número de Tarjeta"
+        label-for="card_number"
+        :invalid-feedback="cardInvalid"
+        :state="cardState"
+        >
+          <b-form-input
+            id="card_number"
+            v-model="card_number"
+            :state="cardState"
+            type="number"
+            placeholder="#### #### #### ####"
+          ></b-form-input>
+        </b-form-group>
       </b-col>
       <b-col cols="6">
-        <label>Nom del titular</label>
-        <input id="card_holder_name" class="form-control"
-        placeholder="NOM COGNOM" required autofocus v-model="card_holder_name">
+        <b-form-group
+        label="Nombre del Titular"
+        label-for="card_holder_name"
+        :invalid-feedback="nameInvalid"
+        :state="nameState"
+        >
+          <b-form-input
+            id="card_holder_number"
+            v-model="card_holder_name"
+            :state="nameState"
+            placeholder="NOMBRE APELLIDOS"
+          ></b-form-input>
+        </b-form-group>
       </b-col>
     </b-row>
 
@@ -28,19 +49,48 @@
         <label>Data de caducitat</label>
         <b-row>
           <b-col cols="4">
-            <input id="month" class="form-control" type="number"
-            placeholder="01" required autofocus v-model="month">
+            <b-form-group
+            label-for="month"
+            :invalid-feedback="monthInvalid"
+            :state="monthState"
+            >
+              <b-form-input
+                id="month"
+                v-model="month"
+                :state="monthState"
+                type="number"
+              ></b-form-input>
           </b-col>
           <b-col cols="8">
-            <input id="year" class="form-control" type="number"
-            placeholder="2021" required autofocus v-model="year">
+            <b-form-group
+            label-for="year"
+            :invalid-feedback="yearInvalid"
+            :state="yearState"
+            >
+              <b-form-input
+                id="year"
+                v-model="year"
+                :state="yearState"
+                type="number"
+              ></b-form-input>
           </b-col>
         </b-row>
       </b-col>
       <b-col cols="6">
-        <label>CVC</label>
-        <input id="card_cvc" class="form-control" type="number"
-        placeholder="0000" required autofocus v-model="card_cvc">
+        <b-form-group
+        label="CVC"
+        label-for="card_cvc"
+        :invalid-feedback="cvcInvalid"
+        :state="cvcState"
+        >
+          <b-form-input
+            id="card_cvc"
+            v-model="card_cvc"
+            :state="cvcState"
+            type="number"
+            placeholder="####"
+          ></b-form-input>
+        </b-form-group>
       </b-col>
     </b-row>
     <br>
@@ -72,12 +122,60 @@ export default {
     navbar,
     foot
   },
+  computed: {
+    cardState () {
+      if (this.card_number.toString().length === 16 && this.card_number >= 1000000000000) {
+        return true
+      }
+      return false
+    },
+    cardInvalid () {
+      if (this.card_number.toString().length === 16 && this.card_number < 1000000000000) {
+        return 'Introduzca el número de tarjeta valido'
+      }
+    },
+    nameState () {
+      return this.card_holder_name.length > 0
+    },
+    nameInvalid () {
+      if (this.card_holder_name.length <= 0) {
+        return 'Este campo no puede quedar vacio'
+      }
+    },
+    monthState () {
+      return this.month >= 1 && this.month <= 12
+    },
+    monthInvalid () {
+      if (!(this.month >= 1 && this.month <= 12)) {
+        return 'Introduzca un mes valido'
+      }
+    },
+    yearState () {
+      return this.year > 2020 && this.year <= 2026
+    },
+    yearInvalid () {
+      if (!(this.year > 2020 && this.year <= 2026)) {
+        return 'Introduzca un año valido'
+      }
+    },
+    cvcState () {
+      return this.card_cvc >= 100 && this.card_cvc <= 9999
+    },
+    cvcInvalid () {
+      if (!(this.card_cvc >= 100 && this.card_cvc <= 9999)) {
+        return 'El CVC no es valido'
+      }
+    }
+  },
   data () {
     return {
       show_c: true,
-
+      card_number: 0,
+      card_holder_name: '',
+      month: 12,
+      year: 2021,
+      card_cvc: 100,
       user: {},
-
       error: '',
       show: false
     }
