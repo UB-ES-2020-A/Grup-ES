@@ -166,7 +166,6 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            json.loads(res.data)
             self.assertEqual(ReviewsModel.find_by_isbn_user_id(book.isbn, user.id).json(), json.loads(res.data))
 
     def test_post_review_without_login(self):
