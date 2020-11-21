@@ -40,6 +40,9 @@ class Reviews(Resource):
             return {"message": f"{data['score']} is not a valid value for score. Score must be an integer ranging from "
                                f"1 to 5."}, 418
 
+        if ReviewsModel.find_by_isbn_user_id(data.isbn, user.id) is not None:
+            return {"message": "Given user already posted a review. Did you meant to update it?"}, 403
+
         data['user_id'] = user.id
         del data['email']
         try:

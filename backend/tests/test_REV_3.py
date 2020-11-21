@@ -221,7 +221,7 @@ class UnitTestOfUS(BaseTest):
             res = self.client.post("/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
-            self.assertEqual(500, res.status_code)
+            self.assertEqual(403, res.status_code)
 
 
 def test_post_review_wrong_score(self):
