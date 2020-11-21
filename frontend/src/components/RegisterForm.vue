@@ -94,7 +94,7 @@ export default {
       if (this.username.length > 0) {
         return 'Introduce al menos 4 carácteres'
       }
-      return 'Este campo no puede estar vacio'
+      return 'El usuario debe tener más de 4 carácteres'
     },
     emailState () {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
