@@ -24,6 +24,8 @@
 </b-container>
 <br>
 <br>
+<modifybooks :isbnNum = "bookIsbn"/>
+<deletebooks :isbnNum = "bookIsbn"/>
 <b-container>
  <b-card-group deck v-for="(book) in filteredList" :key="book.isbn">
   <b-card bg-variant="light" text-variant="dark">
@@ -31,6 +33,10 @@
   <b-card-sub-title class="mb-2">{{ book.autor }}</b-card-sub-title>
   <b-card-text>Stock: {{ book.stock }}</b-card-text>
   <b-card-text>PVP: {{ book.precio }} $</b-card-text>
+  <b-card-text>Current Status: {{ bookStatus(book) }} </b-card-text>
+  <b-button :disabled = "book.vendible == false" v-b-modal.modifybooks @click="getisbn(book)" variant="primary">Modificar llibre</b-button>
+  <b-button :disabled = "book.vendible == false" v-b-modal.deletebooks @click="getisbn(book)" variant="danger">Eliminar llibre</b-button>
+  <b-button v-if = "book.vendible == false" variant="success" @click="reactivateBook(book)">Reactivar llibre</b-button>
 </b-card>
 </b-card-group>
 </b-container>
@@ -46,37 +52,58 @@
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
 import addbooks from './subcomponents/AddBooks'
+import modifybooks from './subcomponents/ModifyBooks'
+import deletebooks from './subcomponents/DeleteBooks'
 import foot from './subcomponents/foot'
 
 export default {
   components: {
     navbar,
     addbooks,
-    foot
+    foot,
+    modifybooks,
+    deletebooks
   },
   data () {
     return {
       showadd: false,
       booksquery: [],
       search: '',
-      show: true
+      show: true,
+      bookIsbn: 0
     }
   },
   created () {
     this.get_books()
   },
   methods: {
-    gotobook (isbn) {
-      this.$router.push({ path: '/book', query: {bk: isbn} })
-    },
-    getURL (book) {
-      return book.url_imagen
-    },
     get_books () {
       const path = 'https://grup-es.herokuapp.com/books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    getisbn (book) {
+      this.bookIsbn = book.isbn
+    },
+    bookStatus (book) {
+      if (book.vendible) {
+        return "Disponible a l'stock"
+      }
+      return "No disponible a l'stock"
+    },
+    reactivateBook (book) {
+      const path = 'https://grup-es.herokuapp.com/book/' + book.isbn
+      const parameters = {
+        vendible: true
+      }
+      axios.put(path, parameters)
+        .then((res) => {
+          alert('Book Reactivated correctly')
         })
         .catch((error) => {
           console.error(error)
