@@ -65,13 +65,13 @@ class Users(Resource):
             return {"message": f"An user with same email {data['email']} already exists"}, 409
         if UsersModel.find_by_username(data['username']) is not None:
             return {"message": f"An user with same username {data['username']} already exists"}, 409
+        data['password'] = data['new_password']
         try:
-            data['password'] = data['new_password']
-            data['id'] = user.id
             user.update_from_db(data)
-            return {"user": user.json()}, 200
         except Exception as e:
             return {"message": "Error a la hora d'editar un usuari a base de dades"}, 500
+
+        return {"user": user.json()}, 200
 
     @auth.login_required
     def delete(self, email):
