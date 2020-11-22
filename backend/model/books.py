@@ -18,7 +18,7 @@ class BooksModel(db.Model):
     fecha_de_publicacion = db.Column(db.DateTime(), nullable=False)
 
     reviews = db.relationship('ReviewsModel', backref='book', lazy=True)
-    score = db.relationship('ScoresModel', backref='book', lazy=True)
+    score = db.relationship('ScoresModel', uselist=False, backref='book', lazy=True)
 
     def __init__(self, isbn, stock, precio, titulo, autor=None, editorial=None, sinopsis=None, url_imagen=None, fecha_de_publicacion=None):
         self.isbn = isbn
@@ -35,11 +35,17 @@ class BooksModel(db.Model):
         else:
             self.fecha_de_publicacion = fecha_de_publicacion
 
-    def json(self):
+    def json(self, reviews=False, score=False):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
         del atr["_sa_instance_state"]
         atr['fecha_de_publicacion'] = self.fecha_de_publicacion.strftime('%Y-%m-%d')
+        if reviews:
+            reviews = self.reviews
+            atr['reviews'] = [review.json() for review in reviews] if reviews else []
+        if score:
+            score = self.score
+            atr['score'] = score.score if score else ''
         return atr
 
     def save_to_db(self):
