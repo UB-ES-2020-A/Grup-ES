@@ -41,8 +41,7 @@ class BooksModel(db.Model):
         del atr["_sa_instance_state"]
         atr['fecha_de_publicacion'] = self.fecha_de_publicacion.strftime('%Y-%m-%d')
         if reviews:
-            reviews = self.reviews
-            atr['reviews'] = [review.json() for review in reviews] if reviews else []
+            atr['reviews'] = [review.json() for review in self.reviews]
         if score:
             score = self.score
             atr['score'] = score.score if score else ''
@@ -65,6 +64,5 @@ class BooksModel(db.Model):
     @classmethod
     def find_by_isbn(cls, isbn):
         return cls.query.filter_by(isbn=isbn).first()
-
 
 
