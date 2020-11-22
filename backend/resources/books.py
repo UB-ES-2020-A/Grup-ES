@@ -35,6 +35,7 @@ def parse_book(minimal=False):
 
     return data
 
+
 def parse_reviews():
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('reviews', type=bool, required=False,
