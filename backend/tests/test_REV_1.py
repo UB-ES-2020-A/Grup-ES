@@ -25,7 +25,7 @@ class UnitTestOfUS(BaseTest):
         return ReviewsModel(1, 1, 5, "This book is so good!")
 
     # TEST TASK 3
-    def test_model_get_book_reviews(self):
+    def test_get_book_reviews(self):
         with self.app.app_context():
             book = self.dummy_book()
             book.save_to_db()
@@ -39,7 +39,7 @@ class UnitTestOfUS(BaseTest):
             res = self.client.get(f"/book/{book.isbn}", data={'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["book"])
 
-    def test_model_get_books_reviews(self):
+    def test_get_books_reviews(self):
         with self.app.app_context():
             book = self.dummy_book()
             book.save_to_db()
@@ -53,7 +53,7 @@ class UnitTestOfUS(BaseTest):
             res = self.client.get(f"/books", data={'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["books"][0])
 
-    def test_model_get_search_by_isbn_reviews(self):
+    def test_get_search_by_isbn_reviews(self):
         with self.app.app_context():
             book = self.dummy_book()
             book.save_to_db()
@@ -66,6 +66,20 @@ class UnitTestOfUS(BaseTest):
 
             res = self.client.get(f"/search", data={"isbn": 1, 'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["books"][0])
+
+    def test_get_user_reviews(self):
+        with self.app.app_context():
+            book = self.dummy_book()
+            book.save_to_db()
+
+            user = self.dummy_user()
+            user.save_to_db()
+
+            review = self.dummy_review()
+            review.save_to_db()
+
+            res = self.client.get(f"/user/{user.email}", data={"isbn": 1, 'reviews': True, 'score': True})
+            self.assertEqual(user.json(reviews=True), json.loads(res.data)["user"])
 
 
 if __name__ == '__main__':
