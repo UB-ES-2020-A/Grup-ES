@@ -138,7 +138,7 @@ export default {
       return this.card_holder_name.length > 0
     },
     nameInvalid () {
-      if (this.card_holder_name.length <= 0) {
+      if (this.card_holder_name.length < 0) {
         return 'Este campo no puede quedar vacio'
       }
     },
