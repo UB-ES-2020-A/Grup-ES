@@ -36,13 +36,23 @@ def parse_book(minimal=False):
     return data
 
 
+def parse_reviews():
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('reviews', type=bool, required=False,
+                        help="Indicates if returning the reviews of the book is needed.")
+    parser.add_argument('score', type=bool, required=False,
+                        help="Indicates if returning the score of the book is needed .")
+    return parser.parse_args()
+
+
 class Books(Resource):
 
     def get(self, isbn):
+        data = parse_reviews()
         book = BooksModel.find_by_isbn(isbn)
         if not book:
             return {"message": f"Book with ['isbn':{isbn}] not found"}, 404
-        return {"book": book.json()}, 200
+        return {"book": book.json(**data)}, 200
 
     def post(self):
         data = parse_book()
@@ -97,6 +107,10 @@ class BooksList(Resource):
                             help="In this field goes the param you want to order")
         parser.add_argument('order', type=str, required=False,
                             help="In this field goes the order (asc, desc) of what you would like to show")
+        parser.add_argument('reviews', type=bool, required=False,
+                            help="Indicates if returning the reviews of the book is needed.")
+        parser.add_argument('score', type=bool, required=False,
+                            help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
         if data['param'] is None:
             books = BooksModel.query.limit(data['numBooks']).all()
@@ -105,7 +119,7 @@ class BooksList(Resource):
                 books = BooksModel.query.order_by(asc(data['param'])).limit(data['numBooks']).all()
             else:
                 books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
-        return {'books': [book.json() for book in books]}, 200
+        return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
 
 
 class SearchBooks(Resource):
@@ -120,6 +134,10 @@ class SearchBooks(Resource):
                             help="In this field goes the author of the book")
         parser.add_argument('editorial', type=str, required=False,
                             help="In this field goes the editorial of the book")
+        parser.add_argument('reviews', type=bool, required=False,
+                            help="Indicates if returning the reviews of the book is needed.")
+        parser.add_argument('score', type=bool, required=False,
+                            help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
         if data['isbn']:  # si hi ha isbn només filtrem per isbn
             books = BooksModel.query.filter_by(isbn=data['isbn'])
@@ -130,4 +148,4 @@ class SearchBooks(Resource):
             books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
         elif data['editorial']:
             books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
-        return {'books': [book.json() for book in books]}, 200
+        return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200

@@ -13,13 +13,22 @@ def parse_user(required_username=True):
     return parser.parse_args()
 
 
+def parse_reviews():
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('reviews', type=bool, required=False,
+                        help="Indicates if returning the reviews of the book is needed.")
+    return parser.parse_args()
+
+
 class Users(Resource):
 
     def get(self, email):
         user = UsersModel.find_by_email(email)
         if not user:
             return {"message": f"User with ['email':{email}] not found"}, 404
-        return {"user": user.json()}, 200
+
+        data = parse_reviews()
+        return {"user": user.json(**data)}, 200
 
     def post(self):
         data = parse_user()
