@@ -12,7 +12,16 @@
        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
        <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
        <h5>{{ book.autor }}</h5>
-       <h6>Valoració</h6>
+       <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
+       <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
+       <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
+       <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
+       <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
+       <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
+       <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
+       <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
+       <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
+       <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
        <h6>{{ book.precio }}</h6>
        <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
        </b-col>
@@ -52,7 +61,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_search () {
-      const path = 'https://grup-es.herokuapp.com/search?titulo=' + this.$route.query.titulo
+      const path = 'https://grup-es.herokuapp.com/search?titulo=' + this.$route.query.titulo + '&score=true'
       axios.get(path)
         .then((res) => {
           this.books = res.data.books
