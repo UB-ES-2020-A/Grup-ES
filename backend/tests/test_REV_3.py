@@ -223,28 +223,27 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(403, res.status_code)
 
+    def test_post_review_wrong_score(self):
+        with self.app.app_context():
+            book = self.dummy_book()
+            book.save_to_db()
 
-def test_post_review_wrong_score(self):
-    with self.app.app_context():
-        book = self.dummy_book()
-        book.save_to_db()
+            user = self.dummy_user()
+            user.save_to_db()
 
-        user = self.dummy_user()
-        user.save_to_db()
+            token = self.login_dummy_user(self.client)
 
-        token = self.login_dummy_user(self.client)
+            parameters = {
+                'isbn': book.isbn,
+                'email': user.email,
+                'score': 0,
+                'review': "Wow such book should not exist"
+            }
 
-        parameters = {
-            'isbn': book.isbn,
-            'email': user.email,
-            'score': 0,
-            'review': "Wow such book should not exist"
-        }
-
-        res = self.client.post("/review", data=parameters, headers={
-            "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
-        })
-        self.assertEqual(418, res.status_code)
+            res = self.client.post("/review", data=parameters, headers={
+                "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(418, res.status_code)
 
 
 
