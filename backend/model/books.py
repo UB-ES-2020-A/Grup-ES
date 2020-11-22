@@ -39,7 +39,7 @@ class BooksModel(db.Model):
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
         del atr["_sa_instance_state"]
-        atr['fecha_de_publicacion'] = self.fecha_de_publicacion.strftime('%d-%m-%Y')
+        atr['fecha_de_publicacion'] = self.fecha_de_publicacion.strftime('%Y-%m-%d')
         return atr
 
     def save_to_db(self):
