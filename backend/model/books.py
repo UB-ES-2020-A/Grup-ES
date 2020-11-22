@@ -44,7 +44,7 @@ class BooksModel(db.Model):
             atr['reviews'] = [review.json() for review in self.reviews]
         if score:
             score = self.score
-            atr['score'] = score.score if score else ''
+            atr['score'] = score.score if score else None
         return atr
 
     def save_to_db(self):
@@ -64,5 +64,4 @@ class BooksModel(db.Model):
     @classmethod
     def find_by_isbn(cls, isbn):
         return cls.query.filter_by(isbn=isbn).first()
-
 
