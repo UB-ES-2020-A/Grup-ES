@@ -50,15 +50,12 @@ class UsersModel(db.Model):
             db.session.commit()
 
     def json(self, reviews=False):
-        _ignore = self.username  # Forces execution to parse properly the class, fixing the bug of transient data
-        atr = self.__dict__.copy()
-        atr["role"] = str(atr["role"])
-        del atr["_sa_instance_state"]
-        del atr["state"]
-        del atr["date"]
+        user = {"username": self.username,	
+                "email": self.email,
+                "role": str(self.role)}
         if reviews:
-            atr['reviews'] = [review.json() for review in self.reviews]
-        return atr
+            user['reviews'] = [review.json() for review in self.reviews    
+        return user    
 
     def delete_from_db(self):
         self.state = False
