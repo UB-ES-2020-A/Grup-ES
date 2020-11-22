@@ -57,8 +57,7 @@ class UsersModel(db.Model):
         del atr["state"]
         del atr["date"]
         if reviews:
-            reviews = self.reviews
-            atr['reviews'] = [review.json() for review in reviews] if reviews else []
+            atr['reviews'] = [review.json() for review in self.reviews]
         return atr
 
     def delete_from_db(self):
