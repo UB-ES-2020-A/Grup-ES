@@ -39,6 +39,30 @@
   </b-container>
   <br>
   <br>
+  <!--Sección de reviews-->
+  <b-container class='bg-info rounded'>
+      <br>
+      <form ref="review-form" v-if="session_boolean === true">
+        <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 2" @click="score = 2" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 2" @click="score = 2" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 3" @click="score = 3" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 3" @click="score = 3" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 4" @click="score = 4" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score<4" @click="score = 4" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 5" @click="score = 5" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 5" @click="score = 5" font-scale="2.5"></b-icon>
+        <b-form-group label="Reseña" label-for="review-input">
+          <b-form-textarea id="review-input" v-model="review" placeholde="Añade un comentario">
+          </b-form-textarea>
+        </b-form-group>
+        <div class="text-right">
+          <button type="button" class="btn btn-dark" @click="submit(single_book, user)">POST</button>
+        </div>
+        <br>
+      </form>
+  </b-container>
   </div>
   </div>
   <foot/>
@@ -58,11 +82,19 @@ export default {
   data () {
     return {
       show: true,
+
+      // LogIn status
+      user: {},
+      session_boolean: false,
+
+      score: 1,
+      review: '',
       single_book: {}
     }
   },
   created () {
     this.load_book()
+    this.fetch_login_status()
   },
   methods: {
     load_book () {
@@ -96,6 +128,23 @@ export default {
         cartItems.push({'book': book, 'quantity': 1})
       }
       localStorage.setItem('cartItems', JSON.stringify(cartItems))
+    },
+    submit (book, user) {
+      const path = 'https://grup-es.herokuapp.com/review' + '?isbn=' + this.$route.query.bk + '&email=' + user.email + '&score=' + this.score + '&review=' + this.review
+      axios.post(path, {}, {auth: {username: this.user.token}})
+        .then((res) => {
+          this.review = ''
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    fetch_login_status () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_boolean = true
+      }
     }
   }
 }
