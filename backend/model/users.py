@@ -54,7 +54,7 @@ class UsersModel(db.Model):
                 "email": self.email,
                 "role": str(self.role)}
         if reviews:
-            user['reviews'] = [review.json() for review in self.reviews    
+            user['reviews'] = [review.json() for review in self.reviews]
         return user    
 
     def delete_from_db(self):
