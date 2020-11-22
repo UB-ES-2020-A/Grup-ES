@@ -268,7 +268,6 @@ export default {
           this.date = res.data.book.fecha_de_publicacion
           this.url = res.data.book.url_imagen
           this.sinopsis = res.data.book.sinopsis
-          
           this.date = this.date.split('-').reverse().join('-')
         })
         .catch((error) => {
