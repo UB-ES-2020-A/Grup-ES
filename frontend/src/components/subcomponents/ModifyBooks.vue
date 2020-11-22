@@ -3,7 +3,8 @@
     <b-modal
     id="modifybooks"
     title="Modificar llibre"
-    @ok="handleOk">
+    @ok="handleOk"
+    @shown="getInfoFromBook">
       <form ref="form" @submit.stop.prevent="handleSubmit">
        <b-row>
        <b-col>
@@ -131,7 +132,7 @@ export default {
   },
   data () {
     return {
-      stock: 0,
+      stock: '',
       precio: '',
       titulo: '',
       autor: '',
@@ -173,7 +174,7 @@ export default {
         })
     },
     clearModal () {
-      this.stock = 0
+      this.stock = ''
       this.precio = ''
       this.titulo = ''
       this.autor = ''
@@ -254,6 +255,25 @@ export default {
     handleOk (bvModalEvt) {
       bvModalEvt.preventDefault()
       this.checkOk()
+    },
+    getInfoFromBook () {
+      const path = 'https://grup-es.herokuapp.com/book/' + this.$props.isbnNum
+      axios.get(path)
+        .then((res) => {
+          this.precio = res.data.book.precio
+          this.titulo = res.data.book.titulo
+          this.autor = res.data.book.autor
+          this.stock = res.data.book.stock
+          this.editorial = res.data.book.editorial
+          this.date = res.data.book.fecha_de_publicacion
+          this.url = res.data.book.url_imagen
+          this.sinopsis = res.data.book.sinopsis
+          
+          this.date = this.date.split('-').reverse().join('-')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }
