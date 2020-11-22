@@ -39,6 +39,25 @@
   </b-container>
   <br>
   <br>
+  <!--Sección de reviews-->
+  <b-container class='bg-info rounded'>
+      <br>
+      <form ref="review-form" @submit="handleSubmit">
+        <b-icon icon="star-fill" font-scale="2.5"></b-icon>
+        <b-icon icon="star" font-scale="2.5"></b-icon>
+        <b-icon icon="star" font-scale="2.5"></b-icon>
+        <b-icon icon="star" font-scale="2.5"></b-icon>
+        <b-icon icon="star" font-scale="2.5"></b-icon>
+        <b-form-group label="Reseña" label-for="review-input">
+          <b-form-textarea id="review-input" v-model="review" placeholde="Añade un comentario">
+          </b-form-textarea>
+        </b-form-group>
+        <div class="text-right">
+          <button type="button" class="btn btn-dark" v-on:click="submit">POST</button>
+        </div>
+        <br>
+      </form>
+  </b-container>
   </div>
   </div>
   <foot/>
@@ -58,6 +77,8 @@ export default {
   data () {
     return {
       show: true,
+      score: 1,
+      review: '',
       single_book: {}
     }
   },
@@ -96,6 +117,22 @@ export default {
         cartItems.push({'book': book, 'quantity': 1})
       }
       localStorage.setItem('cartItems', JSON.stringify(cartItems))
+    },
+    submit () {
+      const path = 'https://grup-es.herokuapp.com/review'
+      const parameters = {
+        'isbn': this.single_book.isbn,
+        'email': this.user.email,
+        'score': this.score,
+        'review': this.review
+      }
+      axios.get(path, parameters)
+        .then((res) => {
+          this.single_book = res.data.book
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }
