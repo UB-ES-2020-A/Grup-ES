@@ -8,7 +8,7 @@ import GoogleSignInButton from 'vue-google-signin-button-directive'
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.config.productionTip = false
-Vue.prototype.$API_URL = 'https://grup-es.herokuapp.com/'
+Vue.prototype.$API_URL = 'http://localhost:5000/'
 
 new Vue({
   router,
