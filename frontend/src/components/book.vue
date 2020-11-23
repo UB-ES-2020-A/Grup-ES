@@ -128,8 +128,12 @@ export default {
   },
   methods: {
     load_book () {
-      const path = this.$API_URL + 'book/' + this.$route.query.bk + '?reviews=true&score=true'
-      axios.get(path)
+      const path = this.$API_URL + 'book/' + this.$route.query.bk
+      const params = {
+        reviews: true,
+        score: true
+      }
+      axios.get(path, { params: params })
         .then((res) => {
           this.single_book = res.data.book
         })

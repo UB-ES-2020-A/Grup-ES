@@ -257,7 +257,7 @@ export default {
     },
     getAdvancedSearch (parameters) {
       const path = this.$API_URL + 'search'
-      axios.get(path, parameters)
+      axios.get(path, { params: parameters })
         .then((res) => {
           this.advancedsearch = res.data
         })

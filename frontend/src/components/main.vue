@@ -91,9 +91,9 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_best_sellers () {
-      const path = this.$API_URL + 'books?score=true'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+      const path = this.$API_URL + 'books'
+      const params = { numBooks: 2, param: 'isbn', order: 'asc', score: true }
+      axios.get(path, { params: params })
         .then((res) => {
           this.best_sellers = res.data
         })
@@ -102,9 +102,9 @@ export default {
         })
     },
     load_new_releases () {
-      const path = this.$API_URL + 'books?score=true'
-      const params = { numBooks: 2, param: 'isbn', order: 'asc' }
-      axios.get(path, params)
+      const path = this.$API_URL + 'books'
+      const params = { numBooks: 2, param: 'isbn', order: 'asc', score: true }
+      axios.get(path, { params: params })
         .then((res) => {
           this.new_releases = res.data.books
         })
