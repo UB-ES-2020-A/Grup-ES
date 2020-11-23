@@ -39,27 +39,15 @@ class Transactions(Resource):
             return {"message": "User with ['id_user': " + str(user.id_user) + "] Not Found"}, 404
         if user != g.user:
             return {"message": "Invalid transaction, can only post yours"}, 401
-        dataTransaction['id_user'] = user.id
-
-        __it = 0
-        transactions = ''
         for isbn in data['isbns']:
             book = BooksModel.find_by_isbn(isbn)
             if book is None:
-                return {"message": "Book with ['isbn': " + isbn + "] Not Found"}, 404
-            dataTransaction['quantity'] = data['quantities'][__it]
-            dataTransaction['isbn'] = isbn
-            dataTransaction['date'] = None
-            try:
-                transaction = TransactionsModel(**dataTransaction)
-                transaction.save_to_db()
-                transactions += str(transaction.json())
-                __it += 1
-            except Exception as e:
-                return {"message": str(e)}, 500
-        TransactionsModel.it_transaction += 1
-        send_email(user.email, 'Order confirmation', transactions)
-        return {'message': str(__it) + ' transactions added with id ' + str(TransactionsModel.it_transaction-1)}, 201
+                return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
+        try:
+            transactions = TransactionsModel.save_transaction(data['isbns'], data['quantities'], user.id)
+        except Exception:
+            return {'message': 'Error saving the transaction'}, 500
+        return {'transactions': transactions}, 201
 
 
 class TransactionsUser(Resource):

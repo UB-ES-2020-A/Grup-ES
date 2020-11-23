@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 
 from db import db
 from utils.mail import send_email
@@ -11,11 +12,13 @@ class TransactionsModel(db.Model):
     it_transaction = 1
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
-    isbn = db.Column(db.BigInteger(), primary_key=True)
+    isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
     price = db.Column(db.Float, nullable=False)
     id_user = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
+
+    book = db.relationship('BooksModel', uselist=False, backref='transactions', lazy=True)
 
     def __init__(self, isbn, id_user, quantity, date=None):
         self.id_transaction = self.it_transaction
@@ -66,4 +69,17 @@ class TransactionsModel(db.Model):
             isbns.append(transaction.isbn)
         return 'ISBNs of books in transaction with id = ' + str(id_transaction) + ' are ' + str(isbns)
 
+    @classmethod
+    def save_transaction(cls, isbns, quantities, user_id):
+        transactions = []
+        for isbn, quantity in zip(isbns, quantities):
+            transaction = TransactionsModel(isbn, user_id, quantity)
+            transactions.append(transaction.json())
+            #transaction.book.stock -= 1
+            db.session.add(transaction)
 
+        cls.it_transaction += 1
+        db.session.commit()
+        recipient = UsersModel.find_by_id(user_id).email
+        send_email(recipient, 'Order confirmation', json.dumps(transactions))
+        return transactions
