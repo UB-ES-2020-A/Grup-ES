@@ -12,7 +12,16 @@
           <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
           <br>
           <br>
-          <h6> Puntuació </h6>
+          <b-icon icon="star-fill" v-if="single_book.score >= 1" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 1" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 2" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 2" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 3" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 3" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 4" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score<4" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 5" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 5" font-scale="3"></b-icon>
         </b-col>
         <b-col cols="5">
           <br>
@@ -98,7 +107,7 @@ export default {
   },
   methods: {
     load_book () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk
+      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk + '?reviews=true&score=true'
       axios.get(path)
         .then((res) => {
           this.single_book = res.data.book
