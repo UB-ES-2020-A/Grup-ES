@@ -65,7 +65,7 @@ class PasswordRecovery(Resource):
             return {"message": f"Password Recovery time has expired."}, 403
 
         try:
-            user.update_from_db(data['new_password'])
+            user.update_password_from_db(data['new_password'])
         except Exception as e:
             return {"message": str(e)}, 500
 
