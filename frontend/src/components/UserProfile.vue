@@ -98,7 +98,6 @@ export default {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))
       if (tmpuser !== null) {
         this.user = tmpuser
-        console.log(this.user.username)
         this.session_status = 'Log Out'
         this.session_boolean = true
       }
