@@ -22,6 +22,7 @@ class ReviewsModel(db.Model):
         """
         Returns a dictionary with pairs of string of name of attribute and it's value.
         """
+        _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
         del atr["_sa_instance_state"]
         return atr
@@ -70,6 +71,7 @@ class ScoresModel(db.Model):
         self.score = 0
 
     def json(self):
+        _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
         del atr["_sa_instance_state"]
         return atr

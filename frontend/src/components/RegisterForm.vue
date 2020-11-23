@@ -9,23 +9,69 @@
       <div class="form-control  bg-light" style="margin-top: 100px">
       <div class="form-label-group">
               <h5>Crear cuenta</h5>
-              <label style="margin-top: 15px">Username</label>
-              <input type="username" id="inputUsername" class="form-control"
-              placeholder="Username" required autofocus v-model="username">
+              <b-form-group
+              label="Username"
+              label-for="inputUsername"
+              :invalid-feedback="userInvalid"
+              :state="userState"
+              style="margin-top: 15px"
+              >
+                <b-form-input
+                  id="inputUsername"
+                  v-model="username"
+                  :state="userState"
+                  type="username"
+                ></b-form-input>
+              </b-form-group>
 
-              <label style="margin-top: 15px">Correo electronico</label>
-              <input type="e-mail" id="inputEmail" class="form-control"
-              placeholder="Correo Electronico" required autofocus v-model="email">
+              <b-form-group
+              label="Correo Electronico"
+              label-for="inputEmail"
+              valid-feedback="El correo electrónico es valido"
+              :invalid-feedback="emailInvalid"
+              :state="emailState"
+              style="margin-top: 15px"
+              >
+                <b-form-input
+                  id="inputEmail"
+                  v-model="email"
+                  :state="emailState"
+                  type="email"
+                ></b-form-input>
+              </b-form-group>
 
-              <label style="margin-top: 15px">Contraseña</label>
-              <input type="password" id="inputPassword1" class="form-control"
-              placeholder="Contraseña" required v-model="password1">
+              <b-form-group
+              label="Contraseña"
+              label-for="inputPassword1"
+              valid-feedback="Contraseña valida"
+              :invalid-feedback="pwd1Invalid"
+              :state="pwd1State"
+              style="margin-top: 15px"
+              >
+                <b-form-input
+                  id="inputPassword1"
+                  v-model="password1"
+                  :state="pwd1State"
+                  type="password"
+                ></b-form-input>
+              </b-form-group>
 
-              <label style="margin-top: 15px">Confirmar contraseña</label>
-              <input type="password" id="inputPassword2" class="form-control"
-              placeholder="Confirmar contraseña" required v-model="password2">
+              <b-form-group
+              label="Confirmar contraseña"
+              label-for="inputPassword2"
+              :invalid-feedback="pwd2Invalid"
+              :state="pwd2State"
+              style="margin-top: 15px"
+              >
+                <b-form-input
+                  id="inputPassword2"
+                  v-model="password2"
+                  :state="pwd2State"
+                  type="password"
+                ></b-form-input>
+              </b-form-group>
 
-              <b-button variant="danger" style="margin-top: 20px" @click="createUser()">Crear usuario</b-button>
+              <b-button variant="danger" style="margin-top: 20px" @click="checkInputs()">Crear usuario</b-button>
       </div>
       </div>
       </div>
@@ -40,16 +86,59 @@ import axios from 'axios'
 import navbar from './subcomponents/navbar'
 
 export default {
+  computed: {
+    userState () {
+      return this.username.length >= 4
+    },
+    userInvalid () {
+      if (this.username.length > 0) {
+        return 'Introduce al menos 4 carácteres'
+      }
+      return 'El usuario debe tener más de 4 carácteres'
+    },
+    emailState () {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      return re.test(this.email)
+    },
+    emailInvalid () {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if (!re.test(this.email)) {
+        return 'El correo electrónico es invalido'
+      }
+    },
+    pwd1State () {
+      var pw = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/
+      return pw.test(this.password1)
+    },
+    pwd1Invalid () {
+      var pw = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/
+      if (!pw.test(this.password1)) {
+        return 'la contraseña debe contener 6 carácteres, un número, una mayuscula, una minuscula.'
+      }
+    },
+    pwd2State () {
+      if (this.password1 !== '' && this.password2 === this.password1) {
+        return true
+      }
+      return false
+    },
+    pwd2Invalid () {
+      if (this.password1 === '' || this.password2 !== this.password1) {
+        return 'Las contraseñas deben de coincidir'
+      }
+    }
+  },
   components: {
     navbar
   },
   data () {
     return {
       show: true,
-
       username: '',
       email: '',
-      password: ''
+      password: '',
+      password1: '',
+      password2: ''
     }
   },
   methods: {
@@ -78,6 +167,13 @@ export default {
       this.email = ''
       this.password1 = ''
       this.password2 = ''
+    },
+    checkInputs () {
+      if (this.userState && this.emailState && this.pwd1State && this.pwd2State) {
+        this.createUser()
+      } else {
+        alert('Algún parametro es incorrecto o no ha sido introducido')
+      }
     }
   }
 }

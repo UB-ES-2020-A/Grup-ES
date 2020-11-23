@@ -7,12 +7,21 @@
    <br>
    <b-container v-if= "show === true">
       <b-row>
-        <b-col cols="4">
+        <b-col class="text-center" cols="4">
           <br>
           <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
           <br>
           <br>
-          <h6> Puntuació </h6>
+          <b-icon icon="star-fill" v-if="single_book.score >= 1" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 1" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 2" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 2" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 3" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 3" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 4" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score<4" font-scale="3"></b-icon>
+          <b-icon icon="star-fill" v-if="single_book.score >= 5" font-scale="3"></b-icon>
+          <b-icon icon="star" v-if="single_book.score < 5" font-scale="3"></b-icon>
         </b-col>
         <b-col cols="5">
           <br>
@@ -39,6 +48,51 @@
   </b-container>
   <br>
   <br>
+  <!--Sección de reviews-->
+  <b-container class='bg-info rounded'>
+      <br>
+      <form ref="review-form" v-if="session_boolean === true">
+        <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 2" @click="score = 2" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 2" @click="score = 2" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 3" @click="score = 3" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 3" @click="score = 3" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 4" @click="score = 4" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score<4" @click="score = 4" font-scale="2.5"></b-icon>
+        <b-icon icon="star-fill" v-if="score >= 5" @click="score = 5" font-scale="2.5"></b-icon>
+        <b-icon icon="star" v-if="score < 5" @click="score = 5" font-scale="2.5"></b-icon>
+        <b-form-group label="Reseña" label-for="review-input">
+          <b-form-textarea id="review-input" v-model="review" placeholde="Añade un comentario">
+          </b-form-textarea>
+        </b-form-group>
+        <div class="text-right">
+          <button type="button" class="btn btn-dark" @click="submit(single_book, user)">POST</button>
+        </div>
+      </form>
+      <hr>
+      <v-row v-for="(review) in this.single_book.reviews" :key="review.user_id">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">user with id {{review.user_id}} commented:</h6>
+            <p class="card-text">{{review.review}}</p>
+          </div>
+        </div>
+        <br>
+      </v-row>
+  </b-container>
   </div>
   </div>
   <foot/>
@@ -58,15 +112,23 @@ export default {
   data () {
     return {
       show: true,
+
+      // LogIn status
+      user: {},
+      session_boolean: false,
+
+      score: 1,
+      review: '',
       single_book: {}
     }
   },
   created () {
     this.load_book()
+    this.fetch_login_status()
   },
   methods: {
     load_book () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk
+      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk + '?reviews=true&score=true'
       axios.get(path)
         .then((res) => {
           this.single_book = res.data.book
@@ -96,6 +158,24 @@ export default {
         cartItems.push({'book': book, 'quantity': 1})
       }
       localStorage.setItem('cartItems', JSON.stringify(cartItems))
+    },
+    submit (book, user) {
+      const path = 'https://grup-es.herokuapp.com/review' + '?isbn=' + this.$route.query.bk + '&email=' + user.email + '&score=' + this.score + '&review=' + this.review
+      axios.post(path, {}, {auth: {username: this.user.token}})
+        .then((res) => {
+          this.review = ''
+          this.load_book()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    fetch_login_status () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_boolean = true
+      }
     }
   }
 }

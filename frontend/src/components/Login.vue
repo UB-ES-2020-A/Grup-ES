@@ -79,6 +79,11 @@ export default {
           this.$router.push({path: '/'})
           this.initForm()
         }))
+        .catch((error) => {
+          console.error(error)
+          this.initForm()
+          alert('La dirección o la contraseña son incorrectas')
+        })
     },
     createUserObject (username, email, role, token) {
       this.userObject.username = username

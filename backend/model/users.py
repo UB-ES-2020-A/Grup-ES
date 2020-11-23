@@ -2,10 +2,11 @@ from flask import g
 from flask_httpauth import HTTPBasicAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from passlib.apps import custom_app_context as pwd_context
-
-from db import db, secret_key
 import datetime as dt
 from enum import Enum
+
+
+from db import db, secret_key
 
 auth = HTTPBasicAuth()
 
@@ -48,10 +49,13 @@ class UsersModel(db.Model):
             db.session.add(self)
             db.session.commit()
 
-    def json(self):
-        return {"username": self.username,
+    def json(self, reviews=False):
+        user = {"username": self.username,	
                 "email": self.email,
                 "role": str(self.role)}
+        if reviews:
+            user['reviews'] = [review.json() for review in self.reviews]
+        return user    
 
     def delete_from_db(self):
         self.state = False
