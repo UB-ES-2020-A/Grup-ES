@@ -219,7 +219,7 @@ export default {
       return false
     },
     addToLibrary (parameters) {
-      const path = 'https://grup-es.herokuapp.com/library'
+      const path = this.$API_URL + 'library'
       axios.post(path, parameters, {
         auth: {username: this.user.token}
       })
@@ -237,7 +237,7 @@ export default {
         email: this.user.email,
         quantity: quantity
       }
-      const path = 'https://grup-es.herokuapp.com/transaction'
+      const path = this.$API_URL + 'transaction'
       axios.post(path, parameters, {auth: {username: this.user.token}})
         .then((res) => {
           console.log('PAID SUCCESSFULLY')

@@ -82,7 +82,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_pedidos () {
-      const path = 'https://grup-es.herokuapp.com/transactions/' + this.user.email
+      const path = this.$API_URL + 'transactions/' + this.user.email
 
       axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {

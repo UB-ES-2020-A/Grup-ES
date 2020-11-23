@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     get_books () {
-      const path = 'https://grup-es.herokuapp.com/books'
+      const path = this.$API_URL + 'books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
@@ -97,7 +97,7 @@ export default {
       return "No disponible a l'stock"
     },
     reactivateBook (book) {
-      const path = 'https://grup-es.herokuapp.com/book/' + book.isbn
+      const path = this.$API_URL + 'book/' + book.isbn
       const parameters = {
         vendible: true
       }

@@ -161,7 +161,7 @@ export default {
         url_imagen: this.url,
         sinopsis: this.sinopsis
       }
-      const path = 'https://grup-es.herokuapp.com/book'
+      const path = this.$API_URL + 'book'
       axios.post(path, parameters)
         .then((res) => {
           alert('Book ADDED correctly')

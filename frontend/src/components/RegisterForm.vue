@@ -148,7 +148,7 @@ export default {
         email: this.email,
         password: this.password1
       }
-      const path = 'https://grup-es.herokuapp.com/user'
+      const path = this.$API_URL + 'user'
       axios.post(path, parameters)
         .then((res) => {
           this.initForm()
