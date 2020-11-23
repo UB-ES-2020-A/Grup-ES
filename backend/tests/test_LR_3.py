@@ -50,7 +50,6 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             recovery = PasswordRecoveryModel(1)
             recovery.save_to_db()
-
             self.assertEqual(PasswordRecoveryModel.find_by_id(recovery.user_id).json(), recovery.json())
 
     def test_model_add_duplicate_id(self):
