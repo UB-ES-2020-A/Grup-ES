@@ -91,7 +91,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_best_sellers () {
-      const path = 'https://grup-es.herokuapp.com/books?score=true'
+      const path = this.$API_URL + 'books?score=true'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {
@@ -102,7 +102,7 @@ export default {
         })
     },
     load_new_releases () {
-      const path = 'https://grup-es.herokuapp.com/books?score=true'
+      const path = this.$API_URL + 'books?score=true'
       const params = { numBooks: 2, param: 'isbn', order: 'asc' }
       axios.get(path, params)
         .then((res) => {

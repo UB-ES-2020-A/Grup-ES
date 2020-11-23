@@ -113,7 +113,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: lib.book.isbn} })
     },
     load_library () {
-      const path = 'https://grup-es.herokuapp.com/library/' + this.user.email
+      const path = this.$API_URL + 'library/' + this.user.email
       axios.get(path, {
         auth: {username: this.user.token}
       })

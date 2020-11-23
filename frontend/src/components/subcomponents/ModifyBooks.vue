@@ -162,7 +162,7 @@ export default {
         url_imagen: this.url,
         sinopsis: this.sinopsis
       }
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$props.isbnNum
+      const path = this.$API_URL + 'book/' + this.$props.isbnNum
       axios.put(path, parameters)
         .then((res) => {
           alert('Book Modified correctly')
@@ -257,7 +257,7 @@ export default {
       this.checkOk()
     },
     getInfoFromBook () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$props.isbnNum
+      const path = this.$API_URL + 'book/' + this.$props.isbnNum
       axios.get(path)
         .then((res) => {
           this.precio = res.data.book.precio

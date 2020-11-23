@@ -61,7 +61,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_search () {
-      const path = 'https://grup-es.herokuapp.com/search?titulo=' + this.$route.query.titulo + '&score=true'
+      const path = this.$API_URL + 'search?titulo=' + this.$route.query.titulo + '&score=true'
       axios.get(path)
         .then((res) => {
           this.books = res.data.books

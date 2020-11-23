@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     resetPassword () {
-      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
+      const path = this.$API_URL + 'recovery/' + this.key
       const parameters = {
         email: this.user.email,
         new_password: this.pwd1
@@ -64,7 +64,7 @@ export default {
         })
     },
     load_user () {
-      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
+      const path = this.$API_URL + 'recovery/' + this.key
       axios.get(path)
         .then((res) => {
           this.user = res.data.user
