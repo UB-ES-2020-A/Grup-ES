@@ -146,27 +146,28 @@ export default {
   },
   methods: {
     changeUsername () {
-      const path = 'https://grup-es.herokuapp.com/user/' + this.user.email
+      const path = 'http://127.0.0.1:5000/user/' + this.$props.user.email
       const parameters = {
         username: this.username
       }
-      axios.put(path, parameters)
+      axios.put(path, {
+        auth: {username: this.$props.user.token}
+      }, parameters)
         .then((res) => {
           alert('Username Modified correctly')
-          this.clearModal()
         })
         .catch((error) => {
           console.error(error)
-          this.clearModal()
         })
     },
     changePassword () {
-      const path = 'https://grup-es.herokuapp.com/user/' + this.user.email
+      const path = 'https://grup-es.herokuapp.com/user/' + this.$props.user.email
       const parameters = {
         newpassword: this.newpassword,
         password: this.password
       }
-      axios.put(path, parameters)
+      const auth = {username: this.$props.user.token}
+      axios.put(path, auth, parameters)
         .then((res) => {
           alert('Password Modified correctly')
           this.clearModal()
@@ -179,6 +180,7 @@ export default {
     checkUsernameChange () {
       if (this.username.length > 0) {
         this.usernameState = true
+        console.log(this.$props.user.token)
         this.changeUsername()
       } else {
         this.usernameState = false
