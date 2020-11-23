@@ -64,8 +64,8 @@ export default {
         email: this.email,
         password: this.password
       }
-      const path = 'https://grup-es.herokuapp.com/login'
-      const path2 = 'https://grup-es.herokuapp.com/user/' + this.email
+      const path = this.$API_URL + 'login'
+      const path2 = this.$API_URL + 'user/' + this.email
       axios.all([
         axios.post(path, parameters),
         axios.get(path2)

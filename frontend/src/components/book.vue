@@ -128,8 +128,12 @@ export default {
   },
   methods: {
     load_book () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$route.query.bk + '?reviews=true&score=true'
-      axios.get(path)
+      const path = this.$API_URL + 'book/' + this.$route.query.bk
+      const params = {
+        reviews: true,
+        score: true
+      }
+      axios.get(path, { params: params })
         .then((res) => {
           this.single_book = res.data.book
         })
@@ -160,7 +164,7 @@ export default {
       localStorage.setItem('cartItems', JSON.stringify(cartItems))
     },
     submit (book, user) {
-      const path = 'https://grup-es.herokuapp.com/review' + '?isbn=' + this.$route.query.bk + '&email=' + user.email + '&score=' + this.score + '&review=' + this.review
+      const path = this.$API_URL + 'review' + '?isbn=' + this.$route.query.bk + '&email=' + user.email + '&score=' + this.score + '&review=' + this.review
       axios.post(path, {}, {auth: {username: this.user.token}})
         .then((res) => {
           this.review = ''

@@ -209,7 +209,7 @@ export default {
 
     // Search
     get_books () {
-      const path = 'https://grup-es.herokuapp.com/books'
+      const path = this.$API_URL + 'books'
       axios.get(path)
         .then((res) => {
           this.booksquery = res.data
@@ -256,8 +256,8 @@ export default {
       this.isbnState = null
     },
     getAdvancedSearch (parameters) {
-      const path = 'https://grup-es.herokuapp.com/search'
-      axios.get(path, parameters)
+      const path = this.$API_URL + 'search'
+      axios.get(path, { params: parameters })
         .then((res) => {
           this.advancedsearch = res.data
         })

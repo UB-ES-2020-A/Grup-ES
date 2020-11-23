@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     deleteBook () {
-      const path = 'https://grup-es.herokuapp.com/book/' + this.$props.isbnNum
+      const path = this.$API_URL + 'book/' + this.$props.isbnNum
       axios.delete(path)
         .then((res) => {
           alert('Book Removed correctly')

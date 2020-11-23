@@ -49,7 +49,7 @@ export default {
   }),
   methods: {
     sendEmail () {
-      const path = 'https://grup-es.herokuapp.com/recovery'
+      const path = this.$API_URL + 'recovery'
       const parameters = {
         email: this.email
       }
