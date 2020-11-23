@@ -7,7 +7,7 @@
    <br>
    <b-container v-if= "show === true">
       <b-row>
-        <b-col cols="4">
+        <b-col class="text-center" cols="4">
           <br>
           <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
           <br>
@@ -69,8 +69,29 @@
         <div class="text-right">
           <button type="button" class="btn btn-dark" @click="submit(single_book, user)">POST</button>
         </div>
-        <br>
       </form>
+      <hr>
+      <v-row v-for="(review) in this.single_book.reviews" :key="review.user_id">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">user with id {{review.user_id}} commented:</h6>
+            <p class="card-text">{{review.review}}</p>
+          </div>
+        </div>
+        <br>
+      </v-row>
   </b-container>
   </div>
   </div>
@@ -143,6 +164,7 @@ export default {
       axios.post(path, {}, {auth: {username: this.user.token}})
         .then((res) => {
           this.review = ''
+          this.load_book()
         })
         .catch((error) => {
           console.error(error)
