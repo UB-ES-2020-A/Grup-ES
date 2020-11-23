@@ -14,7 +14,6 @@ def parse_user(required_username=True):
     return parser.parse_args()
 
 
-
 def parse_modify_user():
     parser = reqparse.RequestParser(bundle_errors=True)
 
@@ -23,8 +22,9 @@ def parse_modify_user():
     parser.add_argument('new_password', required=False, type=str)
     parser.add_argument('password', required=True, type=str, help="You must enter the password in order to modify "
                                                                   "this field")
-    return parser.parser_args()
-  
+    return parser.parse_args()
+
+
 def parse_reviews():
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('reviews', type=bool, required=False,
