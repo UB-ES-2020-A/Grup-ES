@@ -11,6 +11,11 @@ import datetime as dt
 
 class UnitTestOfUS(BaseTest):
 
+    def tearDown(self):
+        super().tearDown()
+        with self.app.app_context():
+            TransactionsModel.it_transaction = 1
+
     def basic_setup(self):
         self.user = UsersModel("test", "bookshelterES@gmail.com")
         self.user.hash_password("test")
@@ -30,8 +35,8 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
-            TransactionsModel.save_transaction([book2.isbn], [6], self.user.id)
             self.assertEqual(1, len(TransactionsModel.find_by_id(1)))
+            TransactionsModel.save_transaction([book2.isbn], [6], self.user.id)
             self.assertEqual(1, len(TransactionsModel.find_by_id(2)))
 
     def test_model_delete(self):
@@ -87,13 +92,18 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
+            # hi ha dues transaccions amb id 1
             self.assertEqual(201, res.status_code)
-            self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]",
-                             TransactionsModel.find_isbns_by_id(1))
+            transactions = TransactionsModel.find_by_id(1)
+
+            # les dues transaccions equivalen als llibres que acabem de posar
+            self.assertEqual(len(transactions), 2)
+
+            for i in range(len(isbns)):
+                self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
 
     # TEST TASK 3
     # test manual: posar variable config TESTING = False i veure com es reb el mail correctament.
@@ -110,13 +120,17 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
+            # hi ha dues transaccions amb id 1
             self.assertEqual(201, res.status_code)
-            self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]",
-                             TransactionsModel.find_isbns_by_id(1))
+            transactions = TransactionsModel.find_by_id(1)
+
+            # les dues transaccions equivalen als llibres que acabem de posar
+            self.assertEqual(len(transactions), 2)
+            for i in range(len(isbns)):
+                self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
 
     # TEST TASK 6
     def test_get_transactions_user(self):
@@ -132,13 +146,13 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
+            transaction_id = TransactionsModel.it_transaction
 
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            self.assertEqual("ISBNs of books in transaction with id = 1 are [1, 2]",
-                             TransactionsModel.find_isbns_by_id(1))
+            # falta relacio!!!
 
     def test_get_transactions_without_login(self):
         with self.app.app_context():

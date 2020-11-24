@@ -1,6 +1,8 @@
 import datetime as dt
 import json
 
+from sqlalchemy import desc, func
+
 from db import db
 from utils.mail import send_email
 from model.users import UsersModel
@@ -9,7 +11,7 @@ from model.books import BooksModel
 
 class TransactionsModel(db.Model):
     __tablename__ = 'transactions'
-    it_transaction = 1
+    it_transaction = None
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
     isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
@@ -18,9 +20,14 @@ class TransactionsModel(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
-    book = db.relationship('BooksModel', uselist=False, backref='transactions', lazy=True)
+    #transactions = db.relationship('BooksModel', backref='books', lazy=True)
 
     def __init__(self, isbn, id_user, quantity, date=None):
+
+        if TransactionsModel.it_transaction is None:
+            aux = TransactionsModel.query.order_by('id_transaction').first()
+            TransactionsModel.it_transaction = 1 if aux is None else aux.id_transaction
+
         self.id_transaction = self.it_transaction
         self.isbn = isbn
         book = BooksModel.find_by_isbn(isbn)
@@ -61,13 +68,6 @@ class TransactionsModel(db.Model):
     @classmethod
     def find_by_id(cls, id_transaction):
         return cls.query.filter_by(id_transaction=id_transaction).all()
-
-    @classmethod
-    def find_isbns_by_id(cls, id_transaction):
-        isbns = []
-        for transaction in cls.find_by_id(id_transaction):
-            isbns.append(transaction.isbn)
-        return 'ISBNs of books in transaction with id = ' + str(id_transaction) + ' are ' + str(isbns)
 
     @classmethod
     def save_transaction(cls, isbns, quantities, user_id):
