@@ -22,8 +22,51 @@
           type="text"
           :state = usernameState
         ></b-form-input>
+        <b-form-group
+          label="Password"
+          label-for="usernamepwd-input"
+          invalid-feedback="Camp a omplenar"
+        >
+        <b-form-input
+          id="usernamepwd-input"
+          v-model="usernamepwd"
+          type="password"
+          :state = usernamepwdState
+        ></b-form-input>
       </b-form-group>
-      <b-button size="md" @click = "checkUsernameChange" variant="danger">Canviar nom d'usuari</b-button>
+      <b-button size="md" @click = "checkUsernameChange()" variant="danger">Canviar nom d'usuari</b-button>
+      </b-col>
+      </b-row>
+      </form>
+      </b-tab>
+      <b-tab title="Correu electrònic">
+       <form ref="form">
+       <b-row>
+       <b-col>
+        <b-form-group
+          label="Nou correu"
+          label-for="newemail-input"
+          invalid-feedback="Camp a omplenar"
+        >
+        <b-form-input
+          id="newemail-input"
+          v-model="newEmail"
+          type="email"
+          :state = newEmailState
+        ></b-form-input>
+        <b-form-group
+          label="Password"
+          label-for="emailpwd-input"
+          invalid-feedback="Camp a omplenar"
+        >
+        <b-form-input
+          id="emailpwd-input"
+          v-model="emailPwdpwd"
+          type="password"
+          :state = emailPwdState
+        ></b-form-input>
+      </b-form-group>
+      <b-button size="md" @click = "checkChangeEmail()" variant="danger">Canviar correu electrònic</b-button>
       </b-col>
       </b-row>
       </form>
@@ -129,65 +172,97 @@ export default {
   data () {
     return {
       username: '',
+      usernamepwd: '',
+      newEmail: '',
+      emailPwd: '',
       email: '',
-      password: '',
+      currentpassword: '',
       newpassword: '',
       newpassword2: '',
       pass: '',
       confirmpass: '',
       usernameState: null,
+      usernamepwdState: null,
       passwordState: null,
       passwordnewState: null,
       passwordnew2State: null,
       emailState: null,
       passdeleteState: null,
-      confirmpassState: null
+      confirmpassState: null,
+      newEmailState: null,
+      emailPwdState: null
     }
   },
   methods: {
     changeUsername () {
-      const path = 'http://127.0.0.1:5000/user/' + this.$props.user.email
+      const path = this.$API_URL + 'user/' + this.$props.user.email
       const parameters = {
-        username: this.username
+        username: this.username,
+        password: this.usernamepwd
       }
-      axios.put(path, {
-        auth: {username: this.$props.user.token}
-      }, parameters)
+      const auth = {'auth': {
+        username: this.$props.user.token}
+      }
+      axios.put(path, parameters, auth)
         .then((res) => {
           alert('Username Modified correctly')
+          this.$bvModal.hide('settings')
         })
         .catch((error) => {
           console.error(error)
         })
     },
     changePassword () {
-      const path = 'https://grup-es.herokuapp.com/user/' + this.$props.user.email
+      const path = this.$API_URL + 'user/' + this.$props.user.email
       const parameters = {
-        newpassword: this.newpassword,
+        new_password: this.newpassword,
         password: this.password
       }
-      const auth = {username: this.$props.user.token}
-      axios.put(path, auth, parameters)
+      axios.put(path, parameters, {
+        auth: {username: this.$props.user.token}
+      })
         .then((res) => {
           alert('Password Modified correctly')
-          this.clearModal()
+          this.$bvModal.hide('settings')
         })
         .catch((error) => {
           console.error(error)
-          this.clearModal()
+        })
+    },
+    changeEmail () {
+      const path = this.$API_URL + 'user/' + this.$props.user.email
+      const parameters = {
+        email: this.newEmail,
+        password: this.password
+      }
+      axios.put(path, parameters, {
+        auth: {username: this.$props.user.token}
+      })
+        .then((res) => {
+          alert('Email Modified correctly')
+          this.$bvModal.hide('settings')
+        })
+        .catch((error) => {
+          console.error(error)
         })
     },
     checkUsernameChange () {
       if (this.username.length > 0) {
         this.usernameState = true
-        console.log(this.$props.user.token)
-        this.changeUsername()
       } else {
         this.usernameState = false
       }
+      if (this.usernamepwd.length > 0) {
+        this.usernamepwdState = true
+      } else {
+        this.usernamepwdState = false
+      }
+      if (this.usernameState && this.usernamepwdState) {
+        this.changeUsername()
+      }
     },
     checkChangePassword () {
-      if (this.password.length > 0) {
+      if (this.currentpassword.length > 0) {
         this.passwordState = true
       } else {
         this.passwordState = false
@@ -203,6 +278,31 @@ export default {
       if (this.passwordState && this.newpasswordState && this.newpassword2State) {
         this.changePassword()
       }
+    },
+    checkChangeEmail () {
+      if (this.newEmail.length > 0) {
+        this.newEmailState = true
+      } else {
+        this.currentEmailState = false
+      }
+      if (this.emailPwd.length > 0) {
+        this.emailPwdState = true
+      } else {
+        this.emailPwdState = false
+      }
+      if (this.emailPwdState && this.newEmailState) {
+        this.changeEmail()
+      }
+    },
+    changeLocalStorage (username, email) {
+      var user = JSON.parse(localStorage.getItem('user_session'))
+      if (username) {
+        user.username = username
+      }
+      if (email) {
+        user.email = email
+      }
+      localStorage.setItem('user_session', JSON.stringify(user))
     }
   }
 }
