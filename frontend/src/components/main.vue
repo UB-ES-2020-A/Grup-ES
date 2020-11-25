@@ -7,15 +7,15 @@
 <div class="body">
 <b-container v-if= "show === true">
   <b-carousel
-  id="carousel-no-animation"
-  style="text-shadow: 0px 0px 2px #000"
+  id="carousel"
+  style="text-shadow: 0px 0px 2px #0000"
   :interval="2000"
-  img-width="1100px"
-  img-height="600px"
+  img-width="550"
+  img-height="300"
   >
   <b-carousel-slide v-for="i in 2" :key = "i"
-      :img-src="loadSlides(i)"
-      ></b-carousel-slide>
+      :img-src="loadSlides(i)" style="height:550; width:300;"
+  ></b-carousel-slide>
   <b-carousel>
 </b-container>
 <br>
@@ -146,7 +146,6 @@ export default {
     },
     loadSlides (imgnum) {
       var image = require('../assets/carousel/book_' + imgnum + '.jpg')
-      console.log(image)
       return image
     }
   }

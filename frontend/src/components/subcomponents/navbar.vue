@@ -1,7 +1,9 @@
 <template>
   <div>
    <b-navbar toggleable="lg" type="dark" variant="info">
-    <b-navbar-brand @click="goStart()">BookShelter</b-navbar-brand>
+    <b-navbar-brand @click="goStart()">
+    <img src="../../assets/Bookshelter.png" class="d-inline-block align-top" width="200" height="60">
+    </b-navbar-brand>
     <b-nav-form>
        <b-form-input autocomplete="off" v-model="search" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
        <datalist id="booksearch">
