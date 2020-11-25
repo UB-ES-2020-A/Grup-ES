@@ -36,7 +36,7 @@ class UnitTestOfUS(BaseTest):
 
             TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
             self.assertEqual(1, len(TransactionsModel.find_by_id(1)))
-            TransactionsModel.save_transaction([book2.isbn], [6], self.user.id)
+            TransactionsModel.save_transaction([book2.isbn], [1], self.user.id)
             self.assertEqual(1, len(TransactionsModel.find_by_id(2)))
 
     def test_model_delete(self):
@@ -105,6 +105,42 @@ class UnitTestOfUS(BaseTest):
             for i in range(len(isbns)):
                 self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
 
+    def test_post_no_stock(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 0, 13.1, "book2")
+            book2.save_to_db()
+
+            isbns = [self.book.isbn, book2.isbn]
+            quantities = [1, 100]  # no stock!
+            dataTransaction = {
+                "isbns": isbns,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(500, res.status_code)
+
+    def test_post_wrong_isbn(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 0, 13.1, "book2")
+            book2.save_to_db()
+
+            isbns = [100, book2.isbn]
+            quantities = [1, 100]  # no stock!
+            dataTransaction = {
+                "isbns": isbns,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(404, res.status_code)
+
     # TEST TASK 3
     # test manual: posar variable config TESTING = False i veure com es reb el mail correctament.
     def test_order_mail(self):
@@ -146,13 +182,18 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            transaction_id = TransactionsModel.it_transaction
 
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
             # falta relacio!!!
+
+            res = self.client.get(f"/transactions/{self.user.email}", headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(2, len(self.user.transactions))
 
     def test_get_transactions_without_login(self):
         with self.app.app_context():

@@ -45,8 +45,8 @@ class Transactions(Resource):
                 return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
         try:
             transactions = TransactionsModel.save_transaction(data['isbns'], data['quantities'], user.id)
-        except Exception:
-            return {'message': 'Error saving the transaction'}, 500
+        except Exception as ex:
+            return {'message': str(ex)}, 500
         return {'transactions': transactions}, 201
 
 
