@@ -11,6 +11,7 @@ import changePassword from '@/components/changePassword.vue'
 import PayMethod from '@/components/PayMethod.vue'
 import Search from '@/components/Search.vue'
 import Stock from '@/components/Stock.vue'
+import UserProfile from '@/components/UserProfile.vue'
 
 Vue.use(Router)
 
@@ -71,6 +72,11 @@ export default new Router({
       path: '/shopstock',
       name: 'Stock',
       component: Stock
+    },
+    {
+      path: '/profile',
+      name: 'UserProfile',
+      component: UserProfile
     }
   ]
 })
