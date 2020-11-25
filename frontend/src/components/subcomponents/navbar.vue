@@ -67,18 +67,30 @@
       <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
         <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
-        <li class="nav-item"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
+        <li class="nav-item" v-if= "session_boolean === false"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
         <li class="nav-item" v-if= "session_boolean === true">
-          <b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
-            <b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
-            <b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
-            <div class="dropdown-divider"></div>
-            <b-dropdown-item v-if="user.role === adminRole" @click="goStock()">Stock</b-dropdown-item>
-            <b-dropdown-item @click="goModBook()">Modificar libro</b-dropdown-item>
-            <b-dropdown-item @click="goDelBook()">Eliminar libro</b-dropdown-item>
-          </b-nav-item-dropdown>
+          <b-button v-b-toggle.sidebar-right> {{ this.user.username }}</b-button>
         </li>
        </ul>
+       <div>
+           <b-sidebar id="sidebar-right" text-variant="light" title="BookShelter" bg-variant="dark" right shadow>
+             <div class="px-3 py-2">
+                <h4> Hola {{ this.user.username }} </h4>
+                <nav class="mb-3">
+                <b-nav vertical>
+                  <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
+                  <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
+                  <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
+                </b-nav>
+                </nav>
+             </div>
+             <template #footer="{ hide }">
+             <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
+              <b-button size="sm"  variant="danger" @click="logIn()">{{ session_status }}</b-button>
+             </div>
+            </template>
+          </b-sidebar>
+      </div>
     </b-navbar-nav>
    </b-navbar>
    <!-- cart -->

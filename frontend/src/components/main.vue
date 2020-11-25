@@ -6,10 +6,19 @@
 <br>
 <div class="body">
 <b-container v-if= "show === true">
- <img :src="'https://placehold.it/1100x300/?text=' + picturestock" alt="">
+  <b-carousel
+  id="carousel-no-animation"
+  style="text-shadow: 0px 0px 2px #000"
+  :interval="2000"
+  img-width="1100px"
+  img-height="600px"
+  >
+  <b-carousel-slide v-for="i in 2" :key = "i"
+      :img-src="loadSlides(i)"
+      ></b-carousel-slide>
+  <b-carousel>
 </b-container>
 <br>
-
 <div class="container" v-if= "show === true">
    <h3> Best sellers </h3>
    <b-row>
@@ -70,6 +79,7 @@
 import axios from 'axios'
 import navbar from './subcomponents/navbar'
 import foot from './subcomponents/foot'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 export default {
   components: {
@@ -133,6 +143,11 @@ export default {
     },
     getURL (book) {
       return book.url_imagen
+    },
+    loadSlides (imgnum) {
+      var image = require('../assets/carousel/book_' + imgnum + '.jpg')
+      console.log(image)
+      return image
     }
   }
 }
