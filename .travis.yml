@@ -1,25 +1,19 @@
 language: python
 python:
-  - "3.6"      # current default Python on Travis CI
-# command to install dependencies
+- '3.6'
 install:
-  - pip install -r deployment/requirements.txt
-# command to run tests
+- pip install -r deployment/requirements.txt
 script:
-  - python3 -m unittest discover -v backend
-# deploy
+- python3 -m unittest discover -v backend
 before_deploy:
-  - npm install --prefix frontend
-  - npm run build --prefix frontend
-  - bash build.sh
-  - cd deployment
-  - git add *
-  - git add .
-  - git commit -a -m "Deployment"
-
+- bash build.sh
 deploy:
   provider: heroku
-  api_key: 2bbf0692-5e1c-42ca-959c-e200af90f6b6
-  strategy: git
+  api_key:
+    secure: VdRd9zimKRsUHiXgd2VTCWjQn1QpaZzQMlm74Hpe4KO2MFuLRgm/RiNB0mvDtTOt6bQQxf7lSTSuS8eVj4eypZ+6ws3oDbGOMl/5XlkizKOUzUjLR/LRr3d4BtqaBBbQ3DmO/cHE+AElsYUCpW8FZYTEj1CD0MNvvk04Dm+sTL8g1GuU6yRxxBzCJaLlTBJmVAbtj6HftG78giGK1m16uKOFveb0o91vJirbmzrfc1eGI63dj8WIKroLAJQ1Wk4MSKuVa5fd4OKH8Lcm9RBE0MuVcya9nmDZHdEcXqqvUzaFvj+8feoHDA8McjuK/cTvDT2miOFmS10OB6nw6D0Yn5R5DBuV5yIUw1d4chslJS3T5yNxOIgmsNYlLPCPBrvFii0A9cVtHFNG3f9H8szkKUxPwO2BurfWPD+Tef24JpnIax7InBtD/J01bDtyh4oVHpFXXWDmKFteVU1HmFjaEamNeXKATU+Sa4ErOSTwR3q3z8/bXzZMWcECkYHhdW3HW8F+nLouSJ8jI8U+04QwMYEot6B6bKkHSEd4C7dugHxoXwgp6JLSJ00uhTQf3fut2Zpc8+fbQIQBKBlEDsn8Tk7Y1gZiHsCH6r55D9ESKvJki/g15x/haOxsMUm5zezxakvkxtlNNGXG9fVveDJ+AMU+bvFNF/Us4nVvkhHSfPU=
+  skip_cleanup: true
   app:
     main: grup-es
+    dev: grup-es-dev
+  run:
+  - bash migrate.sh
