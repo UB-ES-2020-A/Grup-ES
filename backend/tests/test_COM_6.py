@@ -1,12 +1,12 @@
 import base64
 import unittest
 import json
+import datetime as dt
 
 from model.books import BooksModel
 from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
-import datetime as dt
 
 
 class UnitTestOfUS(BaseTest):
@@ -102,7 +102,7 @@ class UnitTestOfUS(BaseTest):
             # les dues transaccions equivalen als llibres que acabem de posar
             self.assertEqual(len(transactions), 2)
 
-            for i in range(len(isbns)):
+            for i, isbn in enumerate(isbns):
                 self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
 
     def test_post_no_stock(self):
@@ -165,7 +165,8 @@ class UnitTestOfUS(BaseTest):
 
             # les dues transaccions equivalen als llibres que acabem de posar
             self.assertEqual(len(transactions), 2)
-            for i in range(len(isbns)):
+
+            for i, isbn in enumerate(isbns):
                 self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
 
     # TEST TASK 6
@@ -194,6 +195,9 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(200, res.status_code)
             self.assertEqual(2, len(self.user.transactions))
+            expected = [transaction.json() for transaction in TransactionsModel.find_by_id(1)]
+            real_output = [transaction.json() for transaction in self.user.transactions]
+            self.assertEqual(expected, real_output)
 
     def test_get_transactions_without_login(self):
         with self.app.app_context():

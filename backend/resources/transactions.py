@@ -5,7 +5,6 @@ from flask_restful import Resource
 from model.books import BooksModel
 from model.users import auth, UsersModel
 from model.transactions import TransactionsModel
-from utils.mail import send_email
 
 
 def parse_transaction():
@@ -58,5 +57,4 @@ class TransactionsUser(Resource):
             return {"message": "User with ['email': " + email + "] Not Found"}, 404
         if g.user != user:
             return {"message": "Invalid user, can only be yourself"}, 401
-        transactions = TransactionsModel.query.filter_by(id_user=user.id).all()
-        return {'transactions': [transaction.json() for transaction in transactions]}, 200
+        return {'transactions': [transaction.json() for transaction in user.transactions]}, 200

@@ -1,8 +1,6 @@
 import datetime as dt
 import json
 
-from sqlalchemy import desc, func
-
 from db import db
 from utils.mail import send_email
 from model.users import UsersModel
