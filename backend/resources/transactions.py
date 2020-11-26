@@ -2,23 +2,23 @@ from flask import g
 from flask_restful import reqparse
 from flask_restful import Resource
 
+from model.books import BooksModel
 from model.users import auth, UsersModel
 from model.transactions import TransactionsModel
+from utils.mail import send_email
 
 
-def parse_transaction(minimal=False):
+def parse_transaction():
     parser = reqparse.RequestParser(bundle_errors=True)
 
-    parser.add_argument('isbn', type=int, required=not minimal,
-                        help="In this field goes the isbn of the book, cannot be left blank")
-    parser.add_argument('price', type=float, required=not minimal,
-                        help="In this field goes the price of the book, cannot be left blank")
-    parser.add_argument('email', type=str, required=not minimal,
+    parser.add_argument('email', type=str,
                         help="In this field goes the email of the user, cannot be left blank")
-    parser.add_argument('quantity', type=str, required=not minimal,
-                        help="In this field goes the quantity of books")
-
+    parser.add_argument('isbns', type=int, action='append',
+                        help="In this field goes the isbns of the books, cannot be left blank")
+    parser.add_argument('quantities', type=int, action='append',
+                        help="In this field goes the quantity of each book, cannot be left blank")
     return parser.parse_args()
+
 
 class Transactions(Resource):
     @auth.login_required
@@ -33,19 +33,21 @@ class Transactions(Resource):
     @auth.login_required
     def post(self):
         data = parse_transaction()
+        dataTransaction = {}
         user = UsersModel.find_by_email(data['email'])
         if user is None:
             return {"message": "User with ['id_user': " + str(user.id_user) + "] Not Found"}, 404
         if user != g.user:
             return {"message": "Invalid transaction, can only post yours"}, 401
-        data['id_user'] = user.id
-        del data['email']
+        for isbn in data['isbns']:
+            book = BooksModel.find_by_isbn(isbn)
+            if book is None:
+                return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
         try:
-            transaction = TransactionsModel(**data)
-            transaction.save_to_db()
-        except Exception as e:
-            return {"message": str(e)}, 500
-        return transaction.json(), 201
+            transactions = TransactionsModel.save_transaction(data['isbns'], data['quantities'], user.id)
+        except Exception as ex:
+            return {'message': str(ex)}, 500
+        return {'transactions': transactions}, 201
 
 
 class TransactionsUser(Resource):
