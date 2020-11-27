@@ -33,17 +33,37 @@ class UnitTestOfUS(BaseTest):
             self.basic_setup()
             book2 = BooksModel(2, 1, 1, "book2")
             book2.save_to_db()
+            expected = TransactionsModel.save_transaction(self.user.id, [self.book.isbn], [self.book.precio], [1])
+            self.assertEqual(expected[0], TransactionsModel.find_by_id_and_isbn(1, self.book.isbn).json())
 
-            TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
-            self.assertEqual(1, len(TransactionsModel.find_by_id(1)))
-            TransactionsModel.save_transaction([book2.isbn], [1], self.user.id)
-            self.assertEqual(1, len(TransactionsModel.find_by_id(2)))
+            expected = TransactionsModel.save_transaction(self.user.id, [book2.isbn], [self.book.precio], [1])
+            self.assertEqual(expected[0], TransactionsModel.find_by_id_and_isbn(2, book2.isbn).json())
+
+    def test_model_add_some(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 1, 1, "book2")
+            book2.save_to_db()
+
+            expected = TransactionsModel.save_transaction(self.user.id, [self.book.isbn, book2.isbn],
+                                                          [self.book.precio, book2.precio], [1, 1])
+            self.assertEqual(expected[0], TransactionsModel.find_by_id_and_isbn(1, self.book.isbn).json())
+            self.assertEqual(expected[1], TransactionsModel.find_by_id_and_isbn(1, book2.isbn).json())  # same id
+
+    def test_model_add_no_stock(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 1, 1, "book2")
+            book2.save_to_db()
+
+            with self.assertRaises(Exception):
+                TransactionsModel.save_transaction(self.user.id, [self.book.isbn], [self.book.precio], [100])
 
     def test_model_delete(self):
         with self.app.app_context():
             self.basic_setup()
 
-            TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
+            TransactionsModel.save_transaction(self.user.id, [self.book.isbn], [self.book.precio], [1])
             self.assertEqual(1, len(TransactionsModel.query.all()))
 
             TransactionsModel.query.filter_by(id_transaction=1).first().delete_from_db()
@@ -53,7 +73,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
+            TransactionsModel.save_transaction(self.user.id, [self.book.isbn], [self.book.precio], [1])
             self.assertEqual(1, len(TransactionsModel.query.all()))
 
             data = {"id_transaction": 10}  # id = 10
@@ -61,8 +81,8 @@ class UnitTestOfUS(BaseTest):
             expected_output = {'date': dt.datetime.today().strftime("%d-%m-%Y"),
                                'id_transaction': 10,
                                'id_user': 1,
-                               'isbn': 1,
-                               'price': 1.0,
+                               'isbn': self.book.isbn,
+                               'price': self.book.precio,
                                'quantity': 1}
 
             self.assertEqual(expected_output, TransactionsModel.find_by_id(data["id_transaction"])[0].json())
@@ -71,7 +91,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            TransactionsModel.save_transaction([self.book.isbn], [1], self.user.id)
+            TransactionsModel.save_transaction(self.user.id, [self.book.isbn], [self.book.precio], [1])
             self.assertEqual(1, len(TransactionsModel.query.all()))
 
             data = {"id_transaction": 'string'}  # must be an integer
@@ -86,24 +106,26 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
             quantities = [1, 1]
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
-            # hi ha dues transaccions amb id 1
             self.assertEqual(201, res.status_code)
+            # hi ha dues transaccions amb id 1
             transactions = TransactionsModel.find_by_id(1)
-
-            # les dues transaccions equivalen als llibres que acabem de posar
             self.assertEqual(len(transactions), 2)
 
+            # les dues transaccions equivalen als llibres que acabem de posar
             for i, isbn in enumerate(isbns):
-                self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
+                self.assertEqual(TransactionsModel.find_by_id_and_isbn(1, isbn).json(),
+                                 json.loads(res.data)['transactions'][i])
 
     def test_post_no_stock(self):
         with self.app.app_context():
@@ -112,16 +134,18 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
             quantities = [1, 100]  # no stock!
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
-            self.assertEqual(500, res.status_code)
+            self.assertEqual(404, res.status_code)
 
     def test_post_wrong_isbn(self):
         with self.app.app_context():
@@ -129,10 +153,12 @@ class UnitTestOfUS(BaseTest):
             book2 = BooksModel(2, 0, 13.1, "book2")
             book2.save_to_db()
 
-            isbns = [100, book2.isbn]
-            quantities = [1, 100]  # no stock!
+            isbns = [100, book2.isbn]  # wrong isbn
+            prices = [self.book.precio, book2.precio]
+            quantities = [1, 1]
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }
@@ -150,24 +176,26 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
             quantities = [1, 1]
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }
             res = self.client.post("/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
-            # hi ha dues transaccions amb id 1
             self.assertEqual(201, res.status_code)
+            # hi ha dues transaccions amb id 1
             transactions = TransactionsModel.find_by_id(1)
-
-            # les dues transaccions equivalen als llibres que acabem de posar
             self.assertEqual(len(transactions), 2)
 
+            # les dues transaccions equivalen als llibres que acabem de posar
             for i, isbn in enumerate(isbns):
-                self.assertEqual(transactions[i].isbn, BooksModel.find_by_isbn(isbns[i]).isbn)
+                self.assertEqual(TransactionsModel.find_by_id_and_isbn(1, isbn).json(),
+                                 json.loads(res.data)['transactions'][i])
 
     # TEST TASK 6
     def test_get_transactions_user(self):
@@ -177,9 +205,11 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
             quantities = [1, 1]
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }
@@ -188,13 +218,15 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            # falta relacio!!!
 
             res = self.client.get(f"/transactions/{self.user.email}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
+            # l'usuari te dues transactions
             self.assertEqual(2, len(self.user.transactions))
+
+            # comprovem que son les que hem acabat d'afegir
             expected = [transaction.json() for transaction in TransactionsModel.find_by_id(1)]
             real_output = [transaction.json() for transaction in self.user.transactions]
             self.assertEqual(expected, real_output)
@@ -223,9 +255,11 @@ class UnitTestOfUS(BaseTest):
             book2.save_to_db()
 
             isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
             quantities = [1, 1]
             dataTransaction = {
                 "isbns": isbns,
+                'prices': prices,
                 'quantities': quantities,
                 "email": self.user.email,
             }

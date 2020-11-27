@@ -14,6 +14,8 @@ def parse_transaction():
                         help="In this field goes the email of the user, cannot be left blank")
     parser.add_argument('isbns', type=int, action='append',
                         help="In this field goes the isbns of the books, cannot be left blank")
+    parser.add_argument('prices', type=float, action='append',
+                        help="In this field goes the prices of the books, cannot be left blank")
     parser.add_argument('quantities', type=int, action='append',
                         help="In this field goes the quantity of each book, cannot be left blank")
     return parser.parse_args()
@@ -32,18 +34,20 @@ class Transactions(Resource):
     @auth.login_required
     def post(self):
         data = parse_transaction()
-        dataTransaction = {}
         user = UsersModel.find_by_email(data['email'])
         if user is None:
             return {"message": "User with ['id_user': " + str(user.id_user) + "] Not Found"}, 404
         if user != g.user:
             return {"message": "Invalid transaction, can only post yours"}, 401
-        for isbn in data['isbns']:
+        for isbn, quantity in zip(data['isbns'], data['quantities']):
             book = BooksModel.find_by_isbn(isbn)
             if book is None:
                 return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
+            if quantity > book.stock:
+                return {"message": "Not enough stock for book with 'isbn': " + str(isbn) + "only "
+                                   + str(book.stock) + " available"}, 404
         try:
-            transactions = TransactionsModel.save_transaction(data['isbns'], data['quantities'], user.id)
+            transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'], data['quantities'])
         except Exception as ex:
             return {'message': str(ex)}, 500
         return {'transactions': transactions}, 201
