@@ -39,6 +39,7 @@ class TransactionsModel(db.Model):
         atr = self.__dict__.copy()
         del atr["_sa_instance_state"]
         atr['date'] = self.date.strftime('%d-%m-%Y')
+        atr['book'] = BooksModel.find_by_isbn(atr['isbn']).json()
         return atr
 
     def save_to_db(self):
@@ -71,10 +72,10 @@ class TransactionsModel(db.Model):
     def save_transaction(cls, user_id, isbns, prices, quantities):
         transactions = []
         for isbn, price, quantity in zip(isbns, prices, quantities):
-            transaction = TransactionsModel(user_id, isbn, price, quantity)
-            transactions.append(transaction.json())
             book = BooksModel.find_by_isbn(isbn)
             cls.check_stock(book, quantity)
+            transaction = TransactionsModel(user_id, isbn, price, quantity)
+            transactions.append(transaction.json())
             db.session.add(transaction)
 
         cls.it_transaction += 1

@@ -83,6 +83,7 @@ class UnitTestOfUS(BaseTest):
                                'id_user': 1,
                                'isbn': self.book.isbn,
                                'price': self.book.precio,
+                               'book': self.book.json(),
                                'quantity': 1}
 
             self.assertEqual(expected_output, TransactionsModel.find_by_id(data["id_transaction"])[0].json())
