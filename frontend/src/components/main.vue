@@ -67,6 +67,29 @@
       </b-col>
       </b-row>
   </div>
+  <div class="container" v-if= "show === true">
+     <h3> Top Rated </h3>
+     <b-row>
+       <b-col  v-for="(book) in top_rated" :key="book.isbn">
+         <br>
+         <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
+         <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
+         <h5>{{ book.autor }}</h5>
+         <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
+         <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
+         <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
+         <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
+         <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
+         <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
+         <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
+         <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
+         <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
+         <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
+         <h6>{{ book.precio }}</h6>
+         <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+         </b-col>
+     </b-row>
+  </div>
 <!-- footer -->
 </div>
 <br>
@@ -90,6 +113,7 @@ export default {
     return {
       best_sellers: [],
       new_releases: [],
+      top_rated: [],
       show: true
     }
   },
@@ -112,6 +136,17 @@ export default {
         })
     },
     load_new_releases () {
+      const path = this.$API_URL + 'books'
+      const params = { numBooks: 2, param: 'isbn', order: 'asc', score: true }
+      axios.get(path, { params: params })
+        .then((res) => {
+          this.new_releases = res.data.books
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    load_top_rated () {
       const path = this.$API_URL + 'books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc', score: true }
       axios.get(path, { params: params })
