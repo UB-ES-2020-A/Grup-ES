@@ -3,6 +3,7 @@ from flask import g
 from model.users import UsersModel, auth, Roles
 from model.library import LibraryModel, LibraryType, State
 from model.books import BooksModel
+from utils.lock import lock
 
 
 def convert_option_to_enum(data):
@@ -76,11 +77,11 @@ class Library(Resource):
 
     @auth.login_required
     def get(self, email):
-        user = check_user(email)
-
         library_type = parse_library_type()
+        with lock:
+            user = check_user(email)
 
-        library = LibraryModel.query.filter_by(user_id=user.id, library_type=library_type).all()
+            library = LibraryModel.query.filter_by(user_id=user.id, library_type=library_type).all()
         return {"library": list(map(lambda entry: entry.json(), library))}, 200
 
 
@@ -89,34 +90,35 @@ class LibraryEntry(Resource):
     @auth.login_required
     def post(self, email):
         data = parse_entry()
-        user = check_user(email)
+        with lock:
+            user = check_user(email)
 
-        if not BooksModel.find_by_isbn(data['isbn']):
-            return {"message": f"Book with ['isbn': {data['isbn']}] Not Found"}, 404
+            if not BooksModel.find_by_isbn(data['isbn']):
+                return {"message": f"Book with ['isbn': {data['isbn']}] Not Found"}, 404
 
-        library = LibraryModel.find_by_id_and_isbn(user.id, data['isbn'])
-        if library is not None:
-            return {"message": f"Entry with ['email': {email}, 'isbn': {data['isbn']}] already exists"}, 409
+            if LibraryModel.find_by_id_and_isbn(user.id, data['isbn']) is not None:
+                return {"message": f"Entry with ['email': {email}, 'isbn': {data['isbn']}] already exists"}, 409
 
-        data['user_id'] = user.id
-        try:
-            entry = LibraryModel(**data)
-            entry.save_to_db()
-        except Exception as e:
-            return {"message": str(e)}, 500
+            data['user_id'] = user.id
+            try:
+                entry = LibraryModel(**data)
+                entry.save_to_db()
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return entry.json(), 201
 
     @auth.login_required
     def put(self, email, isbn):
-        library = check_keys(email, isbn)
         data = parse_entry(False)
+        with lock:
+            library = check_keys(email, isbn)
 
-        del data['isbn']
-        try:
-            library.update_from_db(data)
-        except Exception as e:
-            return {"message": str(e)}, 500
+            del data['isbn']
+            try:
+                library.update_from_db(data)
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made visible"}, 200
 
@@ -125,28 +127,30 @@ class LibraryVisibility(Resource):
 
     @auth.login_required
     def post(self, email, isbn):
-        library = check_keys(email, isbn)
+        with lock:
+            library = check_keys(email, isbn)
 
-        if library.visible is True:
-            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already visible"}, 409
+            if library.visible is True:
+                return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already visible"}, 409
 
-        try:
-            library.change_visible_db(True)
-        except Exception as e:
-            return {"message": str(e)}, 500
+            try:
+                library.change_visible_db(True)
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made visible"}, 200
 
     @auth.login_required
     def delete(self, email, isbn):
-        library = check_keys(email, isbn)
+        with lock:
+            library = check_keys(email, isbn)
 
-        if library.visible is False:
-            return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already not visible"}, 409
+            if library.visible is False:
+                return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] is already not visible"}, 409
 
-        try:
-            library.change_visible_db(False)
-        except Exception as e:
-            return {"message": str(e)}, 500
+            try:
+                library.change_visible_db(False)
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made not visible"}, 200

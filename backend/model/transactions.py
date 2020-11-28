@@ -12,13 +12,13 @@ class TransactionsModel(db.Model):
     it_transaction = None
 
     id_transaction = db.Column(db.Integer(), primary_key=True)
-    id_user = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
     isbn = db.Column(db.BigInteger(), db.ForeignKey('books.isbn'), primary_key=True)
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, id_user, isbn, price, quantity, date=None):
+    def __init__(self, user_id, isbn, price, quantity, date=None):
 
         if TransactionsModel.it_transaction is None:
             aux = TransactionsModel.query.order_by('id_transaction').first()
@@ -27,7 +27,8 @@ class TransactionsModel(db.Model):
         self.id_transaction = self.it_transaction
         self.isbn = isbn
         self.price = price
-        self.id_user = id_user
+        self.user_id = user_id
+
         self.quantity = quantity
         if date is None:
             self.date = dt.datetime.now()
@@ -59,6 +60,14 @@ class TransactionsModel(db.Model):
                 else:
                     raise Exception
         db.session.commit()
+
+    def send_confirmation_mail(self):
+        recipient = UsersModel.find_by_id(self.user_id).email
+        quantity = str(self.quantity)
+        isbn = str(self.isbn)
+        subject = 'Order confirmation'
+        message = 'Has comprat ' + quantity + ' llibre/s amb isbn ' + isbn
+        send_email(recipient, subject, message)
 
     @classmethod
     def find_by_id(cls, id_transaction):

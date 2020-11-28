@@ -80,7 +80,7 @@ class UnitTestOfUS(BaseTest):
             TransactionsModel.query.filter_by(id_transaction=1).first().update_from_db(data)
             expected_output = {'date': dt.datetime.today().strftime("%d-%m-%Y"),
                                'id_transaction': 10,
-                               'id_user': 1,
+                               'user_id': 1,
                                'isbn': self.book.isbn,
                                'price': self.book.precio,
                                'book': self.book.json(),
