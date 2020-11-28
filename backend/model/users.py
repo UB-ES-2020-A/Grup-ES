@@ -32,6 +32,7 @@ class UsersModel(db.Model):
 
     library = db.relationship('LibraryModel', backref='library', lazy=True)
     reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
+    transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
@@ -50,12 +51,12 @@ class UsersModel(db.Model):
             db.session.commit()
 
     def json(self, reviews=False):
-        user = {"username": self.username,	
+        user = {"username": self.username,
                 "email": self.email,
                 "role": str(self.role)}
         if reviews:
             user['reviews'] = [review.json() for review in self.reviews]
-        return user    
+        return user
 
     def delete_from_db(self):
         self.state = False
@@ -123,4 +124,4 @@ class UsersModel(db.Model):
 
     @auth.get_user_roles
     def get_user_roles(user):
-        return user.role
+        return user.role.name

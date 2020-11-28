@@ -35,7 +35,7 @@ def upgrade():
     sa.Column('id_transaction', sa.Integer(), nullable=False),
     sa.Column('isbn', sa.BigInteger(), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('id_user', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id_transaction')
