@@ -96,6 +96,9 @@ class LibraryEntry(Resource):
             if not BooksModel.find_by_isbn(data['isbn']):
                 return {"message": f"Book with ['isbn': {data['isbn']}] Not Found"}, 404
 
+            if LibraryModel.find_by_id_and_isbn(user.id, data['isbn']) is not None:
+                return {"message": f"Entry with ['email': {email}, 'isbn': {data['isbn']}] already exists"}, 409
+
             data['user_id'] = user.id
             try:
                 entry = LibraryModel(**data)

@@ -5,6 +5,7 @@ from model.books import BooksModel
 
 
 class State(Enum):
+    Nan = 0
     Pending = 1
     Reading = 2
     Finished = 3
