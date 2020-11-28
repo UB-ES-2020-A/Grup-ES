@@ -219,7 +219,7 @@ export default {
       return false
     },
     addToLibrary (parameters) {
-      const path = this.$API_URL + 'library'
+      const path = this.$API_URL + 'library/' + this.user.email
       axios.post(path, parameters, {
         auth: {username: this.user.token}
       })
@@ -232,10 +232,10 @@ export default {
     },
     post_transaction (book, quantity) {
       const parameters = {
-        isbn: book.isbn,
-        price: book.precio,
+        isbns: book.isbn,
+        prices: book.precio,
         email: this.user.email,
-        quantity: quantity
+        quantities: quantity
       }
       const path = this.$API_URL + 'transaction'
       axios.post(path, parameters, {auth: {username: this.user.token}})
