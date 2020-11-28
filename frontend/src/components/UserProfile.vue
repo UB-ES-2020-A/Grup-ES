@@ -5,7 +5,7 @@
   <settings :user="user"/>
   <b-container>
     <b-row>
-    <b-col sm="12" md="6" lg="4" xl="4" class="border border-secondary">
+    <b-col sm="12" md="6" lg="4" xl="4">
       <b-row class="d-flex justify-content-center">
         <b-icon icon="person-circle" font-scale="4" class="m-3"></b-icon>
         <b-icon icon="pencil-fill" v-b-modal.settings font-scale="1"></b-icon>
@@ -19,13 +19,22 @@
         <b-icon icon="mailbox" font-scale="1"></b-icon>
         <h4> {{user.email}} </h4>
       </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Llibres a la biblioteca: {{ pedidos.length }} </h5>
+      </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Llibres a la llista de desitjos: {{ pedidos.length }} </h5>
+      </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Reviews escrites: {{ reviews.length }} </h5>
+      </b-row>
     </b-col>
     <b-col sm="12" md="5" lg="7" xl="7" offset-sm="0" offset-md="1" offset-lg="1" offset-xl="1">
       <b-row>
         <h3> La teva biblioteca </h3>
       </b-row>
       <b-row>
-        <b-col  v-if="ped <= librarytoshow" v-for="ped in librarytoshow" :key="ped">
+        <b-col  v-if="ped <= librarytoshow" v-for="ped in showPartialList (pedidos, librarytoshow)" :key="ped">
         <br>
         <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
         <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
@@ -33,12 +42,15 @@
         </b-col>
       </b-row>
       <br>
+      <b-row>
+        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= librarytoshow" @click="librarytoshow += 3"> + Veure'n més</b-button>
+      </b-row>
       <br>
       <b-row>
         <h3> Les teves últimes compres </h3>
       </b-row>
       <b-row>
-        <b-col  v-if="ped <= transtoshow" v-for="ped in transtoshow" :key="ped">
+        <b-col  v-if="ped <= transtoshow" v-for="ped in showPartialList (pedidos, transtoshow)" :key="ped">
         <br>
         <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
         <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
@@ -47,7 +59,7 @@
       </b-row>
       <br>
       <b-row>
-        <b-button pill variant="outline-secondary" @click="transtoshow += 3"> + Veure'n més</b-button>
+        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= transtoshow" @click="transtoshow += 3"> + Veure'n més</b-button>
       </b-row>
       <br>
       <br>
@@ -55,7 +67,7 @@
         <h3> La teva llista de desitjos </h3>
       </b-row>
       <b-row>
-        <b-col  v-if="ped <= wishestoshow" v-for="ped in wishestoshow" :key="ped">
+        <b-col  v-if="ped <= wishestoshow" v-for="ped in showPartialList (pedidos, wishestoshow)" :key="ped">
         <br>
         <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
         <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
@@ -64,7 +76,7 @@
       </b-row>
       <br>
       <b-row>
-        <b-button pill variant="outline-secondary" @click="wishestoshow += 3"> + Veure'n més</b-button>
+        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= wishestoshow" @click="wishestoshow += 3"> + Veure'n més</b-button>
       </b-row>
       <br>
       <br>
@@ -86,7 +98,7 @@
             <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
             <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
           </h5>
-          <h6 class="card-subtitle mb-2 text-muted">You commented on {{ getBookTitle(review.isbn) }}:</h6>
+          <h6 class="card-subtitle mb-2 text-muted">You commented on {{ getBookTitle(review.isbn, pedidos) }}:</h6>
           <p class="card-text">{{review.review}}</p>
         </div>
       </div>
@@ -151,7 +163,7 @@ export default {
         .then((res) => {
           this.pedidos = res.data.transactions
           console.log(this.pedidos)
-          this.pedidos = this.pedidos.concat(this.pedidos, this.pedidos)
+          // this.pedidos = this.pedidos.concat(this.pedidos, this.pedidos)
         })
         .catch((error) => {
           console.error(error)
@@ -200,17 +212,21 @@ export default {
           console.error(error)
         })
     },
-    getBookTitle (isbn) {
-      const path = this.$API_URL + 'book/' + isbn
-      var titulo = ''
-      axios.get(path)
-        .then((res) => {
-          titulo = res.data.book.titulo
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-      return titulo
+    getBookTitle (isbn, array) {
+      var i
+      for (i = 0; i < array.length; i++) {
+        if (array[i].book.isbn === isbn) {
+          return array[i].book.titulo
+        }
+      }
+      return ''
+    },
+    showPartialList (array, head) {
+      if (array.length < head) {
+        return array.length
+      } else {
+        return head
+      }
     }
   }
 }
