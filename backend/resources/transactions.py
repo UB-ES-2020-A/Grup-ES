@@ -53,7 +53,7 @@ class Transactions(Resource):
                 transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'], data['quantities'])
             except Exception as ex:
                 return {'message': str(ex)}, 500
-        return transaction.json(), 201
+        return {'transactions': transactions}, 201
 
 
 class TransactionsUser(Resource):
