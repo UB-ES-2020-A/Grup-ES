@@ -131,29 +131,7 @@
          :state = emailState
        ></b-form-input>
      </b-form-group>
-     <b-form-group
-       label="Contrasenya"
-       label-for="pwd-input"
-     >
-     <b-form-input
-       id="pwd-input"
-       model="passdelete"
-       type="password"
-       :state = passdeleteState
-     ></b-form-input>
-   </b-form-group>
-   <b-form-group
-     label="Repeteix la contrasenya"
-     label-for="pwd2-input"
-   >
-   <b-form-input
-     id="pwd2-input"
-     model="confirmpass"
-     type="password"
-     :state = confirmpassState
-   ></b-form-input>
-   </b-form-group>
-     <b-button size="md" variant="danger">Desactivar compte</b-button>
+     <b-button size="md" @click="checkDeactivateAccount()" variant="danger">Desactivar compte</b-button>
      </b-col>
      </b-row>
      </form>
@@ -179,16 +157,12 @@ export default {
       currentpassword: '',
       newpassword: '',
       newpassword2: '',
-      pass: '',
-      confirmpass: '',
       usernameState: null,
       usernamepwdState: null,
       passwordState: null,
       passwordnewState: null,
       passwordnew2State: null,
       emailState: null,
-      passdeleteState: null,
-      confirmpassState: null,
       newEmailState: null,
       emailPwdState: null
     }
@@ -303,6 +277,31 @@ export default {
         user.email = email
       }
       localStorage.setItem('user_session', JSON.stringify(user))
+    },
+    deactivateAccount () {
+      const path = this.$API_URL + 'user/' + this.email
+      axios.delete(path, {
+        auth: {username: this.$props.user.token}
+      })
+        .then((res) => {
+          alert('Email Modified correctly')
+          this.$bvModal.hide('settings')
+          localStorage.removeItem('user_sesion')
+          this.$router.push({ path: '/' })
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    checkDeactivateAccount () {
+      if (this.email.length > 0) {
+        this.emailState = true
+      } else {
+        this.emailState = false
+      }
+      if (this.emailState) {
+        this.deactivateAccount()
+      }
     }
   }
 }
