@@ -1,10 +1,8 @@
 <template>
   <div id="app">
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
-    </b-navbar>
-    <b-container>
+    <navbar @changeShowState="show = !show"/>
+    <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
       <div class="col-md-4">
       <div class="form-control  bg-light" style="margin-top: 150px">
@@ -30,8 +28,15 @@
 
 <script>
 import axios from 'axios'
+import navbar from './subcomponents/navbar'
+
 export default {
+  components: {
+    navbar
+  },
   data: () => ({
+    show: true,
+
     key: '',
     user: {},
     email: '',
@@ -43,7 +48,7 @@ export default {
   },
   methods: {
     resetPassword () {
-      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
+      const path = this.$API_URL + 'recovery/' + this.key
       const parameters = {
         email: this.user.email,
         new_password: this.pwd1
@@ -59,7 +64,7 @@ export default {
         })
     },
     load_user () {
-      const path = 'https://grup-es.herokuapp.com/recovery/' + this.key
+      const path = this.$API_URL + 'recovery/' + this.key
       axios.get(path)
         .then((res) => {
           this.user = res.data.user

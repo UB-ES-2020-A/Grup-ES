@@ -1,26 +1,11 @@
 <template>
 <div id="app">
-  <!--navbar-->
- <div>
-  <b-navbar toggleable="lg" type="dark" variant="info">
-   <b-navbar-brand @click="goStart()"> NavBar</b-navbar-brand>
-   <b-nav-form>
-      <b-form-input size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
-      <b-button size="md" class="my-2 my-sm-0" type="submit">Search</b-button>
-   </b-nav-form>
-   <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
-   <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-<b-nav-item-dropdown id="my-nav-dropdown" :text="this.user.username" toggle-class="nav-link-custom" right>
-<b-dropdown-item @click="goLibrary()">Biblioteca</b-dropdown-item>
-<b-dropdown-item @click="goPedidos()">Mis Pedidos</b-dropdown-item>
-</b-nav-item-dropdown>
-    </ul>
-   </b-navbar-nav>
-  </b-navbar>
- </div>
+<navbar @changeShowState="show = !show"/>
 <!--body-->
-<b-container fluid="sm" style="margin-left:100px; margin-right:50px">
-<b-container fluid style="height: 100px; background: #808080;" >
+<div class="body">
+<div v-if= "show === true">
+  <b-container fluid="sm" style="margin-left:100px; margin-right:50px">
+  <b-container fluid style="height: 100px; background: #808080;" >
   <b-row align-h="end">
     <b-col cols="3">
       <b-input-group class="mb-2" style="margin-top:25px">
@@ -66,37 +51,58 @@
     </b-col>
   </b-row>
 
-  <b-row>
-    <div class="form-control bg-light">
-     <b-row>
-     <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+    <b-row>
+      <div class="form-control bg-light">
+       <b-row>
+       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
        <b-col align-self="center">
        <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
-       <b-col align-self="center" style="margin-top: 10px">
-       <h4 @click = "gotobook(book)">  {{ book.titulo }} </h4>
+       <b-row>
+       <b-col align-self="center" style="margin-top: 10px" cols="10">
+       <h5 @click = "gotobook(book)">  {{ book.titulo }} </h5>
        </b-col>
-       <b-col align-self="center">
+       <b-col align-self="center" style="margin-top: 10px" cols="2">
+       <b-dropdown variant="link" no-caret>
+        <template #button-content>
+          <b-icon icon="three-dots"></b-icon>
+        </template>
+        <b-dropdown-item @click="markFinished(book)">Marcar como Leido</b-dropdown-item>
+        <b-dropdown-item @click="markPending(book)">Marcar como Pendientes</b-dropdown-item>
+        <b-dropdown-item @click="markReading(book)">Leyendo Actualmente</b-dropdown-item>
+        <b-dropdown-item @click="moveArchive(book)">Archivar</b-dropdown-item>
+       <b-dropdown-item-button>
+       </b-col>
+       </b-row>
+       <b-col>
        <h7>{{ book.autor }}</h7>
        </b-col>
        </b-col>
-     </div>
-     </b-row>
-     </div>
-  </b-row>
-</b-container>
-<br>
-<br>
-<footer style="height:auto; background-color:black;">
-<h5 style="color:white; padding:20px; margin:0; text-align:center; bottom:0;">Contact, bla, bla</h5>
-</footer>
+       </div>
+       </b-row>
+       </div>
+    </b-row>
+  </b-container>
+  <br>
+  <br>
+</div>
+</div>
+<foot/>
 </div>
 </template>
 
 <script>
 import axios from 'axios'
+import navbar from './subcomponents/navbar'
+import foot from './subcomponents/foot'
+
 export default {
+  components: {
+    navbar,
+    foot
+  },
   data () {
     return {
+      show: true,
       list: [],
       library: [],
       bought: [],
@@ -107,13 +113,13 @@ export default {
       user: {},
       book: {},
       archived: false,
-      show: 'A',
       selected: 'A',
       sFilter: 'A',
       options: [
         { value: 'A', text: 'Libros' },
         { value: 'B', text: 'Sin Leer' },
-        { value: 'C', text: 'Leidos' }
+        { value: 'C', text: 'Leidos' },
+        { value: 'D', text: 'Leyendo' }
       ],
       filters: [
         { value: 'A', filter: 'Fecha de inclusión: Más reciente' },
@@ -135,7 +141,7 @@ export default {
       this.$router.push({ path: '/book', query: {bk: book.isbn} })
     },
     load_library () {
-      const path = 'https://grup-es.herokuapp.com/library/' + this.user.email
+      const path = this.$API_URL + 'userLibrary/' + this.user.email
       axios.get(path, {
         auth: {username: this.user.token}
       })
@@ -160,11 +166,62 @@ export default {
         this.session_boolean = true
       }
     },
-    goStart () {
-      this.$router.push({path: '/'})
+    markFinished (book) {
+      const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const parameters = {
+        isbn: book.isbn,
+        library_type: 'Bought',
+        state: 'Finished'
+      }
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.put(path, parameters, auth)
+        .then((res) => {
+          alert('Book marked as finished')
+          this.update_changes()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
-    goLibrary () {
-      this.$router.push({path: '/biblioteca'})
+    markPending (book) {
+      const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const parameters = {
+        isbn: book.isbn,
+        library_type: 'Bought',
+        state: 'Pending'
+      }
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.put(path, parameters, auth)
+        .then((res) => {
+          alert('Book marked as pending')
+          this.update_changes()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    markReading (book) {
+      const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const parameters = {
+        isbn: book.isbn,
+        library_type: 'Bought',
+        state: 'Reading'
+      }
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.put(path, parameters, auth)
+        .then((res) => {
+          alert('Book marked as reading')
+          this.update_changes()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     goPedidos () {
       this.$router.push({path: '/mispedidos'})
@@ -172,7 +229,7 @@ export default {
     manage_library () {
       var i
       for (i = 0; i < this.library.length; i++) {
-        if (this.library[i].library_type === 'Bought') {
+        if (this.library[i].library_type === 'Bought' && this.library[i].visible) {
           this.bought.push(this.library[i].book)
           switch (this.library[i].state) {
             case 'Pending':
@@ -185,6 +242,9 @@ export default {
               this.finished.push(this.library[i].book)
               break
           }
+        }
+        if (!this.library[i].visible) {
+          this.archive.push(this.library[i].book)
         }
       }
       console.log(this.bought)
@@ -202,6 +262,9 @@ export default {
     choose_finished () {
       this.list = this.finished
     },
+    choose_reading () {
+      this.list = this.reading
+    },
     getItem (event) {
       console.log(this.selected)
       switch (this.selected) {
@@ -214,7 +277,33 @@ export default {
         case 'C':
           this.choose_finished()
           break
+        case 'D':
+          this.choose_reading()
+          break
       }
+    },
+    moveArchive (book) {
+      const path = this.$API_URL + 'library/' + this.user.email + '/visibility/' + book.isbn
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.delete(path, auth)
+        .then((res) => {
+          alert('Book moved to archive')
+          this.update_changes()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    update_changes () {
+      this.library = []
+      this.bought = []
+      this.archive = []
+      this.pending = []
+      this.reading = []
+      this.finished = []
+      this.load_library()
     }
   }
 }
