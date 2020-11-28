@@ -52,7 +52,7 @@
   </b-row>
 
     <b-row>
-      <div class="form-control bg-light">
+      <div class="form-control bg-light" v-if="archived===false">
        <b-row>
        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
        <b-col align-self="center">
@@ -80,6 +80,32 @@
        </div>
        </b-row>
        </div>
+       <!--archive-->
+       <div class="form-control bg-light" v-if="archived===true">
+        <b-row>
+        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+        <b-col align-self="center">
+        <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
+        <b-row>
+        <b-col align-self="center" style="margin-top: 10px" cols="10">
+        <h5 @click = "gotobook(book)">  {{ book.titulo }} </h5>
+        </b-col>
+        <b-col align-self="center" style="margin-top: 10px" cols="2">
+        <b-dropdown variant="link" no-caret>
+         <template #button-content>
+           <b-icon icon="three-dots"></b-icon>
+         </template>
+         <b-dropdown-item @click="moveBooks(book)">Sacar del Archivo</b-dropdown-item>
+        <b-dropdown-item-button>
+        </b-col>
+        </b-row>
+        <b-col>
+        <h7>{{ book.autor }}</h7>
+        </b-col>
+        </b-col>
+        </div>
+        </b-row>
+        </div>
     </b-row>
   </b-container>
   <br>
@@ -290,6 +316,20 @@ export default {
       axios.delete(path, auth)
         .then((res) => {
           alert('Book moved to archive')
+          this.update_changes()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    moveBooks (book) {
+      const path = this.$API_URL + 'library/' + this.user.email + '/visibility/' + book.isbn
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.post(path, {}, auth)
+        .then((res) => {
+          alert('Book moved to books')
           this.update_changes()
         })
         .catch((error) => {
