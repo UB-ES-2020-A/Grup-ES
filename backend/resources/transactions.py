@@ -4,6 +4,7 @@ from flask_restful import Resource
 
 from model.users import auth, UsersModel
 from model.transactions import TransactionsModel
+from utils.lock import lock
 
 
 def parse_transaction(minimal=False):
@@ -20,41 +21,45 @@ def parse_transaction(minimal=False):
 
     return parser.parse_args()
 
+
 class Transactions(Resource):
     @auth.login_required
-    def get(self, id):
-        transaction = TransactionsModel.find_by_id(id)
-        if not transaction:
-            return {"message": f"Transaction with ['id_transaction':{id}] not found"}, 404
-        if UsersModel.find_by_id(transaction.user_id) != g.user:
-            return {"message": "Invalid transaction, can only be yours"}, 401
+    def get(self, id_transaction):
+        with lock:
+            transaction = TransactionsModel.find_by_id(id_transaction)
+            if not transaction:
+                return {"message": f"Transaction with ['id_transaction':{id_transaction}] not found"}, 404
+            if UsersModel.find_by_id(transaction.user_id) != g.user:
+                return {"message": "Invalid transaction, can only be yours"}, 401
         return {"transaction": transaction.json()}, 200
 
     @auth.login_required
     def post(self):
         data = parse_transaction()
-        user = UsersModel.find_by_email(data['email'])
-        if user is None:
-            return {"message": "User with ['id_user': " + str(user.id_user) + "] Not Found"}, 404
-        if user != g.user:
-            return {"message": "Invalid transaction, can only post yours"}, 401
-        data['id_user'] = user.id
-        del data['email']
-        try:
-            transaction = TransactionsModel(**data)
-            transaction.save_to_db()
-        except Exception as e:
-            return {"message": str(e)}, 500
+        with lock:
+            user = UsersModel.find_by_email(data['email'])
+            if user is None:
+                return {"message": f"User with ['email': {data['email']}] Not Found"}, 404
+            if user != g.user:
+                return {"message": "Invalid transaction, can only post yours"}, 401
+            data['user_id'] = user.id
+            del data['email']
+            try:
+                transaction = TransactionsModel(**data)
+                transaction.save_to_db()
+            except Exception as e:
+                return {"message": str(e)}, 500
         return transaction.json(), 201
 
 
 class TransactionsUser(Resource):
     @auth.login_required
     def get(self, email):
-        user = UsersModel.find_by_email(email)
-        if user is None:
-            return {"message": "User with ['email': " + email + "] Not Found"}, 404
-        if g.user != user:
-            return {"message": "Invalid user, can only be yourself"}, 401
-        transactions = TransactionsModel.query.filter_by(id_user=user.id).all()
+        with lock:
+            user = UsersModel.find_by_email(email)
+            if user is None:
+                return {"message": "User with ['email': " + email + "] Not Found"}, 404
+            if g.user != user:
+                return {"message": "Invalid user, can only be yourself"}, 401
+            transactions = TransactionsModel.query.filter_by(user_id=user.id).all()
         return {'transactions': [transaction.json() for transaction in transactions]}, 200

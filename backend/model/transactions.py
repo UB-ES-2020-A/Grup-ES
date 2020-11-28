@@ -12,14 +12,14 @@ class TransactionsModel(db.Model):
     id_transaction = db.Column(db.Integer(), primary_key=True)
     isbn = db.Column(db.BigInteger(), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    id_user = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
 
-    def __init__(self, isbn, price, id_user, quantity, date=None):
+    def __init__(self, isbn, price, user_id, quantity, date=None):
         self.isbn = isbn
         self.price = float(price)
-        self.id_user = id_user
+        self.user_id = user_id
         self.quantity = quantity
         if date is None:
             self.date = dt.datetime.now()
@@ -55,7 +55,7 @@ class TransactionsModel(db.Model):
         db.session.commit()
 
     def send_confirmation_mail(self):
-        recipient = UsersModel.find_by_id(self.id_user).email
+        recipient = UsersModel.find_by_id(self.user_id).email
         quantity = str(self.quantity)
         isbn = str(self.isbn)
         subject = 'Order confirmation'
