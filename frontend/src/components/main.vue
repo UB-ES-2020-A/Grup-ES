@@ -90,23 +90,23 @@ export default {
     return {
       best_sellers: [],
       new_releases: [],
-      top_rated: [],
       show: true
     }
   },
   created () {
     this.load_new_releases()
+    this.load_best_sellers()
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
     load_best_sellers () {
-      const path = this.$API_URL + 'books'
-      const params = { numBooks: 5, param: 'isbn', order: 'asc', score: true }
+      const path = this.$API_URL + 'trending'
+      const params = { numBooks: 5, score: true }
       axios.get(path, { params: params })
         .then((res) => {
-          this.best_sellers = res.data
+          this.best_sellers = res.data.books
         })
         .catch((error) => {
           console.error(error)
