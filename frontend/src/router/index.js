@@ -12,6 +12,7 @@ import PayMethod from '@/components/PayMethod.vue'
 import Search from '@/components/Search.vue'
 import Stock from '@/components/Stock.vue'
 import UserProfile from '@/components/UserProfile.vue'
+import Wishlist from '@/components/Wishlist.vue'
 
 Vue.use(Router)
 
@@ -77,6 +78,11 @@ export default new Router({
       path: '/profile',
       name: 'UserProfile',
       component: UserProfile
+    },
+    {
+      path: '/wishlist',
+      name: 'Wishlist',
+      component: Wishlist
     }
   ]
 })
