@@ -39,7 +39,6 @@ export default {
 
     key: '',
     user: {},
-    email: '',
     password: ''
   }),
   created () {
@@ -50,7 +49,6 @@ export default {
     resetPassword () {
       const path = this.$API_URL + 'recovery/' + this.key
       const parameters = {
-        email: this.user.email,
         new_password: this.pwd1
       }
       axios.put(path, parameters)
