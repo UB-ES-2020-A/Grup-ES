@@ -112,10 +112,7 @@ class TransactionsModel(db.Model):
         for transaction in cls.query.all():
             isbn = transaction.isbn
             quantity = transaction.quantity
-            if aux.get(isbn) is not None:
-                aux[isbn] = aux.get(isbn) + quantity
-            else:
-                aux[isbn] = quantity
+            aux[isbn] = quantity + aux.get(isbn, 0)
         sort_best = dict(sorted(aux.items(), key=lambda x: x[1], reverse=True))
         isbns = list(sort_best.keys())
         return isbns
