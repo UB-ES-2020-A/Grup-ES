@@ -114,7 +114,7 @@ export default {
     load_new_releases () {
       const path = this.$API_URL + 'books'
       const params = { numBooks: 2, param: 'isbn', order: 'asc', score: true }
-      axios.get(path, params)
+      axios.get(path, { params: params })
         .then((res) => {
           this.new_releases = res.data.books
         })
