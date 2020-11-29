@@ -301,7 +301,7 @@ export default {
     },
     goProfile () {
       this.$router.push({path: '/profile'})
-    }
+    },
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart
