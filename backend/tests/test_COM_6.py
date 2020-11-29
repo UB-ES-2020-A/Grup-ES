@@ -128,6 +128,29 @@ class UnitTestOfUS(BaseTest):
                 self.assertEqual(TransactionsModel.find_by_id_and_isbn(1, isbn).json(),
                                  json.loads(res.data)['transactions'][i])
 
+    def test_post_add_library(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 10, 13.1, "book2")
+            book2.save_to_db()
+
+            isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
+            quantities = [1, 1]
+            dataTransaction = {
+                "isbns": isbns,
+                'prices': prices,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(201, res.status_code)
+            self.assertEqual(self.book.isbn, self.user.library[0].isbn)
+            self.assertEqual(book2.isbn, self.user.library[1].isbn)
+            self.assertEqual(2, len(self.user.library))
+
     def test_post_no_stock(self):
         with self.app.app_context():
             self.basic_setup()
