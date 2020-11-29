@@ -5,6 +5,7 @@ from flask_restful import reqparse
 from sqlalchemy import desc, asc
 
 from model.books import BooksModel
+from model.transactions import TransactionsModel
 from utils.lock import lock
 
 
@@ -155,3 +156,14 @@ class SearchBooks(Resource):
             elif data['editorial']:
                 books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
+
+
+class BestSellers(Resource):
+
+    def get(self):
+        parser = reqparse.RequestParser(bundle_errors=True)
+        parser.add_argument('numBooks', type=int, required=False,
+                            help="In this field goes the number of the books to show")
+        data = parser.parse_args()
+        isbns = TransactionsModel.best_sellers()
+        return {'books': [BooksModel.find_by_isbn(book).json() for book in isbns[:data['numBooks']]]}, 200
