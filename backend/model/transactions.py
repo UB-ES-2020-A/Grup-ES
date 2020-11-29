@@ -1,5 +1,7 @@
 import datetime as dt
 import json
+from sqlalchemy import desc
+
 from db import db
 
 from utils.mail import send_email
@@ -23,8 +25,8 @@ class TransactionsModel(db.Model):
     def __init__(self, user_id, isbn, price, quantity, date=None):
 
         if TransactionsModel.it_transaction is None:
-            aux = TransactionsModel.query.order_by('id_transaction').first()
-            TransactionsModel.it_transaction = 1 if aux is None else aux.id_transaction
+            aux = TransactionsModel.query.order_by(desc('id_transaction')).first()
+            TransactionsModel.it_transaction = 1 if aux is None else aux.id_transaction + 1
 
         self.id_transaction = self.it_transaction
         self.isbn = isbn
