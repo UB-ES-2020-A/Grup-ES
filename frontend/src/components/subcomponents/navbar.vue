@@ -209,6 +209,7 @@ export default {
         this.session_boolean = false
         alert('Log out successfully')
         this.$router.push({path: '/'})
+        location.reload()
       }
     },
     fetch_cache () {
@@ -305,7 +306,7 @@ export default {
     },
     goProfile () {
       this.$router.push({path: '/profile'})
-    }
+    },
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart
