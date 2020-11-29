@@ -5,6 +5,7 @@ from flask_restful import reqparse
 from sqlalchemy import desc, asc
 
 from model.books import BooksModel
+from utils.lock import lock
 
 
 def parse_book(minimal=False):
@@ -49,50 +50,53 @@ class Books(Resource):
 
     def get(self, isbn):
         data = parse_reviews()
-        book = BooksModel.find_by_isbn(isbn)
+        with lock:
+            book = BooksModel.find_by_isbn(isbn)
         if not book:
             return {"message": f"Book with ['isbn':{isbn}] not found"}, 404
         return {"book": book.json(**data)}, 200
 
     def post(self):
         data = parse_book()
-        book = BooksModel.find_by_isbn(data["isbn"])
-        if book:
-            return {"message": f"A book with same isbn {data['isbn']} already exists"}, 409
-        try:
-            book = BooksModel(**data)
-            book.save_to_db()
-        except Exception as e:
-            return {"message": str(e)}, 500
+        with lock:
+            book = BooksModel.find_by_isbn(data["isbn"])
+            if book:
+                return {"message": f"A book with same isbn {data['isbn']} already exists"}, 409
+            try:
+                book = BooksModel(**data)
+                book.save_to_db()
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return book.json(), 201
 
     def put(self, isbn):
-        book = BooksModel.find_by_isbn(isbn)
-        if book is None:
-            return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
-        else:
-            data = parse_book(minimal=True)
+        data = parse_book(minimal=True)
+        with lock:
+            book = BooksModel.find_by_isbn(isbn)
+            if book is None:
+                return {"message": "Book with ['isbn': " + str(isbn) + "] Not Found"}, 404
             try:
                 book.update_from_db(data)
-                return {"book": book.json()}, 200
             except Exception as e:
-                print(str(e))
-                return {"message": "Error a la hora d'editar un llibre a base de dades"}, 500
+                return {"message": str(e)}, 500
+
+            return {"book": book.json()}, 200
 
     def delete(self, isbn):
-        book = BooksModel.find_by_isbn(isbn)
+        with lock:
+            book = BooksModel.find_by_isbn(isbn)
 
-        if book is None:
-            return {"message": f"Book with ['isbn': {isbn}] Not Found"}, 404
+            if book is None:
+                return {"message": f"Book with ['isbn': {isbn}] Not Found"}, 404
 
-        if not book.vendible:
-            return {"message": f"Book with ['isbn': {isbn}] was previously removed"}, 409
+            if not book.vendible:
+                return {"message": f"Book with ['isbn': {isbn}] was previously removed"}, 409
 
-        try:
-            book.delete_from_db()
-        except Exception as e:
-            return {"message": str(e)}, 500
+            try:
+                book.delete_from_db()
+            except Exception as e:
+                return {"message": str(e)}, 500
 
         return {"message": f"Book with ['isbn': {isbn}] deleted"}, 200
 
@@ -112,13 +116,14 @@ class BooksList(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
-        if data['param'] is None:
-            books = BooksModel.query.limit(data['numBooks']).all()
-        else:
-            if data['order'] == "asc":
-                books = BooksModel.query.order_by(asc(data['param'])).limit(data['numBooks']).all()
+        with lock:
+            if data['param'] is None:
+                books = BooksModel.query.limit(data['numBooks']).all()
             else:
-                books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
+                if data['order'] == "asc":
+                    books = BooksModel.query.order_by(asc(data['param'])).limit(data['numBooks']).all()
+                else:
+                    books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
 
 
@@ -139,13 +144,14 @@ class SearchBooks(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
-        if data['isbn']:  # si hi ha isbn només filtrem per isbn
-            books = BooksModel.query.filter_by(isbn=data['isbn'])
-        elif data['titulo']:
-            # posts = Post.query.filter(Post.tags.like(search)).all()
-            books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo'])).all()
-        elif data['autor']:
-            books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
-        elif data['editorial']:
-            books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
+        with lock:
+            if data['isbn']:  # si hi ha isbn només filtrem per isbn
+                books = BooksModel.query.filter_by(isbn=data['isbn'])
+            elif data['titulo']:
+                # posts = Post.query.filter(Post.tags.like(search)).all()
+                books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo'])).all()
+            elif data['autor']:
+                books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
+            elif data['editorial']:
+                books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
