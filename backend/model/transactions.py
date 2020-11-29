@@ -1,10 +1,10 @@
 import datetime as dt
 import json
-
 from db import db
 
-from model.library import LibraryModel, LibraryType, State
 from utils.mail import send_email
+
+from model.library import LibraryModel, LibraryType, State
 from model.users import UsersModel
 from model.books import BooksModel
 
