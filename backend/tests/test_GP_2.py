@@ -42,7 +42,6 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
             self.assertEqual(data_new['email'], (json.loads(res.data)["user"])['email'])
 
-
     def test_modify_username_already_used(self):
         with self.app.app_context():
             self.basic_setup()
@@ -87,7 +86,7 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
-            self.assertEqual(UsersModel.find_by_username('test').password, data_new['new_password'])
+            self.assertTrue(UsersModel.find_by_username('test').check_password(data_new['new_password']))
 
     def test_modify_wrong_password(self):
         with self.app.app_context():

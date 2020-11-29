@@ -5,7 +5,7 @@
   <settings :user="user"/>
   <b-container>
     <b-row>
-    <b-col sm="12" md="6" lg="4" xl="4" class="border border-secondary">
+    <b-col sm="12" md="6" lg="4" xl="4">
       <b-row class="d-flex justify-content-center">
         <b-icon icon="person-circle" font-scale="4" class="m-3"></b-icon>
         <b-icon icon="pencil-fill" v-b-modal.settings font-scale="1"></b-icon>
@@ -19,65 +19,89 @@
         <b-icon icon="mailbox" font-scale="1"></b-icon>
         <h4> {{user.email}} </h4>
       </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Llibres a la biblioteca: {{ pedidos.length }} </h5>
+      </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Llibres a la llista de desitjos: {{ wishlist.length }} </h5>
+      </b-row>
+      <b-row class="d-flex justify-content-center">
+        <h5> Reviews escrites: {{ reviews.length }} </h5>
+      </b-row>
+      <br>
+      <b-row v-for="(review) in reviews" :key="review.user_id" class="d-flex align-items-stretch">
+      <div class="card" style="width: 100%">
+        <div class="card-body">
+          <h5 class="card-title">
+            <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="1.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 1" font-scale="1.5"></b-icon>
+            <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="1.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+            <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="1.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 3" font-scale="1.5"></b-icon>
+            <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="1.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 4" font-scale="1.5"></b-icon>
+            <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="1.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 5" font-scale="1.5"></b-icon>
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">You commented on {{ getBookTitle(review.isbn, pedidos) }}:</h6>
+          <p class="card-text">{{review.review}}</p>
+          <br>
+        </div>
+      </div>
+      </b-row>
     </b-col>
-
     <b-col sm="12" md="5" lg="7" xl="7" offset-sm="0" offset-md="1" offset-lg="1" offset-xl="1">
       <b-row>
         <h3> La teva biblioteca </h3>
       </b-row>
       <b-row>
-        <b-col  v-for="(lib) in library" :key="lib.book.isbn">
+        <b-col  v-if="ped <= librarytoshow" v-for="ped in showPartialList (library, librarytoshow)" :key="ped">
         <br>
-        <img :src="getURL(lib)" style="height:209px; width:140px;" alt="">
-        <h6>{{ lib.book.titulo }}</h6>
-        <h5>{{ lib.book.autor }}</h5>
+        <img :src="getURL(library[ped - 1].book)" style="height:209px; width:140px;" alt="">
+        <h6>{{ library[ped - 1].book.titulo }}</h6>
+        <h5>{{ library[ped - 1].book.autor }}</h5>
         </b-col>
       </b-row>
       <br>
+      <b-row>
+        <b-button pill variant="outline-secondary" :disabled = "library.length <= librarytoshow" @click="librarytoshow += 3"> + Veure'n més</b-button>
+      </b-row>
       <br>
       <b-row>
         <h3> Les teves últimes compres </h3>
       </b-row>
       <b-row>
-        <b-col  v-for="(ped) in pedidos" :key="ped.book.isbn">
+        <b-col  v-if="ped <= transtoshow" v-for="ped in showPartialList (pedidos, transtoshow)" :key="ped">
         <br>
-        <img :src="getURL(lib)" style="height:209px; width:140px;" alt="">
-        <h6>{{ ped.book.titulo }}</h6>
-        <h5>{{ ped.book.autor }}</h5>
+        <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
+        <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
+        <h5>{{ pedidos[ped - 1].book.autor }}</h5>
         </b-col>
       </b-row>
+      <br>
+      <b-row>
+        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= transtoshow" @click="transtoshow += 3"> + Veure'n més</b-button>
+      </b-row>
+      <br>
+      <br>
       <b-row>
         <h3> La teva llista de desitjos </h3>
       </b-row>
       <b-row>
-        <b-col  v-for="(ped) in pedidos" :key="ped.book.isbn">
+        <b-col  v-if="ped <= wishestoshow" v-for="ped in showPartialList (wishlist, wishestoshow)" :key="ped">
         <br>
-        <img :src="getURL(lib)" style="height:209px; width:140px;" alt="">
-        <h6 >{{ ped.book.titulo }}</h6>
-        <h5>{{ ped.book.autor }}</h5>
+        <img :src="getURL(wishlist[ped - 1].book)" style="height:209px; width:140px;" alt="">
+        <h6>{{ wishlist[ped - 1].book.titulo }}</h6>
+        <h5>{{ wishlist[ped - 1].book.autor }}</h5>
         </b-col>
       </b-row>
-      <v-row v-for="(review) in this.reviews" :key="review.id">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">
-              <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
-            </h5>
-            <h6 class="card-subtitle mb-2 text-muted">You commented:</h6>
-            <p class="card-text">{{review.review}}</p>
-          </div>
-        </div>
-        <br>
-      </v-row>
+      <br>
+      <b-row>
+        <b-button pill variant="outline-secondary" :disabled = "wishlist.length <= wishestoshow" @click="wishestoshow += 3"> + Veure'n més</b-button>
+      </b-row>
+      <br>
+      <br>
     </b-col>
     </b-row>
   </b-container>
@@ -107,13 +131,19 @@ export default {
       user: {},
       pedidos: [],
       library: [],
-      reviews: []
+      reviews: [],
+      wishlist: [],
+      transtoshow: 3,
+      wishestoshow: 3,
+      librarytoshow: 3,
+      reviewstoshow: 3
     }
   },
   created () {
     this.fetch_cache()
-    this.load_library()
     this.load_pedidos()
+    this.load_library()
+    this.load_wishlist()
     this.getReviews()
   },
   methods: {
@@ -133,13 +163,14 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.pedidos = res.data.transactions
+          console.log(this.pedidos)
         })
         .catch((error) => {
           console.error(error)
         })
     },
     load_library () {
-      const path = this.$API_URL + 'library/' + this.user.email
+      const path = this.$API_URL + 'userLibrary/' + this.user.email
       const auth = {'auth': {
         username: this.user.token}
       }
@@ -152,8 +183,23 @@ export default {
           console.error(error)
         })
     },
-    getURL (lib) {
-      return lib.book.url_imagen
+    load_wishlist () {
+      const path = this.$API_URL + 'userLibrary/' + this.user.email + '?library_type=WishList'
+      // const params = {library_type: 'WishList'}
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.get(path, auth)
+        .then((res) => {
+          this.wishlist = res.data.library
+          console.log(this.wishlist)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    getURL (book) {
+      return book.url_imagen
     },
     getReviews () {
       const path = this.$API_URL + 'user/' + this.user.email
@@ -162,11 +208,27 @@ export default {
       }
       axios.get(path, { params: params })
         .then((res) => {
-          this.reviews = res.data.reviews
+          this.reviews = res.data.user.reviews
         })
         .catch((error) => {
           console.error(error)
         })
+    },
+    getBookTitle (isbn, array) {
+      var i
+      for (i = 0; i < array.length; i++) {
+        if (array[i].book.isbn === isbn) {
+          return array[i].book.titulo
+        }
+      }
+      return ''
+    },
+    showPartialList (array, head) {
+      if (array.length < head) {
+        return array.length
+      } else {
+        return head
+      }
     }
   }
 }

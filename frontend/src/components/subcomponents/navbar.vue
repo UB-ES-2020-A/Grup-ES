@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="navbar">
    <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand @click="goStart()">
     <img src="../../assets/Bookshelter.png" class="d-inline-block align-top" width="200" height="60">
@@ -208,6 +208,7 @@ export default {
         this.session_status = 'Log In'
         this.session_boolean = false
         alert('Log out successfully')
+        this.$router.push({path: '/'})
       }
     },
     fetch_cache () {

@@ -61,7 +61,7 @@
         >
         <b-form-input
           id="emailpwd-input"
-          v-model="emailPwdpwd"
+          v-model="emailPwd"
           type="password"
           :state = emailPwdState
         ></b-form-input>
@@ -170,17 +170,19 @@ export default {
   methods: {
     changeUsername () {
       const path = this.$API_URL + 'user/' + this.$props.user.email
+      const auth = {
+        auth: {username: this.$props.user.token}
+      }
       const parameters = {
         username: this.username,
         password: this.usernamepwd
       }
-      const auth = {'auth': {
-        username: this.$props.user.token}
-      }
       axios.put(path, parameters, auth)
         .then((res) => {
           alert('Username Modified correctly')
+          this.changeLocalStorage(res.data.user.username, null, res.data.token)
           this.$bvModal.hide('settings')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)
@@ -190,7 +192,7 @@ export default {
       const path = this.$API_URL + 'user/' + this.$props.user.email
       const parameters = {
         new_password: this.newpassword,
-        password: this.password
+        password: this.currentpassword
       }
       axios.put(path, parameters, {
         auth: {username: this.$props.user.token}
@@ -198,6 +200,7 @@ export default {
         .then((res) => {
           alert('Password Modified correctly')
           this.$bvModal.hide('settings')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)
@@ -207,14 +210,16 @@ export default {
       const path = this.$API_URL + 'user/' + this.$props.user.email
       const parameters = {
         email: this.newEmail,
-        password: this.password
+        password: this.emailPwd
       }
       axios.put(path, parameters, {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
           alert('Email Modified correctly')
+          this.changeLocalStorage(null, res.data.user.email, res.data.token)
           this.$bvModal.hide('settings')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)
@@ -257,7 +262,7 @@ export default {
       if (this.newEmail.length > 0) {
         this.newEmailState = true
       } else {
-        this.currentEmailState = false
+        this.newEmailState = false
       }
       if (this.emailPwd.length > 0) {
         this.emailPwdState = true
@@ -268,13 +273,16 @@ export default {
         this.changeEmail()
       }
     },
-    changeLocalStorage (username, email) {
+    changeLocalStorage (username, email, token) {
       var user = JSON.parse(localStorage.getItem('user_session'))
       if (username) {
         user.username = username
       }
       if (email) {
         user.email = email
+      }
+      if (token) {
+        user.token = token
       }
       localStorage.setItem('user_session', JSON.stringify(user))
     },
