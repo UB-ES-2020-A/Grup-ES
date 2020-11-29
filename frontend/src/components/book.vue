@@ -41,7 +41,7 @@
           <br>
           <b-button style="width:100%" variant="danger" @click="add_cart(single_book)">Afegir a la cistella</b-button><br><br>
           <b-button style="width:100%" variant="dark">Comprar ara</b-button><br><br>
-          <b-button style="width:100%" variant="dark" > Afegir a la llista de desitjos</b-button>
+          <b-button style="width:100%" variant="dark" @click="add_wishlist(single_book)"> Afegir a la llista de desitjos</b-button>
           </b-container>
         </b-col>
       </b-row>
@@ -180,6 +180,22 @@ export default {
         this.user = tmpuser
         this.session_boolean = true
       }
+    },
+    add_wishlist (book) {
+      const path = this.$API_URL + 'library/' + this.user.email
+      const parameters = {
+        isbn: book.isbn,
+        library_type: 'WishList',
+        state: 'Nan'
+      }
+      const auth = {auth: {username: this.user.token}}
+      axios.post(path, parameters, auth)
+        .then((res) => {
+          console.log('BOOK ADDED TO WISHLIST')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }

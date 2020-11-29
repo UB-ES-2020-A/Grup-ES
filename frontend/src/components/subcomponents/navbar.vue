@@ -67,7 +67,7 @@
     </b-nav-form>
     <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
       <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if= "session_boolean === false"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
         <li class="nav-item" v-if= "session_boolean === true">
@@ -300,9 +300,12 @@ export default {
     goStock () {
       this.$router.push({path: '/shopstock'})
     },
+    goWishlist () {
+      this.$router.push({path: '/wishlist'})
+    },
     goProfile () {
       this.$router.push({path: '/profile'})
-    },
+    }
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart

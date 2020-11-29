@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
 
-from resources.books import Books, BooksList, SearchBooks
+from resources.books import Books, BooksList, SearchBooks, BestSellers
 from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
 from resources.library import Library, LibraryVisibility, LibraryEntry
@@ -18,6 +18,7 @@ def init_api(api):
     api.add_resource(Books, '/book/<int:isbn>', '/book')
     api.add_resource(BooksList, '/books')
     api.add_resource(SearchBooks, '/search')
+    api.add_resource(BestSellers, '/trending')
 
     api.add_resource(Users, '/user/<string:email>', '/user')
     api.add_resource(UsersList, '/users')
