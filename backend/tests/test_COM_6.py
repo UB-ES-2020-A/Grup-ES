@@ -134,7 +134,7 @@ class UnitTestOfUS(BaseTest):
             book2 = BooksModel(2, 10, 13.1, "book2")
             book2.save_to_db()
 
-            isbns = [book2.isbn, book2.isbn]
+            isbns = [self.book.isbn, book2.isbn]
             prices = [self.book.precio, book2.precio]
             quantities = [1, 1]
             dataTransaction = {
@@ -147,8 +147,9 @@ class UnitTestOfUS(BaseTest):
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
-            self.assertEqual(book2.isbn, self.user.library[0].isbn)
-            self.assertEqual(1, len(self.user.library))
+            self.assertEqual(self.book.isbn, self.user.library[0].isbn)
+            self.assertEqual(book2.isbn, self.user.library[1].isbn)
+            self.assertEqual(2, len(self.user.library))
 
     def test_post_no_stock(self):
         with self.app.app_context():
