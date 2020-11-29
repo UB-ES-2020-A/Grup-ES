@@ -66,5 +66,5 @@ class TransactionsUser(Resource):
             if g.user != user:
                 return {"message": "Invalid user, can only be yourself"}, 401
             transactions = TransactionsModel.query.filter_by(user_id=user.id).all()
-            grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in set([t.id_transaction for t in transactions])]
+            grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in set(t.id_transaction for t in transactions)]
             return {'transactions': grouped_transactions}, 200
