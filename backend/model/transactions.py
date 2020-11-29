@@ -105,3 +105,17 @@ class TransactionsModel(db.Model):
             book.stock -= quantity
         else:
             raise Exception('Not enough stock')
+
+    @classmethod
+    def best_sellers(cls):
+        aux = {}
+        for transaction in cls.query.all():
+            isbn = transaction.isbn
+            quantity = transaction.quantity
+            if aux.get(isbn) is not None:
+                aux[isbn] = aux.get(isbn) + quantity
+            else:
+                aux[isbn] = quantity
+        sort_best = dict(sorted(aux.items(), key=lambda x: x[1], reverse=True))
+        isbns = list(sort_best.keys())
+        return isbns
