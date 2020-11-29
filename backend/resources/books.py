@@ -169,6 +169,6 @@ class BestSellers(Resource):
         books = []
         for i, isbn in enumerate(isbns):
             if i >= data['numBooks']:
-                return {'books': [book.json() for book in books]}, 200
+                return {'books': [book.json(score=True) for book in books]}, 200
             books.append(BooksModel.find_by_isbn(isbn))
-        return {'books': [book.json() for book in books]}, 200
+        return {'books': [book.json(score=True) for book in books]}, 200
