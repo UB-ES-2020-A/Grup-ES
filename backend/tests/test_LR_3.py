@@ -89,23 +89,10 @@ class UnitTestOfUS(BaseTest):
             recovery.save_to_db()
 
             new_password = "newPassword"
-            res = self.client.put(f"/recovery/{recovery.key}", data={"email": user.email, "new_password": new_password})
+            res = self.client.put(f"/recovery/{recovery.key}", data={"new_password": new_password})
             self.assertEqual(200, res.status_code)
             self.assertEqual(user.json(), json.loads(res.data)["user"])
             self.assertTrue(user.check_password(new_password))
-
-    def test_put_recovery_invalid_email(self):
-        with self.app.app_context():
-            user = UsersModel("test", "test")
-            user.hash_password("test")
-            user.save_to_db()
-
-            recovery = PasswordRecoveryModel(user.id)
-            recovery.save_to_db()
-
-            new_password = "newPassword"
-            res = self.client.put(f"/recovery/{recovery.key}", data={"email": "fail", "new_password": new_password})
-            self.assertEqual(404, res.status_code)
 
     def test_put_recovery_not_requested(self):
         with self.app.app_context():
@@ -114,26 +101,7 @@ class UnitTestOfUS(BaseTest):
             user.save_to_db()
 
             new_password = "newPassword"
-            res = self.client.put(f"/recovery/notImportant", data={"email": user.email, "new_password": new_password})
-            self.assertEqual(404, res.status_code)
-
-    def test_put_recovery_other_user(self):
-        with self.app.app_context():
-            user = UsersModel("test", "test")
-            user.hash_password("test")
-            user.save_to_db()
-
-            user2 = UsersModel("test2", "test2")
-            user2.hash_password("test")
-            user2.save_to_db()
-
-            recovery = PasswordRecoveryModel(user.id)
-            recovery.save_to_db()
-            recovery2 = PasswordRecoveryModel(user2.id)
-            recovery2.save_to_db()
-
-            new_password = "newPassword"
-            res = self.client.put(f"/recovery/{recovery.key}", data={"email": user2.email, "new_password": new_password})
+            res = self.client.put(f"/recovery/notImportant", data={"new_password": new_password})
             self.assertEqual(403, res.status_code)
 
     def test_put_recovery_expired(self):
