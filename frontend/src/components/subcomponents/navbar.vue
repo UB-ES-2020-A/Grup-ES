@@ -80,6 +80,7 @@
                 <h4> Hola {{ this.user.username }} </h4>
                 <nav class="mb-3">
                 <b-nav vertical>
+                  <b-nav-item active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
                   <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
                   <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
@@ -167,6 +168,7 @@ export default {
       session_status: 'Log In',
       session_boolean: false,
       adminRole: 'Admin',
+      userRole: 'User',
       // Search
       search: '',
       booksquery: [],
@@ -297,6 +299,9 @@ export default {
     goStock () {
       this.$router.push({path: '/shopstock'})
     },
+    goProfile () {
+      this.$router.push({path: '/profile'})
+    }
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart
