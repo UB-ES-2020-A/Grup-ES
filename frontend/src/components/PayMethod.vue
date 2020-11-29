@@ -218,35 +218,6 @@ export default {
       this.error = this.errors[0]
       return false
     },
-    addToLibrary (parameters) {
-      const path = this.$API_URL + 'library/' + this.user.email
-      axios.post(path, parameters, {
-        auth: {username: this.user.token}
-      })
-        .then((res) => {
-          console.log('BOOK ADDED TO LIBRARY')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
-    post_transaction (book, quantity) {
-      const parameters = {
-        isbns: book.isbn,
-        prices: book.precio,
-        email: this.user.email,
-        quantities: quantity
-      }
-      const path = this.$API_URL + 'transaction'
-      axios.post(path, parameters, {auth: {username: this.user.token}})
-        .then((res) => {
-          console.log('PAID SUCCESSFULLY')
-          alert('Transaction correctly realized!')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
     submitCard () {
       if (this.checkForm()) {
         var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
@@ -254,16 +225,31 @@ export default {
         if (tmpitems !== null) {
           cartItems = tmpitems
         }
+        var isbns = []
+        var prices = []
+        var quantities = []
         for (var i = 0; i < cartItems.length; i++) {
-          this.post_transaction(cartItems[i].book, cartItems[i].quantity)
-          const parameters = {
-            isbn: cartItems[i].book.isbn,
-            email: this.user.email
-          }
-          this.addToLibrary(parameters)
+          isbns.push(cartItems[i].book.isbn)
+          prices.push(cartItems[i].book.precio)
+          quantities.push(cartItems[i].quantity)
         }
-        cartItems = []
-        localStorage.setItem('cartItems', JSON.stringify(cartItems))
+        const parameters = {
+          isbns: isbns,
+          prices: prices,
+          email: this.user.email,
+          quantities: quantities
+        }
+        const path = this.$API_URL + 'transaction'
+        axios.post(path, parameters, {auth: {username: this.user.token}})
+          .then((res) => {
+            console.log('PAID SUCCESSFULLY')
+            alert('Transaction correctly realized!')
+            cartItems = []
+            localStorage.setItem('cartItems', JSON.stringify(cartItems))
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       }
     }
   }
