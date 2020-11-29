@@ -9,29 +9,31 @@
       <br>
       <div class="container">
         <h3> Mis Pedidos </h3>
-        <b-row>
-          <b-col  v-for="(pedido) in pedidos" :key="pedido.id_transaction">
-            <!-- ATR:
-            .isbn,
-            .price,
-            .id_user,
-            .quantity,
-            .date-->
-            <div class="card">
-              <div class="card-header">Factura: {{ pedido.id_transaction}}</div>
-              <div class="card-body">
+        <b-row  v-for="(fact) in pedidos" :key="fact[0].id_transaction">
+          <!-- ATR:
+          .isbn,
+          .price,
+          .id_user,
+          .quantity,
+          .date-->
+          <br>
+          <div class="card">
+            <div class="card-header">Factura: {{ fact[0].id_transaction}}</div>
+            <div class="card-body">
+              <b-col v-for="(line) in fact" :key="line.book.isbn">
+                <hr>
                 <b-col>
-                <img :src="getURL(pedido.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(pedido.book.isbn)">
+                <img :src="getURL(line.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(line.book.isbn)">
                 </b-col>
                 <br>
-                <h6 @click = "gotobook(book.isbn)">Título del libro: {{ pedido.book.titulo }}</h6>
-                <h6>Autor del libro: {{ pedido.book.autor }}</h6>
-                <h6>Precio: {{ pedido.price}}</h6>
-                <h6>Cantidad: {{ pedido.quantity}}</h6>
-                <h6>Fecha de compra: {{ pedido.date}}</h6>
-              </div>
+                <h6 @click = "gotobook(line.book.isbn)">Título del libro: {{ line.book.titulo }}</h6>
+                <h6>Autor del libro: {{ line.book.autor }}</h6>
+                <h6>Precio: {{ line.price}}</h6>
+                <h6>Cantidad: {{ line.quantity}}</h6>
+                <h6>Fecha de compra: {{ line.date}}</h6>
+              </b-col>
             </div>
-          </b-col>
+          </div>
         </b-row>
       </div>
     </div>
