@@ -5,7 +5,6 @@
 export default {
   name: 'App'
 }
-document.title = 'BookShelter'
 </script>
 
 <style>
