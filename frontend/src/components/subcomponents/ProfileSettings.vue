@@ -180,7 +180,7 @@ export default {
       axios.put(path, parameters, auth)
         .then((res) => {
           alert('Username Modified correctly')
-          this.changeLocalStorage(parameters.username, null)
+          this.changeLocalStorage(res.data.user.username, null, res.data.token)
           this.$bvModal.hide('settings')
           location.reload()
         })
@@ -200,6 +200,7 @@ export default {
         .then((res) => {
           alert('Password Modified correctly')
           this.$bvModal.hide('settings')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)
@@ -216,7 +217,7 @@ export default {
       })
         .then((res) => {
           alert('Email Modified correctly')
-          this.changeLocalStorage(null, parameters.newEmail)
+          this.changeLocalStorage(null, res.data.user.email, res.data.token)
           this.$bvModal.hide('settings')
           location.reload()
         })
@@ -272,13 +273,16 @@ export default {
         this.changeEmail()
       }
     },
-    changeLocalStorage (username, email) {
+    changeLocalStorage (username, email, token) {
       var user = JSON.parse(localStorage.getItem('user_session'))
       if (username) {
         user.username = username
       }
       if (email) {
         user.email = email
+      }
+      if (token) {
+        user.token = token
       }
       localStorage.setItem('user_session', JSON.stringify(user))
     },
