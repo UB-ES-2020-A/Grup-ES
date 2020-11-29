@@ -2,10 +2,11 @@ from flask import g
 from flask_httpauth import HTTPBasicAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from passlib.apps import custom_app_context as pwd_context
-
-from db import db, secret_key
 import datetime as dt
 from enum import Enum
+
+
+from db import db, secret_key
 
 auth = HTTPBasicAuth()
 
@@ -28,7 +29,10 @@ class UsersModel(db.Model):
     role = db.Column(db.Enum(Roles, name='roles_types'), nullable=False)
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
+
     library = db.relationship('LibraryModel', backref='library', lazy=True)
+    reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
+    transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
@@ -46,17 +50,31 @@ class UsersModel(db.Model):
             db.session.add(self)
             db.session.commit()
 
-    def json(self):
-        return {"username": self.username,
+    def json(self, reviews=False):
+        user = {"username": self.username,
                 "email": self.email,
                 "role": str(self.role)}
+        if reviews:
+            user['reviews'] = [review.json() for review in self.reviews]
+        return user
 
     def delete_from_db(self):
         self.state = False
         db.session.commit()
 
-    def update_from_db(self, password):
+    def update_password_from_db(self, password):
         self.hash_password(password)
+        db.session.commit()
+
+    def update_from_db(self, data):
+        if 0 < self.query.filter_by(username=data['username'] and id != self.id, state=True).count():
+            raise Exception("Username already in use")
+        if 0 < self.query.filter_by(email=data['email'] and id != self.id, state=True).count():
+            raise Exception("Email already in use")
+
+        for attr, newValue in data.items():
+            if newValue is not None:
+                setattr(self, attr, newValue)
         db.session.commit()
 
     @classmethod
@@ -106,4 +124,4 @@ class UsersModel(db.Model):
 
     @auth.get_user_roles
     def get_user_roles(user):
-        return user.role
+        return user.role.name

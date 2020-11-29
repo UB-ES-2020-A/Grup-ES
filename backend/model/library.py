@@ -5,6 +5,7 @@ from model.books import BooksModel
 
 
 class State(Enum):
+    Nan = 0
     Pending = 1
     Reading = 2
     Finished = 3
@@ -52,6 +53,10 @@ class LibraryModel(db.Model):
 
     def delete_from_db(self):
         self.visible = False
+        db.session.commit()
+
+    def change_visible_db(self, state):
+        self.visible = state
         db.session.commit()
 
     def update_from_db(self, data):
