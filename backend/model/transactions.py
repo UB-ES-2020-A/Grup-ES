@@ -1,10 +1,12 @@
 import datetime as dt
 import json
-
 from sqlalchemy import desc
 
 from db import db
+
 from utils.mail import send_email
+
+from model.library import LibraryModel, LibraryType, State
 from model.users import UsersModel
 from model.books import BooksModel
 
@@ -88,6 +90,10 @@ class TransactionsModel(db.Model):
             transaction = TransactionsModel(user_id, isbn, price, quantity)
             transactions.append(transaction.json())
             db.session.add(transaction)
+            user = UsersModel.find_by_id(user_id)
+            if LibraryModel.find_by_id_and_isbn(user.id, transaction.isbn) is None:
+                entry = LibraryModel(book.isbn, user.id, LibraryType.Bought, State.Pending)
+                db.session.add(entry)
 
         cls.it_transaction += 1
         db.session.commit()
