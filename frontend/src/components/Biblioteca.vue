@@ -12,7 +12,7 @@
       <b-input-group-prepend is-text>
         <b-icon icon="search"></b-icon>
       </b-input-group-prepend>
-      <b-form-input type="search" placeholder="Search terms"></b-form-input>
+      <b-form-input type="search" v-model="search"  placeholder="Filter by title"></b-form-input>
     </b-input-group>
     </b-col>
   </b-row>
@@ -54,7 +54,7 @@
     <b-row>
       <div class="form-control bg-light" v-if="archived===false">
        <b-row>
-       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
        <b-col align-self="center">
        <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
        <b-row>
@@ -83,7 +83,7 @@
        <!--archive-->
        <div class="form-control bg-light" v-if="archived===true">
         <b-row>
-        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
         <b-col align-self="center">
         <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
         <b-row>
@@ -138,6 +138,7 @@ export default {
       finished: [],
       user: {},
       book: {},
+      search: '',
       archived: false,
       selected: 'A',
       sFilter: 'A',
@@ -344,6 +345,15 @@ export default {
       this.reading = []
       this.finished = []
       this.load_library()
+    }
+  },
+  computed: {
+    filteredList () {
+      if (this.list.length !== 0 && this.search !== '') {
+        return this.list.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()))
+      } else {
+        return this.list
+      }
     }
   }
 }
