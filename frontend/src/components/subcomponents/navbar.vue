@@ -247,7 +247,7 @@ export default {
       }
     },
     checkOk () {
-      if (this.isbn.length <= 13 || (this.title.length >= 0 || this.autor.length >= 0 || this.editorial.length >= 0)) {
+      if ((this.isbn.length <= 13 && this.isbn.length > 0) || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
         this.$nextTick(() => {
           this.$bvModal.hide('modal-1')
         })
