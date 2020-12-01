@@ -18,8 +18,7 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(2, 1, 1, "as")
             book.save_to_db()
             args = {
-                "isbn": 1,
-                'autor': "patata"
+                "isbn": 1
             }
             res = self.client.get('/search', data=args)
             self.assertEqual(200, res.status_code)
@@ -50,8 +49,7 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(2, 1, 1, "as")
             book.save_to_db()
             args = {
-                'titulo': "test",
-                'editorial': 'no_importa'
+                'titulo': "test"
             }
             res = self.client.get('/search', data=args)
             self.assertEqual(200, res.status_code)
@@ -67,6 +65,23 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(2, 1, 1, "as")
             book.save_to_db()
             args = {
+                'editorial': "Bantam Books"
+            }
+            res = self.client.get('/search', data=args)
+            self.assertEqual(200, res.status_code)
+            self.assertEqual(len(json.loads(res.data)["books"]), 1)
+            list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(editorial=args['editorial']).all()))
+            self.assertEqual(list_books, json.loads(res.data)["books"])
+
+
+    def test_get_search_by_editorial_and_title(self):
+        with self.app.app_context():
+            book = BooksModel(1, 1, 1, "test", "Isaac Asimov", "Bantam Books")
+            book.save_to_db()
+            book = BooksModel(2, 1, 1, "as")
+            book.save_to_db()
+            args = {
+                'titulo': "test",
                 'editorial': "Bantam Books"
             }
             res = self.client.get('/search', data=args)

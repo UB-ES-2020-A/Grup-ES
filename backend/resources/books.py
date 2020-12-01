@@ -4,6 +4,7 @@ from flask_restful import Resource
 from flask_restful import reqparse
 from sqlalchemy import desc, asc
 
+from db import db
 from model.books import BooksModel
 from model.transactions import TransactionsModel
 from utils.lock import lock
@@ -145,16 +146,15 @@ class SearchBooks(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
+        if not data:
+            return {"message": "Missing parameters to search by."}, 406
+
         with lock:
-            if data['isbn']:  # si hi ha isbn només filtrem per isbn
-                books = BooksModel.query.filter_by(isbn=data['isbn'])
-            elif data['titulo']:
-                # posts = Post.query.filter(Post.tags.like(search)).all()
-                books = BooksModel.query.filter(BooksModel.titulo.like(data['titulo'])).all()
-            elif data['autor']:
-                books = BooksModel.query.filter(BooksModel.autor.like(data['autor'])).all()
-            elif data['editorial']:
-                books = BooksModel.query.filter(BooksModel.editorial.like(data['editorial'])).all()
+            books = db.session.query(BooksModel)
+            for k, v in data.items():
+                if v is not None and k not in ['reviews', 'score']:
+                    books = books.filter(getattr(BooksModel, k).like(f"%{v}%"))
+
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
 
 
