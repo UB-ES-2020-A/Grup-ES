@@ -89,3 +89,14 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(len(json.loads(res.data)["books"]), 1)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(editorial=args['editorial']).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
+
+    def test_get_search_empty(self):
+        with self.app.app_context():
+            res = self.client.get('/search', data={})
+            self.assertEqual(406, res.status_code)
+
+    def test_get_search_empty(self):
+        with self.app.app_context():
+            args = {'score': True, 'reviews': True}
+            res = self.client.get('/search', data=args)
+            self.assertEqual(406, res.status_code)

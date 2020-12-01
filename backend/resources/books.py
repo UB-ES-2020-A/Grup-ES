@@ -146,7 +146,7 @@ class SearchBooks(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
-        if not data:
+        if not any(v is not None for k, v in data.items() if k not in ['reviews', 'score']):
             return {"message": "Missing parameters to search by."}, 406
 
         with lock:
