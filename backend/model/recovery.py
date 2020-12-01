@@ -68,12 +68,12 @@ class PasswordRecoveryModel(db.Model):
 
     @classmethod
     def find_by_id(cls, user_id):
-        cls.clean_expired_keys()
+        # cls.clean_expired_keys()
         return cls.query.filter_by(user_id=user_id).first()
 
     @classmethod
     def find_by_key(cls, key):
-        cls.clean_expired_keys()
+        # cls.clean_expired_keys()
         return cls.query.filter_by(key=key).first()
 
     @classmethod
