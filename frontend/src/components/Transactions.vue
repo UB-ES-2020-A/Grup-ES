@@ -32,8 +32,10 @@
    <b-collapse :id="'collapse-' + transaction[0].id_transaction" class="mt-2">
       <b-card v-for="(line) in transaction" :key="line.book.isbn">
         <h4> {{ line.book.titulo }} - {{ line.book.isbn }} </h4>
-        <p> {{ line.book.autor }} </p>
-        <p> {{ line.book.precio }} $ </p>
+        <p> Autor: {{ line.book.autor }} </p>
+        <p> Preu del llibre: {{ line.book.precio }} $ </p>
+        <p> Quantitat comprada: {{ transaction[0].quantity }} </p>
+        <p> Preu pagat: {{ line.book.precio * transaction[0].quantity }} $</p>
       </b-card>
    </b-collapse>
    <br>
