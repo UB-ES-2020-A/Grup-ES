@@ -247,24 +247,33 @@ export default {
       }
     },
     checkOk () {
-      if (this.isbn.length === 13) {
-        this.isbnState = true
-      } else {
-        this.isbnState = false
-      }
-      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
+      if (this.isbn.length <= 13 || (this.title.length >= 0 || this.autor.length >= 0 || this.editorial.length >= 0)) {
         this.$nextTick(() => {
           this.$bvModal.hide('modal-1')
         })
         this.isbnState = true
-        this.clearModal()
         return true
       }
       return false
     },
     handleOk (bvModalEvt) {
       bvModalEvt.preventDefault()
-      this.checkOk()
+      if (this.checkOk()) {
+        var params = {}
+        if (this.isbn !== '') {
+          params['isbn'] = this.isbn
+        }
+        if (this.title !== '') {
+          params['titulo'] = this.title
+        }
+        if (this.autor !== '') {
+          params['autor'] = this.autor
+        }
+        if (this.editorial !== '') {
+          params['editorial'] = this.editorial
+        }
+        this.$router.push({ path: '/search', query: params })
+      }
     },
     clearModal () {
       this.isbn = ''
