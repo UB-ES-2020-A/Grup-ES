@@ -62,10 +62,9 @@ export default {
     },
     load_search (query) {
       const path = this.$API_URL + 'search'
-      const params = {
-        titulo: query.titulo,
-        score: true
-      }
+      const params = query
+      params['score'] = true
+
       axios.get(path, { params: params })
         .then((res) => {
           this.books = res.data.books
