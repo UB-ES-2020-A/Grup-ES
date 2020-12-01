@@ -54,16 +54,16 @@ export default {
     }
   },
   created () {
-    this.load_search()
+    this.load_search(this.$route.query)
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
-    load_search () {
+    load_search (query) {
       const path = this.$API_URL + 'search'
       const params = {
-        titulo: this.$route.query.titulo,
+        titulo: query.titulo,
         score: true
       }
       axios.get(path, { params: params })
@@ -96,6 +96,10 @@ export default {
     getURL (book) {
       return book.url_imagen
     }
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.load_search(to.query)
+    next()
   }
 }
 </script>
