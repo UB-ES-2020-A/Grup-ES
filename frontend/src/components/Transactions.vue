@@ -29,6 +29,7 @@
   <b-card-title> Transaction ID : {{ transaction[0].id_transaction }} </b-card-title>
   <b-card-sub-title class="mb-2">User ID : {{ transaction[0].user_id }}</b-card-sub-title>
   <b-card-sub-title class="mb-2">Date : {{ transaction[0].date }}</b-card-sub-title>
+  <b-card-sub-title class="mb-2">Preu total : {{ getPreuTotal(transaction) }} $ </b-card-sub-title>
    <b-collapse :id="'collapse-' + transaction[0].id_transaction" class="mt-2">
       <b-card v-for="(line) in transaction" :key="line.book.isbn">
         <h4> {{ line.book.titulo }} - {{ line.book.isbn }} </h4>
@@ -66,7 +67,8 @@ export default {
       allTransactions: [],
       search: '',
       show: true,
-      user: {}
+      user: {},
+      price: 0.0
     }
   },
   created () {
@@ -75,7 +77,7 @@ export default {
   },
   methods: {
     getTransactions () {
-      const path = this.$API_URL + 'transactions/' + this.user.email
+      const path = this.$API_URL + 'allTransactions'
       axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {
           this.allTransactions = res.data.transactions
@@ -91,6 +93,15 @@ export default {
         this.user = tmpuser
         this.session_boolean = true
       }
+    },
+    getPreuTotal (trans) {
+      var i
+      var price = 0.0
+      for (i = 0; i < trans.length; i++) {
+        price += trans[i].price * trans[i].quantity
+      }
+      price = price.toFixed(2)
+      return price
     }
   }
 }
