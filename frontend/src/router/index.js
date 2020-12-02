@@ -13,6 +13,7 @@ import Search from '@/components/Search.vue'
 import Stock from '@/components/Stock.vue'
 import UserProfile from '@/components/UserProfile.vue'
 import Wishlist from '@/components/Wishlist.vue'
+import Transactions from '@/components/Transactions.vue'
 
 Vue.use(Router)
 
@@ -83,6 +84,11 @@ export default new Router({
       path: '/wishlist',
       name: 'Wishlist',
       component: Wishlist
+    },
+    {
+      path: '/stocktransactions',
+      name: 'Transactions',
+      component: Transactions
     }
   ]
 })

@@ -84,6 +84,7 @@
                   <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
                   <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
+                  <b-nav-item active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
                 </b-nav>
                 </nav>
              </div>
@@ -320,6 +321,9 @@ export default {
     },
     goProfile () {
       this.$router.push({path: '/profile'})
+    },
+    goTransactions () {
+      this.$router.push({path: '/stocktransactions'})
     },
     // Cart
     show_cart () {

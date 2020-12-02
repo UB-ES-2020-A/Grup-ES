@@ -46,8 +46,13 @@
       class="mb-3"
       value-field="value"
       text-field="filter"
+      @change="getFilter($event)"
       disabled-field="notEnabled"
-    ></b-form-select>
+    >
+    <template #first>
+      <b-form-select-option :value="null" disabled>Filtrar Biblioteca </b-form-select-option>
+    </template>
+    </b-form-select>
     </b-col>
   </b-row>
 
@@ -141,7 +146,7 @@ export default {
       search: '',
       archived: false,
       selected: 'A',
-      sFilter: 'A',
+      sFilter: null,
       options: [
         { value: 'A', text: 'Libros' },
         { value: 'B', text: 'Sin Leer' },
@@ -149,12 +154,10 @@ export default {
         { value: 'D', text: 'Leyendo' }
       ],
       filters: [
-        { value: 'A', filter: 'Fecha de inclusión: Más reciente' },
-        { value: 'B', filter: 'Fecha de inclusión: Más antiguos' },
-        { value: 'C', filter: 'Titulo: de A a Z' },
-        { value: 'D', filter: 'Titulo: de Z a A' },
-        { value: 'E', filter: 'Autor: de A a Z' },
-        { value: 'F', filter: 'Autor: de Z a A' }
+        { value: 'A', filter: 'Titulo: de A a Z' },
+        { value: 'B', filter: 'Titulo: de Z a A' },
+        { value: 'C', filter: 'Autor: de A a Z' },
+        { value: 'D', filter: 'Autor: de Z a A' }
       ]
     }
   },
@@ -306,6 +309,65 @@ export default {
           break
         case 'D':
           this.choose_reading()
+          break
+      }
+    },
+    getFilter (event) {
+      console.log(this.sFilter)
+      switch (this.sFilter) {
+        case 'A':
+          this.list.sort(function (a, b) {
+            var title1 = a.titulo.toUpperCase()
+            var title2 = b.titulo.toUpperCase()
+            if (title1 < title2) {
+              return -1
+            }
+            if (title1 > title2) {
+              return 1
+            }
+            return 0
+          })
+          break
+        case 'B':
+          this.list.sort(function (a, b) {
+            var title1 = a.titulo.toUpperCase()
+            var title2 = b.titulo.toUpperCase()
+            if (title1 < title2) {
+              return -1
+            }
+            if (title1 > title2) {
+              return 1
+            }
+            return 0
+          })
+          this.list.reverse()
+          break
+        case 'C':
+          this.list.sort(function (a, b) {
+            var autor1 = a.autor.toUpperCase()
+            var autor2 = b.autor.toUpperCase()
+            if (autor1 < autor2) {
+              return -1
+            }
+            if (autor1 > autor2) {
+              return 1
+            }
+            return 0
+          })
+          break
+        case 'D':
+          this.list.sort(function (a, b) {
+            var autor1 = a.autor.toUpperCase()
+            var autor2 = b.autor.toUpperCase()
+            if (autor1 < autor2) {
+              return -1
+            }
+            if (autor1 > autor2) {
+              return 1
+            }
+            return 0
+          })
+          this.list.reverse()
           break
       }
     },
