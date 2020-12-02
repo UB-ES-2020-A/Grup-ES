@@ -117,13 +117,18 @@
              </b-col>
              <b-col>
              <b-row>
-             <h6>{{ total_amount(item.book, item.quantity) }} $</h6>
+             <div>
+             <label for="sb-inline">Quantitat</label>
+             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)" min="1">
+             </b-form-spinbutton>
+             </div>
              </b-row>
              <br>
+             <br>
              <b-row>
-             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)"
-              min="1" style="width:45%"></b-form-spinbutton>
+             <h6>Preu: {{ total_amount(item.book, item.quantity) }} $</h6>
              </b-row>
+             <br>
              </b-col>
              <b-col>
                <b-button variant="danger" @click="return_book(item)">Eliminar</b-button>
@@ -325,16 +330,16 @@ export default {
       this.$emit('changeShowState')
     },
     total_amount (book, quantity) {
-      return Number(book.precio * quantity).toFixed(2)
+      var preu = book.precio * quantity
+      return parseFloat(preu.toFixed(2))
     },
     calculate_total_price () {
       var price = 0.0
       var i
       for (i = 0; i < this.cartItems.length; i++) {
-        price += this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
+        price = price + this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
       }
-      this.price = price
-      return Number(this.price).toFixed(2)
+      return parseFloat(price.toFixed(2))
     },
     return_book (item) {
       var deleteIdx = this.cartItems.indexOf(item)
@@ -345,7 +350,6 @@ export default {
     },
     save_quantity (book, quantity) {
       var i
-      console.log('hola')
       for (i = 0; i < this.cartItems.length; i++) {
         if (book.isbn === this.cartItems[i].book.isbn) {
           this.cartItems[i].quantity = quantity
