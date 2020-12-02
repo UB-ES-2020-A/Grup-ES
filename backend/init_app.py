@@ -34,7 +34,7 @@ def init_api(api):
 
     api.add_resource(PasswordRecovery, '/recovery/<string:key>', '/recovery')
 
-    api.add_resource(Reviews, '/review')
+    api.add_resource(Reviews, '/review', '/review/<int:user_id>/<int:isbn>')
 
 
 def init(environment):
