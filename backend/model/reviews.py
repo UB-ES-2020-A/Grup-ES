@@ -24,6 +24,8 @@ class ReviewsModel(db.Model):
         """
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
+        user = UsersModel.find_by_id(self.user_id)
+        atr['email'] = user.email if user.state else None
         del atr["_sa_instance_state"]
         return atr
 
