@@ -29,7 +29,9 @@ def check_user_and_book(user_model, isbn):
     if not BooksModel.find_by_isbn(isbn):
         abort(404, message={"message": f"Book with ['isbn': {isbn}] Not Found"})
 
-    if g.user != user_model:
+    # First stament checks if the role is user and that it doesn't try to modify an other user
+    # Second statement checks if the user who wants to modify it's not and Admin
+    if (g.user.role is not Roles.User or g.user != user_model) and g.user.role is not Roles.Admin:
         abort(401, message={"message": "Invalid user to remove, can only be yourself"})
 
 
@@ -59,7 +61,7 @@ class Reviews(Resource):
 
         return review.json(), 201
 
-    @auth.login_required(role=Roles.User.name)
+    @auth.login_required
     def delete(self, user_id, isbn):
         with lock:
             user = UsersModel.find_by_id(user_id)
