@@ -1,12 +1,11 @@
 import base64
 import unittest
 import json
-import datetime as dt
 
 from model.books import BooksModel
 from model.users import UsersModel
-from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
+from tests.base_test import BaseTest
 
 
 class UnitTestOfUS(BaseTest):
