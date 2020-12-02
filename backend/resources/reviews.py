@@ -22,18 +22,15 @@ def parse_review():
     return parser.parse_args()
 
 
-def check_user_and_book(email, isbn):
-    user = UsersModel.find_by_email(email)
-    if not user:
-        abort(404, message={"message": f"User with ['email': {email}] Not Found"})
+def check_user_and_book(user_model, isbn):
+    if not user_model:
+        abort(404, message={"message": f"User Not Found"})
 
     if not BooksModel.find_by_isbn(isbn):
         abort(404, message={"message": f"Book with ['isbn': {isbn}] Not Found"})
 
-    if g.user != user:
+    if g.user != user_model:
         abort(401, message={"message": "Invalid user to remove, can only be yourself"})
-
-    return user
 
 
 class Reviews(Resource):
@@ -42,7 +39,8 @@ class Reviews(Resource):
     def post(self):
         data = parse_review()
         with lock:
-            user = check_user_and_book(data['email'], data['isbn'])
+            user = UsersModel.find_by_email(data['email'])
+            check_user_and_book(user, data['isbn'])
 
             if data['score'] < 1 or data['score'] > 5:
                 return {"message": f"{data['score']} is not a valid value for score. Score must be an integer ranging "
@@ -62,11 +60,12 @@ class Reviews(Resource):
         return review.json(), 201
 
     @auth.login_required(role=Roles.User.name)
-    def delete(self, email, isbn):
+    def delete(self, user_id, isbn):
         with lock:
-            user = check_user_and_book(email, isbn)
+            user = UsersModel.find_by_id(user_id)
+            check_user_and_book(user, isbn)
 
-            review = ReviewsModel.find_by_isbn_user_id(isbn, user.id)
+            review = ReviewsModel.find_by_isbn_user_id(isbn, user_id)
             if review is None:
                 return {"message": "Given user hasn't posted a review yet. Did you meant to post it?"}, 404
 
@@ -75,5 +74,5 @@ class Reviews(Resource):
             except Exception as e:
                 return {"message": str(e)}, 500
 
-        return {"message": f"Review with ['email': {email}, 'isbn': {isbn}] deleted"}, 200
+        return {"message": f"Review with ['user_id': {user_id}, 'isbn': {isbn}] deleted"}, 200
 

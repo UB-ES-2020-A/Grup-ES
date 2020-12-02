@@ -1,5 +1,6 @@
 import base64
 import json
+import unittest
 
 from tests.base_test import BaseTest
 from model.users import UsersModel
@@ -29,7 +30,7 @@ class UnitTestOfUS(BaseTest):
             review = ReviewsModel(self.book.isbn, self.user.id, 3, "test")
             review.save_to_db()
 
-            res = self.client.delete(f"/review/email/{self.user.email}/{self.book.isbn}", headers={
+            res = self.client.delete(f"/review/{self.user.id}/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -46,7 +47,7 @@ class UnitTestOfUS(BaseTest):
             review = ReviewsModel(self.book.isbn, user2.id, 3, "test")
             review.save_to_db()
 
-            res = self.client.delete(f"/review/email/{user2.email}/{self.book.isbn}", headers={
+            res = self.client.delete(f"/review/{user2.id}/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -58,7 +59,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/review/email/{self.user.email}/{self.book.isbn}", headers={
+            res = self.client.delete(f"/review/{self.user.id}/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -67,7 +68,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/review/email/{self.user.email}/0", headers={
+            res = self.client.delete(f"/review/{self.user.id}/0", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -76,7 +77,7 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/review/email/fail/{self.book.isbn}", headers={
+            res = self.client.delete(f"/review/0/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -85,5 +86,5 @@ class UnitTestOfUS(BaseTest):
         with self.app.app_context():
             self.basic_setup()
 
-            res = self.client.delete(f"/review/email/{self.user.email}/{self.book.isbn}")
+            res = self.client.delete(f"/review/{self.user.id}/{self.book.isbn}")
             self.assertEqual(401, res.status_code)
