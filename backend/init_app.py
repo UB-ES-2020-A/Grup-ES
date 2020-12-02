@@ -7,7 +7,7 @@ from resources.books import Books, BooksList, SearchBooks, BestSellers
 from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
 from resources.library import Library, LibraryVisibility, LibraryEntry
-from resources.transactions import Transactions, TransactionsUser
+from resources.transactions import Transactions, TransactionsUser, TransactionsList
 from resources.reviews import Reviews
 
 from db import db, init_db
@@ -30,6 +30,7 @@ def init_api(api):
 
     api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
     api.add_resource(TransactionsUser, '/transactions/<string:email>')
+    api.add_resource(TransactionsList, '/allTransactions')
 
     api.add_resource(PasswordRecovery, '/recovery/<string:key>', '/recovery')
 
