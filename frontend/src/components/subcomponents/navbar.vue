@@ -161,6 +161,19 @@
          </b-col>
        </b-row>
    </b-container>
+   <!--toast-->
+   <b-toast id="toast" toaster="b-toaster-top-center" variant="primary" solid autoHideDelay="5000">
+     <template #toast-title>
+       <div class="d-flex flex-grow-1 align-items-baseline">
+         <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+         <strong class="mr-auto">Notice!</strong>
+       </div>
+     </template>
+     <b-row style="margin-left:5px">
+     Se ha enviado un correo de confirmación a su cuenta.
+     </b-row>
+     <br>
+   </b-toast>
   </div>
 </template>
 
