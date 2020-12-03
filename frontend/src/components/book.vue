@@ -51,52 +51,79 @@
   <!--Sección de reviews-->
   <b-container class='bg-info rounded'>
       <br>
-      <form ref="review-form" v-if="session_boolean === true">
-        <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
-        <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
-        <b-icon icon="star-fill" v-if="score >= 2" @click="score = 2" font-scale="2.5"></b-icon>
-        <b-icon icon="star" v-if="score < 2" @click="score = 2" font-scale="2.5"></b-icon>
-        <b-icon icon="star-fill" v-if="score >= 3" @click="score = 3" font-scale="2.5"></b-icon>
-        <b-icon icon="star" v-if="score < 3" @click="score = 3" font-scale="2.5"></b-icon>
-        <b-icon icon="star-fill" v-if="score >= 4" @click="score = 4" font-scale="2.5"></b-icon>
-        <b-icon icon="star" v-if="score<4" @click="score = 4" font-scale="2.5"></b-icon>
-        <b-icon icon="star-fill" v-if="score >= 5" @click="score = 5" font-scale="2.5"></b-icon>
-        <b-icon icon="star" v-if="score < 5" @click="score = 5" font-scale="2.5"></b-icon>
-        <b-form-group label="Reseña" label-for="review-input">
-          <b-form-textarea id="review-input" v-model="review" placeholde="Añade un comentario">
-          </b-form-textarea>
-        </b-form-group>
-        <div class="text-right">
-          <button type="button" class="btn btn-dark" @click="submit(single_book, user)">POST</button>
-        </div>
-      </form>
-      <hr>
+      <div v-if="can_post === true">
+        <form ref="review-form" v-if="session_boolean === true">
+          <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
+          <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
+          <b-icon icon="star-fill" v-if="score >= 2" @click="score = 2" font-scale="2.5"></b-icon>
+          <b-icon icon="star" v-if="score < 2" @click="score = 2" font-scale="2.5"></b-icon>
+          <b-icon icon="star-fill" v-if="score >= 3" @click="score = 3" font-scale="2.5"></b-icon>
+          <b-icon icon="star" v-if="score < 3" @click="score = 3" font-scale="2.5"></b-icon>
+          <b-icon icon="star-fill" v-if="score >= 4" @click="score = 4" font-scale="2.5"></b-icon>
+          <b-icon icon="star" v-if="score<4" @click="score = 4" font-scale="2.5"></b-icon>
+          <b-icon icon="star-fill" v-if="score >= 5" @click="score = 5" font-scale="2.5"></b-icon>
+          <b-icon icon="star" v-if="score < 5" @click="score = 5" font-scale="2.5"></b-icon>
+          <b-form-group label="Reseña" label-for="review-input">
+            <b-form-textarea id="review-input" v-model="review" placeholde="Añade un comentario">
+            </b-form-textarea>
+          </b-form-group>
+          <div class="text-right">
+            <button type="button" class="btn btn-dark" @click="submit(single_book, user)">POST</button>
+          </div>
+        </form>
+        <hr>
+      </div>
       <v-row v-for="(review) in this.single_book.reviews" :key="review.user_id">
         <div class="card">
           <div class="card-body">
+            <div v-if="!is_modifying(review)">
             <b-row>
               <b-col>
                 <h5 class="card-title">
-                  <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
-                  <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
-                  <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
-                  <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
-                  <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
-                  <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
-                  <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
-                  <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
-                  <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
-                  <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
+                  <div>
+                    <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
+                    <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
+                    <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
+                    <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+                    <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
+                    <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
+                    <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
+                    <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
+                    <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
+                    <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
+                  </div>
                 </h5>
               </b-col>
               <b-col>
                 <div class="text-right text-top" style="height=100px">
+                  <b-icon icon="pencil-fill" v-if="modify_visibility(review)" font-scale="1" @click="change_modify_state(review)"></b-icon>
                   <b-icon icon="trash-fill" v-if="delete_visibility(review)" font-scale="1" v-b-modal.conf-del @click="set_focus(review)"></b-icon>
                 </div>
               </b-col>
             </b-row>
             <h6 class="card-subtitle mb-2 text-muted">{{review.username}} with id {{review.user_id}} commented:</h6>
             <p class="card-text">{{review.review}}</p>
+            </div>
+            <form ref="review-form" v-if="is_modifying(review)">
+              <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="score >= 2" @click="score = 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="score < 2" @click="score = 2" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="score >= 3" @click="score = 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="score < 3" @click="score = 3" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="score >= 4" @click="score = 4" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="score<4" @click="score = 4" font-scale="2.5"></b-icon>
+              <b-icon icon="star-fill" v-if="score >= 5" @click="score = 5" font-scale="2.5"></b-icon>
+              <b-icon icon="star" v-if="score < 5" @click="score = 5" font-scale="2.5"></b-icon>
+              <b-form-group label="Reseña" label-for="review-input">
+                <b-form-textarea id="review-modify-input" v-model="review_modify_input" placeholde="Añade un comentario">
+                </b-form-textarea>
+              </b-form-group>
+              <div class="text-right">
+                <button type="button" class="btn btn-danger" @click="change_modify_state(review)">CANCEL</button>
+                <button type="button" class="btn btn-dark" @click="modify(review, single_book, user)">OK</button>
+              </div>
+            </form>
           </div>
         </div>
         <br>
@@ -130,6 +157,7 @@ export default {
       adminRole: 'Admin',
 
       show: true,
+      can_post: true,
 
       // LogIn status
       user: {},
@@ -139,12 +167,18 @@ export default {
       review: '',
       single_book: {},
 
-      focused_review: {}
+      // Delete
+      focused_review: {},
+
+      // Modify
+      modifying_review: {},
+      modifying: false,
+      review_modify_input: ''
     }
   },
   created () {
-    this.load_book()
     this.fetch_login_status()
+    this.load_book()
   },
   methods: {
     load_book () {
@@ -156,6 +190,16 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.single_book = res.data.book
+          this.can_post = true
+          var i
+          console.log(this.single_book)
+          console.log(this.single_book.reviews)
+          for (i = 0; i < this.single_book.reviews.length; i++) {
+            console.log(this.single_book.reviews[i])
+            if (this.single_book.reviews[i].user_id === this.user.id) {
+              this.can_post = false
+            }
+          }
         })
         .catch((error) => {
           console.error(error)
@@ -206,6 +250,32 @@ export default {
     },
     delete_visibility (review) {
       return (review.user_id === this.user.id) || (this.user.role === this.adminRole)
+    },
+    modify_visibility (review) {
+      return review.user_id === this.user.id
+    },
+    is_modifying (review) {
+      return review === this.modifying_review && this.modifying
+    },
+    change_modify_state (review) {
+      this.modifying = !this.modifying
+      this.modifying_review = review
+      this.review_modify_input = review.review
+      this.score = review.score
+    },
+    modify (review) {
+      const path = this.$API_URL + 'review/' + review.user_id + '/' + review.isbn
+      const data = {
+        score: this.score,
+        review: this.review_modify_input
+      }
+      axios.put(path, data, {auth: {username: this.user.token}})
+        .then((res) => {
+          this.load_book()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     set_focus (review) {
       this.focused_review = review
