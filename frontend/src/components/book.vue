@@ -74,19 +74,28 @@
       <v-row v-for="(review) in this.single_book.reviews" :key="review.user_id">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">
-              <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
-              <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
-              <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
-            </h5>
-            <h6 class="card-subtitle mb-2 text-muted">user with id {{review.user_id}} commented:</h6>
+            <b-row>
+              <b-col>
+                <h5 class="card-title">
+                  <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="2.5"></b-icon>
+                  <b-icon icon="star" v-if="review.score < 1" font-scale="2.5"></b-icon>
+                  <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="2.5"></b-icon>
+                  <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+                  <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="2.5"></b-icon>
+                  <b-icon icon="star" v-if="review.score < 3" font-scale="2.5"></b-icon>
+                  <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="2.5"></b-icon>
+                  <b-icon icon="star" v-if="review.score<4" font-scale="2.5"></b-icon>
+                  <b-icon icon="star-fill" v-if="review.score >= 5" font-scale="2.5"></b-icon>
+                  <b-icon icon="star" v-if="review.score < 5" font-scale="2.5"></b-icon>
+                </h5>
+              </b-col>
+              <b-col>
+                <div class="text-right text-top" style="height=100px">
+                  <b-icon icon="trash-fill" v-if="review.user_id === user.id" font-scale="1" v-b-modal.conf-del @click="set_focus(review)"></b-icon>
+                </div>
+              </b-col>
+            </b-row>
+            <h6 class="card-subtitle mb-2 text-muted">{{review.username}} with id {{review.user_id}} commented:</h6>
             <p class="card-text">{{review.review}}</p>
           </div>
         </div>
@@ -96,6 +105,12 @@
   </div>
   </div>
   <foot/>
+  <b-modal
+    id="conf-del"
+    title="Seguro que quiere eliminar la review?"
+    @ok="delete_review(focused_review)">
+    <p> Atención: está acción es irreversible! <p>
+  </b-modal>
   </div>
 </template>
 
@@ -119,7 +134,9 @@ export default {
 
       score: 1,
       review: '',
-      single_book: {}
+      single_book: {},
+
+      focused_review: {}
     }
   },
   created () {
@@ -173,6 +190,19 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    delete_review (review) {
+      const path = this.$API_URL + 'review/' + review.user_id + '/' + review.isbn
+      axios.delete(path, {auth: {username: this.user.token}})
+        .then((res) => {
+          this.load_book()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    set_focus (review) {
+      this.focused_review = review
     },
     fetch_login_status () {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))

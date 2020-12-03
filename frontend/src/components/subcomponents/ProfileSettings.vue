@@ -12,9 +12,9 @@
        <b-row>
        <b-col>
         <b-form-group
-          label="Username"
+          label="Nou Username"
           label-for="username-input"
-          invalid-feedback="Camp a omplenar"
+          invalid-feedback="Camp a omplenar (Cal que tingui més de 4 caràcters)"
         >
         <b-form-input
           id="username-input"
@@ -46,7 +46,7 @@
         <b-form-group
           label="Nou correu"
           label-for="newemail-input"
-          invalid-feedback="Camp a omplenar"
+          invalid-feedback="Format incorrecte"
         >
         <b-form-input
           id="newemail-input"
@@ -88,9 +88,9 @@
        ></b-form-input>
      </b-form-group>
      <b-form-group
-       label="Introdueix la nova contrasenya"
+       label="Introdueix la nova contrasenya: Cal que tingui un nombre, un caràcter, una majuscula i una minuscula"
        label-for="pwdnew1-input"
-       invalid-feedback="Les contrasenyes no coincideixen"
+       invalid-feedback="La contrasenya no és correcta"
      >
      <b-form-input
        id="pwdnew1-input"
@@ -102,7 +102,7 @@
    <b-form-group
      label="Repeteix la nova contrasenya"
      label-for="pwdnew2-input"
-     invalid-feedback="Les contrasenyes no coincideixen"
+     invalid-feedback="La contrasenya no és correcta"
    >
    <b-form-input
      id="pwdnew2-input"
@@ -226,7 +226,7 @@ export default {
         })
     },
     checkUsernameChange () {
-      if (this.username.length > 0) {
+      if (this.username.length > 4) {
         this.usernameState = true
       } else {
         this.usernameState = false
@@ -241,25 +241,27 @@ export default {
       }
     },
     checkChangePassword () {
-      if (this.currentpassword.length > 0) {
+      var pw = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/
+      if (pw.test(this.currentpassword)) {
         this.passwordState = true
       } else {
         this.passwordState = false
       }
-      if (this.newpassword.length > 0 && this.newpassword2.length > 0 &&
+      if (pw.test(this.newpassword) && pw.test(this.newpassword2) &&
       this.newpassword === this.newpassword2) {
-        this.newpassword2State = true
-        this.newpasswordState = true
+        this.passwordnewState = true
+        this.passwordnew2State = true
       } else {
-        this.newpassword2State = false
-        this.newpasswordState = false
+        this.passwordnewState = false
+        this.passwordnew2State = false
       }
-      if (this.passwordState && this.newpasswordState && this.newpassword2State) {
+      if (this.passwordState && this.passwordnew2State && this.passwordnewState) {
         this.changePassword()
       }
     },
     checkChangeEmail () {
-      if (this.newEmail.length > 0) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if (re.test(this.newEmail)) {
         this.newEmailState = true
       } else {
         this.newEmailState = false

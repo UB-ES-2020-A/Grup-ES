@@ -1,11 +1,9 @@
 import base64
 import json
-import unittest
 
 from tests.base_test import BaseTest
 from model.users import UsersModel
 from model.books import BooksModel
-# Solves problem of user model not finding reviews model
 from model.reviews import ReviewsModel
 
 
