@@ -1,6 +1,7 @@
 from flask import g
 from flask_restful import reqparse
 from flask_restful import Resource
+from sqlalchemy import asc, desc
 
 from model.books import BooksModel
 from model.users import auth, UsersModel
@@ -50,7 +51,8 @@ class Transactions(Resource):
                     return {"message": "Not enough stock for book with 'isbn': " + str(isbn) + "only "
                                        + str(book.stock) + " available"}, 404
             try:
-                transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'], data['quantities'])
+                transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'],
+                                                                  data['quantities'])
             except Exception as ex:
                 return {'message': str(ex)}, 500
         return {'transactions': transactions}, 201
@@ -66,7 +68,7 @@ class TransactionsUser(Resource):
             if g.user != user:
                 return {"message": "Invalid user, can only be yourself"}, 401
             transactions = TransactionsModel.query.filter_by(user_id=user.id).all()
-            grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in set(t.id_transaction for t in transactions)]
+            grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
             return {'transactions': grouped_transactions}, 200
 
 
@@ -74,6 +76,32 @@ class TransactionsList(Resource):
     @auth.login_required(role='Admin')
     def get(self):
         with lock:
-            transactions = TransactionsModel.query.all()
-            grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in set(t.id_transaction for t in transactions)]
+            parser = reqparse.RequestParser(bundle_errors=True)
+
+            parser.add_argument('isbn', type=int, required=False,
+                                help="In this field goes the isbn of the transactions")
+            # parser.add_argument('titulo', type=str, required=False,
+            # help="In this field goes the tittle of the book")
+            parser.add_argument('user_id', type=int, required=False,
+                                help="In this field goes the user_id of the transactions")
+            parser.add_argument('date', type=str, required=False,
+                                help="In this field goes the date order (asc, desc) of the transactions")
+            data = parser.parse_args()
+
+            transactions = TransactionsModel.query
+            if not any(v is not None for k, v in data.items()):  # no filter asked
+                grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
+                return {'transactions': grouped_transactions}, 200
+            else:
+                for k, v in data.items():
+                    if v is not None:
+                        if k != 'date':
+                            transactions = transactions.filter(getattr(TransactionsModel, k) == v)
+
+            if data['date'] == 'asc':
+                transactions = transactions.order_by(asc('date'))
+            elif data['date'] == 'desc':
+                transactions = transactions.order_by(desc('date'))
+
+            grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
             return {'transactions': grouped_transactions}, 200
