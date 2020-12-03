@@ -42,7 +42,7 @@ export default {
   },
   data: () => ({
     show: true,
-
+    id: '',
     clientId: '374016962135-l70k72dvqf1ugd3pirf58ti292v8gk1a.apps.googleusercontent.com',
     username: '',
     email: '',
@@ -72,10 +72,11 @@ export default {
       ])
         .then(axios.spread((datapost, dataget) => {
           this.token = datapost.data.token
+          this.id = dataget.data.user.id
           this.username = dataget.data.user.username
           this.email = dataget.data.user.email
           this.role = dataget.data.user.role
-          this.createUserObject(this.username, this.email, this.role, this.token)
+          this.createUserObject(this.id, this.username, this.email, this.role, this.token)
           this.$router.push({path: '/'})
           this.initForm()
         }))
@@ -85,13 +86,14 @@ export default {
           alert('La dirección o la contraseña son incorrectas')
         })
     },
-    createUserObject (username, email, role, token) {
+    createUserObject (id, username, email, role, token) {
+      this.userObject.id = id
       this.userObject.username = username
       this.userObject.email = email
       this.userObject.role = role
       this.userObject.token = token
       localStorage.setItem('user_session', JSON.stringify(this.userObject))
-      console.log(this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
+      console.log(this.userObject.id, this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
     },
     goRegister () {
       this.$router.push({path: '/userregister'})
