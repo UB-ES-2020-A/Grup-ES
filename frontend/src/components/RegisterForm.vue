@@ -70,13 +70,28 @@
                   type="password"
                 ></b-form-input>
               </b-form-group>
-
               <b-button variant="danger" style="margin-top: 20px" @click="checkInputs()">Crear usuario</b-button>
       </div>
       </div>
       </div>
       </div>
     </b-container>
+    <!--toast-->
+    <b-toast id="my-toast" toaster="b-toaster-top-center" variant="primary" solid>
+      <template #toast-title>
+        <div class="d-flex flex-grow-1 align-items-baseline">
+          <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+          <strong class="mr-auto">Notice!</strong>
+        </div>
+      </template>
+      <b-row style="margin-left:5px">
+      Se ha enviado un correo de confirmación a su cuenta.
+      </b-row>
+      <b-row align-h="center" style="margin-left:5px">
+      <b-button @click="goLogin()">OK</b-button>
+      </b-row>
+      <br>
+    </b-toast>
   </div>
   </div>
 </template>
@@ -142,6 +157,9 @@ export default {
     }
   },
   methods: {
+    goLogin () {
+      this.$router.push({path: '/userlogin'})
+    },
     createUser () {
       const parameters = {
         username: this.username,
@@ -154,7 +172,7 @@ export default {
           this.initForm()
           console.log('ACCOUNT CREATED')
           alert('Account created')
-          this.$router.push({path: '/userlogin'})
+          this.$bvToast.show('my-toast')
         })
         .catch((error) => {
           console.error(error)
