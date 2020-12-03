@@ -97,9 +97,8 @@ class TransactionsList(Resource):
             else:
                 for k, v in data.items():
                     if v is not None:
-                        if k == 'date':
-                            pass
-                        transactions = transactions.filter(getattr(TransactionsModel, k) == v)
+                        if k != 'date':
+                            transactions = transactions.filter(getattr(TransactionsModel, k) == v)
 
             if data['date'] == 'asc':
                 transactions = transactions.order_by(asc('date'))

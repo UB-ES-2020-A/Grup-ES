@@ -2,6 +2,8 @@ import base64
 import unittest
 import json
 
+from sqlalchemy import desc
+
 from model.books import BooksModel
 from model.users import UsersModel
 from model.transactions import TransactionsModel
@@ -90,14 +92,18 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(200, res.status_code)
 
-            allTransactions = TransactionsModel.query.all()
-            self.assertEqual(4, len(allTransactions))
-            # no se com comprovar que son les que hi ha afegides.
+            transactions = TransactionsModel.query.all()
+            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
+                                    set(t.id_transaction for t in transactions)]
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
 
     def test_filter_transactions_by_isbn(self):
         with self.app.app_context():
             self.basic_setup()
             self.add_transactions_user1()
+            self.add_transactions_user2()
 
             res = self.client.get("/allTransactions", data={'isbn': self.book.isbn}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
@@ -105,8 +111,11 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
 
             transactions = TransactionsModel.query.filter_by(isbn=self.book.isbn).all()
-            for i, transaction in enumerate(transactions):
-                self.assertEqual(transaction.json(), json.loads(res.data)['transactions'][0][i])
+            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
+                                     set(t.id_transaction for t in transactions)]
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
 
     def test_filter_transactions_by_user_id(self):
         with self.app.app_context():
@@ -119,10 +128,12 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(200, res.status_code)
 
-            transactions = TransactionsModel.query.filter_by(user_id=self.user.id).all()
-            for transaction_id in json.loads(res.data)['transactions']:
-                for transaction in transaction_id:
-                    self.assertEqual(self.user2.id, transaction['user_id'])
+            transactions = TransactionsModel.query.filter_by(user_id=self.user2.id).all()
+            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
+                                     set(t.id_transaction for t in transactions)]
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
 
     def test_filter_transactions_by_user_id_and_date_desc(self):
         with self.app.app_context():
@@ -135,17 +146,12 @@ class UnitTestOfUS(BaseTest):
             })
             self.assertEqual(200, res.status_code)
 
-    def test_get_no_transactions(self):
-        with self.app.app_context():
-            self.basic_setup()
-
-            res = self.client.get("/allTransactions", headers={
-                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
-            })
-            self.assertEqual(200, res.status_code)
-
-            allTransactions = TransactionsModel.query.all()
-            self.assertEqual(0, len(allTransactions))
+            transactions = TransactionsModel.query.filter_by(user_id=self.user2.id).order_by(desc('date')).all()
+            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
+                                     set(t.id_transaction for t in transactions)]
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
 
 
 if __name__ == '__main__':
