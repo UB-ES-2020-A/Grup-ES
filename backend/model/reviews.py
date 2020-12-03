@@ -131,8 +131,6 @@ class ScoresModel(db.Model):
         score = cls.find_by_isbn(review.isbn)
         if score is None:
             raise Exception("No review to update.")
-        elif score.n_reviews == 1:
-            score.score = review.score
         else:
             score.score = (score.n_reviews * score.score + review.score - previous_score) / score.n_reviews
             db.session.commit()
