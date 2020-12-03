@@ -84,7 +84,6 @@
                   <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
                   <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
-                  <b-nav-item active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
                 </b-nav>
                 </nav>
              </div>
@@ -118,18 +117,13 @@
              </b-col>
              <b-col>
              <b-row>
-             <div>
-             <label for="sb-inline">Quantitat</label>
-             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)" min="1">
-             </b-form-spinbutton>
-             </div>
+             <h6>{{ total_amount(item.book, item.quantity) }} $</h6>
              </b-row>
-             <br>
              <br>
              <b-row>
-             <h6>Preu: {{ total_amount(item.book, item.quantity) }} $</h6>
+             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)"
+              min="1" style="width:45%"></b-form-spinbutton>
              </b-row>
-             <br>
              </b-col>
              <b-col>
                <b-button variant="danger" @click="return_book(item)">Eliminar</b-button>
@@ -161,6 +155,19 @@
          </b-col>
        </b-row>
    </b-container>
+   <!--toast-->
+   <b-toast id="toast" toaster="b-toaster-top-center" variant="primary" solid autoHideDelay="5000">
+     <template #toast-title>
+       <div class="d-flex flex-grow-1 align-items-baseline">
+         <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+         <strong class="mr-auto">Notice!</strong>
+       </div>
+     </template>
+     <b-row style="margin-left:5px">
+     Se ha enviado un correo de confirmación a su cuenta.
+     </b-row>
+     <br>
+   </b-toast>
   </div>
 </template>
 
@@ -253,33 +260,24 @@ export default {
       }
     },
     checkOk () {
-      if ((this.isbn.length <= 13 && this.isbn.length > 0) || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
+      if (this.isbn.length === 13) {
+        this.isbnState = true
+      } else {
+        this.isbnState = false
+      }
+      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
         this.$nextTick(() => {
           this.$bvModal.hide('modal-1')
         })
         this.isbnState = true
+        this.clearModal()
         return true
       }
       return false
     },
     handleOk (bvModalEvt) {
       bvModalEvt.preventDefault()
-      if (this.checkOk()) {
-        var params = {}
-        if (this.isbn !== '') {
-          params['isbn'] = this.isbn
-        }
-        if (this.title !== '') {
-          params['titulo'] = this.title
-        }
-        if (this.autor !== '') {
-          params['autor'] = this.autor
-        }
-        if (this.editorial !== '') {
-          params['editorial'] = this.editorial
-        }
-        this.$router.push({ path: '/search', query: params })
-      }
+      this.checkOk()
     },
     clearModal () {
       this.isbn = ''
@@ -322,9 +320,6 @@ export default {
     goProfile () {
       this.$router.push({path: '/profile'})
     },
-    goTransactions () {
-      this.$router.push({path: '/stocktransactions'})
-    },
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart
@@ -334,16 +329,16 @@ export default {
       this.$emit('changeShowState')
     },
     total_amount (book, quantity) {
-      var preu = book.precio * quantity
-      return parseFloat(preu.toFixed(2))
+      return Number(book.precio * quantity).toFixed(2)
     },
     calculate_total_price () {
       var price = 0.0
       var i
       for (i = 0; i < this.cartItems.length; i++) {
-        price = price + this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
+        price += this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
       }
-      return parseFloat(price.toFixed(2))
+      this.price = price
+      return Number(this.price).toFixed(2)
     },
     return_book (item) {
       var deleteIdx = this.cartItems.indexOf(item)
@@ -354,6 +349,7 @@ export default {
     },
     save_quantity (book, quantity) {
       var i
+      console.log('hola')
       for (i = 0; i < this.cartItems.length; i++) {
         if (book.isbn === this.cartItems[i].book.isbn) {
           this.cartItems[i].quantity = quantity
