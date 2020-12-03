@@ -1,20 +1,20 @@
-from flask_restful import Resource, reqparse, abort
 from flask import g
-from model.users import UsersModel, auth, Roles
-from model.library import LibraryModel, LibraryType, State
+from flask_restful import Resource, reqparse, abort
+
 from model.books import BooksModel
 from model.reviews import ReviewsModel
+from model.users import UsersModel, auth, Roles
 from utils.lock import lock
 
 
-def parse_review():
+def parse_review(required=True):
     parser = reqparse.RequestParser(bundle_errors=True)
 
-    parser.add_argument('isbn', required=True, type=int,
+    parser.add_argument('isbn', required=required, type=int,
                         help="ISBN of the book associated to the review. Can't be null.")
-    parser.add_argument('email', required=True, type=str,
+    parser.add_argument('email', required=required, type=str,
                         help="Email of the user associated to the review. Can't be null.")
-    parser.add_argument('score', required=True, type=int,
+    parser.add_argument('score', required=required, type=int,
                         help="Integer score ranging from 1 to 5 which indicates book score. Can't be null.")
     parser.add_argument('review', required=False, type=str,
                         help="Review message the user has posted with the score. Can be null.")
@@ -75,4 +75,22 @@ class Reviews(Resource):
                 return {"message": str(e)}, 500
 
         return {"message": f"Review with ['user_id': {user_id}, 'isbn': {isbn}] deleted"}, 200
+
+    @auth.login_required()
+    def put(self, user_id, isbn):
+        data = parse_review(False)
+        with lock:
+            user = UsersModel.find_by_id(user_id)
+            check_user_and_book(user, isbn)
+
+            review = ReviewsModel.find_by_isbn_user_id(isbn, user_id)
+            if review is None:
+                return {"message": "Given user hasn't posted a review yet. Did you meant to post it?"}, 404
+
+            try:
+                review.update_from_db(data)
+            except Exception as e:
+                return {"message": str(e)}, 500
+
+        return {"review": review.json()}, 200
 
