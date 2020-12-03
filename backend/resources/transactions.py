@@ -80,13 +80,13 @@ class TransactionsList(Resource):
             parser = reqparse.RequestParser(bundle_errors=True)
 
             parser.add_argument('isbn', type=int, required=False,
-                                help="In this field goes the isbn of the book")
+                                help="In this field goes the isbn of the transactions")
             # parser.add_argument('titulo', type=str, required=False,
             # help="In this field goes the tittle of the book")
             parser.add_argument('user_id', type=int, required=False,
-                                help="In this field goes the editorial of the book")
+                                help="In this field goes the user_id of the transactions")
             parser.add_argument('date', type=str, required=False,
-                                help="In this field goes the date order (asc, desc)")
+                                help="In this field goes the date order (asc, desc) of the transactions")
             data = parser.parse_args()
 
             transactions = TransactionsModel.query
