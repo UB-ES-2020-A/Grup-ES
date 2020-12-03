@@ -93,8 +93,7 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
 
             transactions = TransactionsModel.query.all()
-            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
-                                    set(t.id_transaction for t in transactions)]
+            expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
             for i, transactions in enumerate(expected_transactions):
                 for j, transaction in enumerate(transactions):
                     self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
@@ -111,8 +110,7 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
 
             transactions = TransactionsModel.query.filter_by(isbn=self.book.isbn).all()
-            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
-                                     set(t.id_transaction for t in transactions)]
+            expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
             for i, transactions in enumerate(expected_transactions):
                 for j, transaction in enumerate(transactions):
                     self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
@@ -147,8 +145,7 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
 
             transactions = TransactionsModel.query.filter_by(user_id=self.user2.id).order_by(desc('date')).all()
-            expected_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
-                                     set(t.id_transaction for t in transactions)]
+            expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
             for i, transactions in enumerate(expected_transactions):
                 for j, transaction in enumerate(transactions):
                     self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])

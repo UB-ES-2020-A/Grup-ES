@@ -118,3 +118,9 @@ class TransactionsModel(db.Model):
         sort_best = dict(sorted(aux.items(), key=lambda x: x[1], reverse=True))
         isbns = list(sort_best.keys())
         return isbns
+
+    @classmethod
+    def group_transactions_by_id(cls, transactions):
+        grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
+                                set(t.id_transaction for t in transactions)]
+        return grouped_transactions
