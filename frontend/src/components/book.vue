@@ -91,7 +91,7 @@
               </b-col>
               <b-col>
                 <div class="text-right text-top" style="height=100px">
-                  <b-icon icon="trash-fill" v-if="review.user_id === user.id" font-scale="1" v-b-modal.conf-del @click="set_focus(review)"></b-icon>
+                  <b-icon icon="trash-fill" v-if="delete_visibility(review)" font-scale="1" v-b-modal.conf-del @click="set_focus(review)"></b-icon>
                 </div>
               </b-col>
             </b-row>
@@ -126,6 +126,9 @@ export default {
   },
   data () {
     return {
+      // Roles
+      adminRole: 'Admin',
+
       show: true,
 
       // LogIn status
@@ -200,6 +203,9 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    delete_visibility (review) {
+      return (review.user_id === this.user.id) || (this.user.role === this.adminRole)
     },
     set_focus (review) {
       this.focused_review = review
