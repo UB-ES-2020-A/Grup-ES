@@ -51,7 +51,8 @@ class UsersModel(db.Model):
             db.session.commit()
 
     def json(self, reviews=False):
-        user = {"username": self.username,
+        user = {"id": self.id,
+                "username": self.username,
                 "email": self.email,
                 "role": str(self.role)}
         if reviews:
