@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
@@ -154,7 +154,8 @@ export default {
           this.initForm()
           console.log('ACCOUNT CREATED')
           alert('Account created')
-          this.$router.push({path: '/userlogin'})
+          this.$refs.c.$bvToast.show('toast')
+          setTimeout(() => this.$router.push({path: '/userlogin'}), 5000)
         })
         .catch((error) => {
           console.error(error)
