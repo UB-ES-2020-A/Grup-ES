@@ -20,6 +20,21 @@
     <b-form-input v-model="search" placeholder="Filter by ID"></b-form-input>
     </b-col>
 </b-row>
+<br>
+<b-row align-v="center">
+    <b-col sm="2" xl="2">
+    <b-form-input v-model="isbnSearch" placeholder="ISBN"></b-form-input>
+    </b-col>
+    <b-col sm="2" xl="2">
+    <b-form-input v-model="userSearch" placeholder="User ID"></b-form-input>
+    </b-col>
+    <b-col sm="2" xl="4">
+    <b-form-select v-model="selected" :options="options"></b-form-select>
+    </b-col>
+    <b-col sm="2" xl="4">
+    <b-button @click="advancedSearch()" variant="secondary">Cerca</b-button>
+    </b-col>
+</b-row>
 </b-container>
 <br>
 <br>
@@ -42,6 +57,7 @@
    <br>
    <b-button v-b-toggle = "'collapse-' + transaction[0].id_transaction" variant="secondary">Detalls</b-button>
   </b-card>
+  <h3 v-if="allTransactions.length == 0"> No hi han transaccions </h3>
 </b-card-group>
 </b-container>
 <!-- footer -->
@@ -68,7 +84,15 @@ export default {
       search: '',
       show: true,
       user: {},
-      price: 0.0
+      price: 0.0,
+      selected: null,
+      isbnSearch: null,
+      userSearch: null,
+      options: [
+        { value: null, text: 'Data' },
+        { value: 'asc', text: 'Més antigues primer' },
+        { value: 'desc', text: 'Més noves primer' }
+      ]
     }
   },
   created () {
@@ -81,7 +105,6 @@ export default {
       axios.get(path, { auth: { username: this.user.token } })
         .then((res) => {
           this.allTransactions = res.data.transactions
-          console.log(res)
         })
         .catch((error) => {
           console.error(error)
@@ -102,6 +125,33 @@ export default {
       }
       price = price.toFixed(2)
       return price
+    },
+    advancedSearch () {
+      const path = this.$API_URL + 'allTransactions'
+      var params = this.parseParameters()
+      const headers = {'auth': { username: this.user.token },
+        params: params}
+      axios.get(path, headers)
+        .then((res) => {
+          this.allTransactions = res.data.transactions
+          console.log(res.data.transactions)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    },
+    parseParameters () {
+      var obj = {}
+      if (this.isbnSearch) {
+        obj.isbn = this.isbnSearch
+      }
+      if (this.userSearch) {
+        obj.user_id = this.userSearch
+      }
+      if (this.selected) {
+        obj.date = this.selected
+      }
+      return obj
     }
   }
 }
