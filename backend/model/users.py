@@ -15,9 +15,6 @@ class Roles(Enum):
     User = 1
     Admin = 2
 
-    def __str__(self):
-        return self.name
-
 
 class UsersModel(db.Model):
     __tablename__ = 'users'
@@ -54,7 +51,7 @@ class UsersModel(db.Model):
         user = {"id": self.id,
                 "username": self.username,
                 "email": self.email,
-                "role": str(self.role)}
+                "role": self.role.name}
         if reviews:
             user['reviews'] = [review.json() for review in self.reviews]
         return user
@@ -68,9 +65,11 @@ class UsersModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
-        if 0 < self.query.filter_by(username=data['username'] and id != self.id, state=True).count():
+        if 0 < self.query.filter(UsersModel.username == data['username'], UsersModel.id != self.id,
+                                 UsersModel.state).count():
             raise Exception("Username already in use")
-        if 0 < self.query.filter_by(email=data['email'] and id != self.id, state=True).count():
+        if 0 < self.query.filter(UsersModel.username == data['username'], UsersModel.id != self.id,
+                                 UsersModel.state).count():
             raise Exception("Email already in use")
 
         for attr, newValue in data.items():
