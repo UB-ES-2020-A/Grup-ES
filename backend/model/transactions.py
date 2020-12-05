@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 from sqlalchemy import desc
+from sqlalchemy.util import OrderedSet
 
 from db import db
 
@@ -122,5 +123,5 @@ class TransactionsModel(db.Model):
     @classmethod
     def group_transactions_by_id(cls, transactions):
         grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
-                                set(t.id_transaction for t in transactions)]
+                                OrderedSet(t.id_transaction for t in transactions)]
         return grouped_transactions
