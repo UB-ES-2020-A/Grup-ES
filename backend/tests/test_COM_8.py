@@ -101,15 +101,39 @@ class UnitTestOfUS(BaseTest):
     def test_filter_transactions_by_isbn(self):
         with self.app.app_context():
             self.basic_setup()
-            self.add_transactions_user1()
-            self.add_transactions_user2()
+            self.add_transactions_user1()  # has book with isbn = 1
+            self.add_transactions_user2()  # has book with isbn = 1
 
             res = self.client.get("/allTransactions", data={'isbn': self.book.isbn}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
 
-            transactions = TransactionsModel.query.filter_by(isbn=self.book.isbn).all()
+            # the transactions with the books with isbn 1 are transactions 1 and 2
+            ids_transactions = [1, 2]
+            transactions = TransactionsModel.query.filter(
+                TransactionsModel.id_transaction.in_(ids_transactions))
+            expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
+
+    def test_filter_transactions_by_isbn_and_user(self):
+        with self.app.app_context():
+            self.basic_setup()
+            self.add_transactions_user1()  # has book with isbn = 1
+            self.add_transactions_user2()  # has book with isbn = 1
+
+            res = self.client.get("/allTransactions", data={'isbn': self.book.isbn, 'user_id': self.user2.id}, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(200, res.status_code)
+
+            # the transactions with the books with isbn 1 are transactions 1 and 2 but only the second is from user2.
+            ids_transactions = [1, 2]
+            transactions = TransactionsModel.query.\
+                filter(TransactionsModel.id_transaction.in_(ids_transactions)).\
+                filter_by(user_id=self.user2.id)
             expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
             for i, transactions in enumerate(expected_transactions):
                 for j, transaction in enumerate(transactions):
@@ -145,6 +169,23 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(200, res.status_code)
 
             transactions = TransactionsModel.query.filter_by(user_id=self.user2.id).order_by(desc('date')).all()
+            expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
+            for i, transactions in enumerate(expected_transactions):
+                for j, transaction in enumerate(transactions):
+                    self.assertEqual(transaction, json.loads(res.data)['transactions'][i][j])
+
+    def test_filter_transactions_by_date_desc(self):
+        with self.app.app_context():
+            self.basic_setup()
+            self.add_transactions_user1()
+            self.add_transactions_user2()
+
+            res = self.client.get("/allTransactions", data={'date': 'desc'}, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(200, res.status_code)
+
+            transactions = TransactionsModel.query.order_by(desc('date')).all()
             expected_transactions = TransactionsModel.group_transactions_by_id(transactions)
             for i, transactions in enumerate(expected_transactions):
                 for j, transaction in enumerate(transactions):

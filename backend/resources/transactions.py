@@ -93,15 +93,21 @@ class TransactionsList(Resource):
                 grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
                 return {'transactions': grouped_transactions}, 200
             else:
-                for k, v in data.items():
-                    if v is not None:
-                        if k != 'date':
-                            transactions = transactions.filter(getattr(TransactionsModel, k) == v)
+                if data['isbn'] is not None:
+                    # Get transactions with isbn = isbn
+                    transactions_containing_isbn = transactions.filter_by(isbn=data['isbn'])
+                    # Ids of the transactions that have the isbn
+                    ids_transactions = [t.id_transaction for t in transactions_containing_isbn]
 
-            if data['date'] == 'asc':
-                transactions = transactions.order_by(asc('date'))
-            elif data['date'] == 'desc':
-                transactions = transactions.order_by(desc('date'))
+                    # All transactions with the ids
+                    transactions = TransactionsModel.query.filter(
+                        TransactionsModel.id_transaction.in_(ids_transactions))
+                if data['user_id'] is not None:
+                    transactions = transactions.filter_by(user_id=data['user_id'])
+                if data['date'] == str('asc'):
+                    transactions = transactions.order_by(asc('date'))
+                elif data['date'] == str('desc'):
+                    transactions = transactions.order_by(desc('date'))
 
             grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
             return {'transactions': grouped_transactions}, 200
