@@ -70,18 +70,14 @@
       <br>
       <b-row>
         <h3> Les teves últimes compres </h3>
+        <br>
       </b-row>
       <b-row>
-        <b-col  v-if="ped <= transtoshow" v-for="ped in showPartialList (pedidos, transtoshow)" :key="ped">
-        <br>
-        <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
-        <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
-        <h5>{{ pedidos[ped - 1].book.autor }}</h5>
-        </b-col>
+        <b-table striped hover :items="transactions"></b-table>
       </b-row>
       <br>
       <b-row>
-        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= transtoshow" @click="transtoshow += 3"> + Veure'n més</b-button>
+        <b-button pill variant="outline-secondary" @click="goPedidos()"> + Veure'n més</b-button>
       </b-row>
       <br>
       <br>
@@ -129,6 +125,7 @@ export default {
     return {
       show: true,
       user: {},
+      transactions: [],
       pedidos: [],
       library: [],
       reviews: [],
@@ -163,7 +160,8 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.pedidos = res.data.transactions
-          console.log(this.pedidos)
+          this.manage_transactions(this.pedidos)
+          // console.log(this.pedidos)
         })
         .catch((error) => {
           console.error(error)
@@ -192,7 +190,7 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.wishlist = res.data.library
-          console.log(this.wishlist)
+          // console.log(this.wishlist)
         })
         .catch((error) => {
           console.error(error)
@@ -229,6 +227,26 @@ export default {
       } else {
         return head
       }
+    },
+    manage_transactions (ped) {
+      var i, j
+      for (i = 0; i < ped.length; i++) {
+        for (j = 0; j < ped[i].length; j++) {
+          this.transactions.push({
+            isbn: ped[i][j].isbn,
+            titulo: ped[i][j].book.titulo,
+            fecha: ped[i][j].date,
+            precio: ped[i][j].book.precio,
+            cantidad: ped[i][j].quantity
+          })
+        }
+      }
+      this.transactions.reverse()
+      this.transactions = this.transactions.slice(0, 3)
+      console.log(this.transactions)
+    },
+    goPedidos () {
+      this.$router.push({path: '/mispedidos'})
     }
   }
 }
