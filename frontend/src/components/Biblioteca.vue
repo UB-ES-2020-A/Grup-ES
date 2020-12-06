@@ -198,6 +198,7 @@ export default {
     },
     markFinished (book) {
       const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const path2 = this.$API_URL + 'userLibrary/' + this.user.email
       const parameters = {
         isbn: book.isbn,
         library_type: 'Bought',
@@ -206,17 +207,23 @@ export default {
       const auth = {'auth': {
         username: this.user.token}
       }
-      axios.put(path, parameters, auth)
-        .then((res) => {
+      axios.all([
+        axios.put(path, parameters, auth),
+        axios.get(path2, auth)
+      ])
+        .then(axios.spread((dataput, dataget) => {
           alert('Book marked as finished')
           this.update_changes()
-        })
+          this.library = dataget.data.library
+          this.manage_library()
+        }))
         .catch((error) => {
           console.error(error)
         })
     },
     markPending (book) {
       const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const path2 = this.$API_URL + 'userLibrary/' + this.user.email
       const parameters = {
         isbn: book.isbn,
         library_type: 'Bought',
@@ -225,17 +232,23 @@ export default {
       const auth = {'auth': {
         username: this.user.token}
       }
-      axios.put(path, parameters, auth)
-        .then((res) => {
+      axios.all([
+        axios.put(path, parameters, auth),
+        axios.get(path2, auth)
+      ])
+        .then(axios.spread((dataput, dataget) => {
           alert('Book marked as pending')
           this.update_changes()
-        })
+          this.library = dataget.data.library
+          this.manage_library()
+        }))
         .catch((error) => {
           console.error(error)
         })
     },
     markReading (book) {
       const path = this.$API_URL + 'library/' + this.user.email + '/' + book.isbn
+      const path2 = this.$API_URL + 'userLibrary/' + this.user.email
       const parameters = {
         isbn: book.isbn,
         library_type: 'Bought',
@@ -244,11 +257,16 @@ export default {
       const auth = {'auth': {
         username: this.user.token}
       }
-      axios.put(path, parameters, auth)
-        .then((res) => {
+      axios.all([
+        axios.put(path, parameters, auth),
+        axios.get(path2, auth)
+      ])
+        .then(axios.spread((dataput, dataget) => {
           alert('Book marked as reading')
           this.update_changes()
-        })
+          this.library = dataget.data.library
+          this.manage_library()
+        }))
         .catch((error) => {
           console.error(error)
         })
@@ -373,28 +391,40 @@ export default {
     },
     moveArchive (book) {
       const path = this.$API_URL + 'library/' + this.user.email + '/visibility/' + book.isbn
+      const path2 = this.$API_URL + 'userLibrary/' + this.user.email
       const auth = {'auth': {
         username: this.user.token}
       }
-      axios.delete(path, auth)
-        .then((res) => {
+      axios.all([
+        axios.delete(path, auth),
+        axios.get(path2, auth)
+      ])
+        .then(axios.spread((datadelete, dataget) => {
           alert('Book moved to archive')
           this.update_changes()
-        })
+          this.library = dataget.data.library
+          this.manage_library()
+        }))
         .catch((error) => {
           console.error(error)
         })
     },
     moveBooks (book) {
       const path = this.$API_URL + 'library/' + this.user.email + '/visibility/' + book.isbn
+      const path2 = this.$API_URL + 'userLibrary/' + this.user.email
       const auth = {'auth': {
         username: this.user.token}
       }
-      axios.post(path, {}, auth)
-        .then((res) => {
+      axios.all([
+        axios.post(path, {}, auth),
+        axios.get(path2, auth)
+      ])
+        .then(axios.spread((datapost, dataget) => {
           alert('Book moved to books')
           this.update_changes()
-        })
+          this.library = dataget.data.library
+          this.manage_library()
+        }))
         .catch((error) => {
           console.error(error)
         })
@@ -406,7 +436,6 @@ export default {
       this.pending = []
       this.reading = []
       this.finished = []
-      this.load_library()
     }
   },
   computed: {
