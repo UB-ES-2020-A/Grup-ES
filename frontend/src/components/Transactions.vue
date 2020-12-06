@@ -35,7 +35,7 @@
     <b-button @click="advancedSearch()" variant="secondary">Cerca</b-button>
     </b-col>
     <b-col sm="2" xl="2">
-    <b-button @click="cleanInputs()" variant="secondary">Neteja</b-button>
+    <b-button @click="cleanInputs();makeToast()" variant="secondary">Neteja</b-button>
     </b-col>
 </b-row>
 </b-container>
@@ -162,7 +162,6 @@ export default {
       this.userSearch = null
       this.selected = null
       this.search = ''
-      this.makeToast()
       this.getTransactions()
     },
     makeToast () {
