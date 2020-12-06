@@ -1,4 +1,5 @@
 import datetime as dt
+from itertools import islice
 
 from flask_restful import Resource
 from flask_restful import reqparse
@@ -171,12 +172,7 @@ class BestSellers(Resource):
                             help="In this field goes the number of the books to show")
         data = parser.parse_args()
         isbns = TransactionsModel.best_sellers()
-        books = []
-        for isbn in isbns:
-            if len(books) == data['numBooks']:
-                return {'books': books}, 200
-            book = BooksModel.find_by_isbn(isbn)
-            if book.vendible:
-                books.append(BooksModel.find_by_isbn(isbn).json(score=True))
 
-        return {'books': books}, 200
+        return {'books': list(islice(
+            filter(lambda book: book['vendible'], map(lambda x: BooksModel.find_by_isbn(x).json(score=True), isbns)),
+                              data['numBooks']))}, 200
