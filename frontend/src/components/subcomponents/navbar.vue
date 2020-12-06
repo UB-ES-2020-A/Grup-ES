@@ -5,7 +5,7 @@
     <img src="../../assets/Bookshelter.png" class="d-inline-block align-top" width="200" height="60">
     </b-navbar-brand>
     <b-nav-form>
-       <b-form-input autocomplete="off" v-model="search" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+       <b-form-input autocomplete="off" v-model="search" @change="onInputDataList()" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
        <datalist id="booksearch">
          <option v-for="book in filteredList" :key="book.isbn" :value="book.titulo" :id="book.isbn">
            {{ book.autor }}
@@ -260,8 +260,8 @@ export default {
       var input = document.getElementById('inputsearch').value
       for (var i = 0; i < datalist.length; i++) {
         if (datalist[i].value === input) {
-          // this.gotobook(datalist[i].id)
-          break
+          this.gotobook(datalist[i].id)
+          console.log(datalist[i].id)
         }
       }
     },
@@ -385,7 +385,7 @@ export default {
   computed: {
     filteredList () {
       if (this.booksquery.length !== 0 && this.search !== '') {
-        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()))
+        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()) && book.vendible)
       } else {
         return ''
       }

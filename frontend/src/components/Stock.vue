@@ -70,11 +70,13 @@ export default {
       booksquery: [],
       search: '',
       show: true,
-      bookIsbn: 0
+      bookIsbn: 0,
+      user: {}
     }
   },
   created () {
     this.get_books()
+    this.fetch_session()
   },
   methods: {
     get_books () {
@@ -86,6 +88,13 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    fetch_session () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_boolean = true
+      }
     },
     getisbn (book) {
       this.bookIsbn = book.isbn
@@ -101,9 +110,13 @@ export default {
       const parameters = {
         vendible: true
       }
-      axios.put(path, parameters)
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.put(path, parameters, auth)
         .then((res) => {
           alert('Book Reactivated correctly')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)

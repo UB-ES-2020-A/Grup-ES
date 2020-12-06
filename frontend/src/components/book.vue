@@ -190,6 +190,7 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.single_book = res.data.book
+          this.redirectNotFound(this.single_book)
           this.can_post = true
           var i
           console.log(this.single_book)
@@ -204,6 +205,12 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    redirectNotFound (book) {
+      if (book.vendible === false) {
+        // redirigir a not found page
+        console.log('not vendible')
+      }
     },
     getURL (book) {
       return book.url_imagen
