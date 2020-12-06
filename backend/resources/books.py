@@ -7,6 +7,7 @@ from sqlalchemy import desc, asc
 from db import db
 from model.books import BooksModel
 from model.transactions import TransactionsModel
+from model.users import auth
 from utils.lock import lock
 
 
@@ -18,6 +19,8 @@ def parse_book(minimal=False):
                         help="In this field goes the isbn of the book" + str_variable)
     parser.add_argument('stock', type=int, required=not minimal,
                         help="In this field goes the stock of the book" + str_variable)
+    parser.add_argument('vendible', type=bool, required=False,
+                        help="In this field goes if the book is available" + str_variable)
     parser.add_argument('precio', type=float, required=not minimal,
                         help="In this field goes the price of the book" + str_variable)
     parser.add_argument('titulo', type=str, required=not minimal,
@@ -65,6 +68,7 @@ class Books(Resource):
             if book:
                 return {"message": f"A book with same isbn {data['isbn']} already exists"}, 409
             try:
+                del data['vendible']  # always set to True when post
                 book = BooksModel(**data)
                 book.save_to_db()
             except Exception as e:
@@ -72,6 +76,7 @@ class Books(Resource):
 
         return book.json(), 201
 
+    @auth.login_required(role='Admin')
     def put(self, isbn):
         data = parse_book(minimal=True)
         with lock:
