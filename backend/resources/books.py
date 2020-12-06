@@ -171,4 +171,12 @@ class BestSellers(Resource):
                             help="In this field goes the number of the books to show")
         data = parser.parse_args()
         isbns = TransactionsModel.best_sellers()
-        return {'books': [BooksModel.find_by_isbn(book).json(score=True) for book in isbns[:data['numBooks']]]}, 200
+        books = []
+        for isbn in isbns:
+            if len(books) == data['numBooks']:
+                return {'books': books}, 200
+            book = BooksModel.find_by_isbn(isbn)
+            if book.vendible:
+                books.append(BooksModel.find_by_isbn(isbn).json(score=True))
+
+        return {'books': books}, 200

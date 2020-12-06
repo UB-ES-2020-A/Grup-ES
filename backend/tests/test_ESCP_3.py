@@ -94,6 +94,36 @@ class UnitTestOfUS(BaseTest):
         self.assertEqual(len(json.loads(res.data)['books']), 0)  # encara que el numBooks sigui 1, retorna 0 perque no
         # hi ha cap transaction
 
+    def test_get_best_sellers_no_vendible(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 100, 13.1, "book2")
+            book2.save_to_db()
+            book2.vendible = False
+
+            isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
+            quantities = [1, 50]
+            dataTransaction = {
+                "isbns": isbns,
+                'prices': prices,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(201, res.status_code)
+
+        args = {
+            "numBooks": 1,
+        }
+        res = self.client.get('/trending', data=args)
+        self.assertEqual(200, res.status_code)
+
+        # el llibre amb isbn=2 no és vendible així que el llibre més venut és el isbn=1.
+        self.assertEqual(json.loads(res.data)['books'][0]['isbn'], 1)
+
 
 if __name__ == '__main__':
     unittest.main()
