@@ -101,6 +101,7 @@
    <b-container v-if= "see_cart === true">
      <br>
      <br>
+     <br>
      <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
    </b-container>
    <br>
@@ -159,6 +160,8 @@
            <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
            </b-container>
          </b-col>
+         <b-icon icon="arrow-left-circle-fill" variant="info" font-scale="3" @click="show_cart()"
+         style="position: fixed; left: 100; top: 150;"></b-icon>
        </b-row>
    </b-container>
    <!--toast-->
