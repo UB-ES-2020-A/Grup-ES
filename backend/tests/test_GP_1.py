@@ -13,17 +13,17 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test4")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": "test4@email.com", "password": "test4"})
+            res = self.client.post("/api/login", data={"email": "test4@email.com", "password": "test4"})
             self.assertEqual(200, res.status_code)
 
             token = json.loads(res.data)["token"]
-            res = self.client.delete("/user/test4@email.com", headers={
+            res = self.client.delete("/api/user/test4@email.com", headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
 
             # veiem que s'esborra correctament
             self.assertEqual(200, res.status_code)
-            res = self.client.get("/users")
+            res = self.client.get("/api/users")
             self.assertEqual(200, res.status_code)
             self.assertEqual(None, json.loads(res.data)["users"])
 
@@ -32,7 +32,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test4")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": "test4@email.com", "password": "test4"})
+            res = self.client.post("/api/login", data={"email": "test4@email.com", "password": "test4"})
             self.assertEqual(200, res.status_code)
 
 

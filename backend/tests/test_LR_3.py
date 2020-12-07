@@ -1,6 +1,5 @@
 import json
 import unittest
-from datetime import timedelta
 
 from model.users import UsersModel
 from tests.base_test import BaseTest
@@ -33,7 +32,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test")
             user.save_to_db()
 
-            res = self.client.post(f"/recovery", data={"email": user.email})
+            res = self.client.post(f"/api/recovery", data={"email": user.email})
             self.assertEqual(201, res.status_code)
             self.assertEqual(1, len(outbox))
             self.assertEqual(PasswordRecoveryModel.find_by_id(user.id).json(), json.loads(res.data)["recovery"])
@@ -41,7 +40,7 @@ class UnitTestOfUS(BaseTest):
     def test_post_inavlid_recovery(self):
         with self.app.app_context(), mail.record_messages() as outbox:
 
-            res = self.client.post(f"/recovery", data={"email": "fails"})
+            res = self.client.post(f"/api/recovery", data={"email": "fails"})
             self.assertEqual(404, res.status_code)
             self.assertEqual(0, len(outbox))
 
@@ -89,7 +88,7 @@ class UnitTestOfUS(BaseTest):
             recovery.save_to_db()
 
             new_password = "newPassword"
-            res = self.client.put(f"/recovery/{recovery.key}", data={"new_password": new_password})
+            res = self.client.put(f"/api/recovery/{recovery.key}", data={"new_password": new_password})
             self.assertEqual(200, res.status_code)
             self.assertEqual(user.json(), json.loads(res.data)["user"])
             self.assertTrue(user.check_password(new_password))
@@ -101,7 +100,7 @@ class UnitTestOfUS(BaseTest):
             user.save_to_db()
 
             new_password = "newPassword"
-            res = self.client.put(f"/recovery/notImportant", data={"new_password": new_password})
+            res = self.client.put(f"/api/recovery/notImportant", data={"new_password": new_password})
             self.assertEqual(403, res.status_code)
 
     def test_put_recovery_expired(self):
@@ -115,7 +114,7 @@ class UnitTestOfUS(BaseTest):
             recovery.save_to_db()
 
             new_password = "newPassword"
-            res = self.client.put(f"/recovery/{recovery.key}", data={"email": user.email, "new_password": new_password})
+            res = self.client.put(f"/api/recovery/{recovery.key}", data={"email": user.email, "new_password": new_password})
             self.assertEqual(403, res.status_code)
 
     # TASK 6
@@ -128,7 +127,7 @@ class UnitTestOfUS(BaseTest):
             recovery = PasswordRecoveryModel(user.id)
             recovery.save_to_db()
 
-            res = self.client.get(f"/recovery/{recovery.key}")
+            res = self.client.get(f"/api/recovery/{recovery.key}")
             self.assertEqual(200, res.status_code)
             self.assertEqual(UsersModel.find_by_id(user.id).json(), json.loads(res.data)["user"])
 
@@ -138,7 +137,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test2")
             user.save_to_db()
 
-            res = self.client.get(f"/recovery/fails")
+            res = self.client.get(f"/api/recovery/fails")
             self.assertEqual(404, res.status_code)
             self.assertEqual("Password Recovery with ['key':fails] is invalid", json.loads(res.data)["message"])
 

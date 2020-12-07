@@ -19,7 +19,7 @@ class UnitTestOfUS(BaseTest):
         self.book = BooksModel(1, 1, 1, "test")
         self.book.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": password})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": password})
         self.token = json.loads(res.data)["token"]
 
     def test_model_update_one_score(self):
@@ -77,7 +77,7 @@ class UnitTestOfUS(BaseTest):
             review.save_to_db()
 
             data = {"score": 1, "review": "test review"}
-            res = self.client.put(f"/review/{self.user.id}/{self.book.isbn}", data=data, headers={
+            res = self.client.put(f"/api/review/{self.user.id}/{self.book.isbn}", data=data, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
