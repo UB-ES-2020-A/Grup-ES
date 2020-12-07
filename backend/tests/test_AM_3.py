@@ -1,7 +1,9 @@
+import base64
 import unittest
 import json
 
 from model.books import BooksModel
+from model.users import Roles, UsersModel
 from tests.base_test import BaseTest
 
 
@@ -33,18 +35,34 @@ class UnitTestOfUS(BaseTest):
                 "fecha_de_publicacion": "2001-06-01"
             }
 
-            res = self.client.delete(f"/book/{isbn}", data=data)
+            password = "admin"
+            admin = UsersModel("admin", "admin", Roles.Admin)
+            admin.hash_password(password)
+            admin.save_to_db()
+
+            res = self.client.post("/api/login", data={"email": admin.email, "password": password})
+            self.token = json.loads(res.data)["token"]
+
+            res = self.client.delete(f"api/book/{isbn}", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(404, res.status_code)
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
             self.assertEqual(BooksModel.find_by_isbn(isbn).json(), json.loads(res.data))
 
-            res = self.client.delete(f"/book/{isbn}", data=data)
+            res = self.client.delete(f"api/book/{isbn}", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(200, res.status_code)
             self.assertFalse(BooksModel.find_by_isbn(isbn).vendible)
 
-            res = self.client.delete(f"/book/{isbn}", data=data)
+            res = self.client.delete(f"api/book/{isbn}", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(409, res.status_code)
 
 

@@ -24,7 +24,7 @@ class UnitTestOfUS(BaseTest):
         self.book = BooksModel(1, 1, 1, "book1")
         self.book.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": "test"})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": "test"})
         self.token = json.loads(res.data)["token"]
 
     # TEST TASK 1
@@ -115,7 +115,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -143,7 +143,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -166,7 +166,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -186,7 +186,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -208,7 +208,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -238,12 +238,12 @@ class UnitTestOfUS(BaseTest):
                 "email": self.user.email,
             }
 
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
 
-            res = self.client.get(f"/transactions/{self.user.email}", headers={
+            res = self.client.get(f"/api/transactions/{self.user.email}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -269,7 +269,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
             }
 
-            res = self.client.post("/transaction", data=dataTransaction)
+            res = self.client.post("/api/transaction", data=dataTransaction)
             self.assertEqual(401, res.status_code)
 
     def test_get_transactions_other_user(self):
@@ -288,7 +288,7 @@ class UnitTestOfUS(BaseTest):
                 "email": self.user.email,
             }
 
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -296,7 +296,7 @@ class UnitTestOfUS(BaseTest):
             user2.hash_password('test2')
             UsersModel.save_to_db(user2)
 
-            res = self.client.get('/transactions/' + user2.email, headers={  # user tries to get user2 transactions
+            res = self.client.get('/api/transactions/' + user2.email, headers={  # user tries to get user2 transactions
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(401, res.status_code)

@@ -124,4 +124,4 @@ class UsersModel(db.Model):
 
     @auth.get_user_roles
     def get_user_roles(user):
-        return user.role.name
+        return user.role

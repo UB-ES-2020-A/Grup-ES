@@ -98,10 +98,10 @@ class UnitTestOfUS(BaseTest):
             entry3 = LibraryModel(book3.isbn, user.id, LibraryType.Bought, State.Reading)
             entry3.save_to_db()
 
-            res = self.client.post("/login", data={"email": user.email, "password": "test"})
+            res = self.client.post("api/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
-            res = self.client.get(f"/userLibrary/{user.email}", headers={
+            res = self.client.get(f"api/userLibrary/{user.email}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -128,17 +128,17 @@ class UnitTestOfUS(BaseTest):
             entry3 = LibraryModel(book3.isbn, user.id, LibraryType.Bought, State.Pending)
             entry3.save_to_db()
 
-            res = self.client.post("/login", data={"email": user.email, "password": "test2"})
+            res = self.client.post("api/login", data={"email": user.email, "password": "test2"})
             token = json.loads(res.data)["token"]
 
-            res = self.client.get(f"/userLibrary/{user.email}", data={"library_type": "Bought"}, headers={
+            res = self.client.get(f"api/userLibrary/{user.email}", data={"library_type": "Bought"}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
             expected_res = list(map(lambda e: e.json(), [entry, entry3]))
             self.assertEqual(expected_res, json.loads(res.data)["library"])
 
-            res = self.client.get(f"/userLibrary/{user.email}", data={"library_type": "WishList"}, headers={
+            res = self.client.get(f"api/userLibrary/{user.email}", data={"library_type": "WishList"}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -151,7 +151,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test3")
             user.save_to_db()
 
-            res = self.client.get(f"/userLibrary/{user.email}")
+            res = self.client.get(f"api/userLibrary/{user.email}")
             self.assertEqual(401, res.status_code)
 
     def test_get_entry_invalid_parameter(self):
@@ -160,10 +160,10 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test4")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": user.email, "password": "test4"})
+            res = self.client.post("api/login", data={"email": user.email, "password": "test4"})
             token = json.loads(res.data)["token"]
 
-            res = self.client.get(f"/userLibrary/{user.email}", data={"library_type": "Potato"}, headers={
+            res = self.client.get(f"api/userLibrary/{user.email}", data={"library_type": "Potato"}, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(409, res.status_code)
@@ -178,14 +178,14 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(1, 1, 1, "test")
             book.save_to_db()
 
-            res = self.client.post("/login", data={"email": user.email, "password": "test"})
+            res = self.client.post("api/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
             parameters = {
                 'isbn': book.isbn,
             }
 
-            res = self.client.post(f"/library/{user.email}", data=parameters, headers={
+            res = self.client.post(f"api/library/{user.email}", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -197,7 +197,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test2")
             user.save_to_db()
 
-            res = self.client.post(f"/library/{user.email}")
+            res = self.client.post(f"api/library/{user.email}")
             self.assertEqual(401, res.status_code)
 
     def test_post_entry_invalid_parameter(self):
@@ -206,7 +206,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": user.email, "password": "test"})
+            res = self.client.post("api/login", data={"email": user.email, "password": "test"})
             token = json.loads(res.data)["token"]
 
             parameters = {
@@ -214,7 +214,7 @@ class UnitTestOfUS(BaseTest):
                 'email': user.email
             }
 
-            res = self.client.post("/library", data=parameters, headers={
+            res = self.client.post("api/library", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)

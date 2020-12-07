@@ -75,7 +75,7 @@ def check_keys(email, isbn):
 
 class Library(Resource):
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def get(self, email):
         library_type = parse_library_type()
         with lock:
@@ -87,7 +87,7 @@ class Library(Resource):
 
 class LibraryEntry(Resource):
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def post(self, email):
         data = parse_entry()
         with lock:
@@ -108,7 +108,7 @@ class LibraryEntry(Resource):
 
         return entry.json(), 201
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def put(self, email, isbn):
         data = parse_entry(False)
         with lock:
@@ -125,7 +125,7 @@ class LibraryEntry(Resource):
 
 class LibraryVisibility(Resource):
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def post(self, email, isbn):
         with lock:
             library = check_keys(email, isbn)
@@ -140,7 +140,7 @@ class LibraryVisibility(Resource):
 
         return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made visible"}, 200
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def delete(self, email, isbn):
         with lock:
             library = check_keys(email, isbn)

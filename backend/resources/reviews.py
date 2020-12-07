@@ -41,7 +41,7 @@ def check_user_and_book(user_model, isbn, ignore_if_admin=False):
 
 class Reviews(Resource):
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def post(self):
         data = parse_review()
         with lock:
@@ -82,7 +82,7 @@ class Reviews(Resource):
 
         return {"message": f"Review with ['user_id': {user_id}, 'isbn': {isbn}] deleted"}, 200
 
-    @auth.login_required()
+    @auth.login_required(role=Roles.User)
     def put(self, user_id, isbn):
         data = parse_review(False)
         with lock:
