@@ -252,6 +252,7 @@ export default {
             alert('Transaction correctly realized!')
             cartItems = []
             localStorage.setItem('cartItems', JSON.stringify(cartItems))
+            this.$router.push({path: '/'})
           })
           .catch((error) => {
             console.error(error)

@@ -39,6 +39,7 @@ export default {
       axios.delete(path, auth)
         .then((res) => {
           alert('Book Removed correctly')
+          location.reload()
         })
         .catch((error) => {
           console.error(error)

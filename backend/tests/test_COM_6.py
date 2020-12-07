@@ -4,6 +4,7 @@ import json
 import datetime as dt
 
 from model.books import BooksModel
+from model.library import LibraryModel, LibraryType, State
 from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
@@ -149,6 +150,40 @@ class UnitTestOfUS(BaseTest):
             self.assertEqual(201, res.status_code)
             self.assertEqual(self.book.isbn, self.user.library[0].isbn)
             self.assertEqual(book2.isbn, self.user.library[1].isbn)
+            self.assertEqual(2, len(self.user.library))
+
+    def test_post_add_library_delete_from_wishlist(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 10, 13.1, "book2")
+            book2.save_to_db()
+
+            # enter book to wishlist
+            entry = LibraryModel(self.book.isbn, 1, LibraryType.WishList, State.Pending)
+            entry.save_to_db()
+            self.assertEqual(entry, LibraryModel.find_by_id_and_isbn(1, 1))
+
+            isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
+            quantities = [1, 1]
+            dataTransaction = {
+                "isbns": isbns,
+                'prices': prices,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(201, res.status_code)
+
+            # check if book is in library
+            self.assertEqual(self.book.isbn, self.user.library[0].isbn)
+            self.assertEqual(book2.isbn, self.user.library[1].isbn)
+
+            # check if type of book2 has changed: was in wishlist, now bought
+            self.assertEqual(LibraryType.Bought, self.user.library[1].library_type)
+
             self.assertEqual(2, len(self.user.library))
 
     def test_post_no_stock(self):

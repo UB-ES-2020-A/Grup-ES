@@ -1,4 +1,5 @@
 import datetime as dt
+from itertools import islice
 
 from flask_restful import Resource
 from flask_restful import reqparse
@@ -126,13 +127,14 @@ class BooksList(Resource):
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
         with lock:
+            books = BooksModel.query.filter_by(vendible=True)
             if data['param'] is None:
-                books = BooksModel.query.limit(data['numBooks']).all()
+                books = books.limit(data['numBooks']).all()
             else:
                 if data['order'] == "asc":
-                    books = BooksModel.query.order_by(asc(data['param'])).limit(data['numBooks']).all()
+                    books = books.order_by(asc(data['param'])).limit(data['numBooks']).all()
                 else:
-                    books = BooksModel.query.order_by(desc(data['param'])).limit(data['numBooks']).all()
+                    books = books.order_by(desc(data['param'])).limit(data['numBooks']).all()
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200
 
 
@@ -173,4 +175,7 @@ class BestSellers(Resource):
                             help="In this field goes the number of the books to show")
         data = parser.parse_args()
         isbns = TransactionsModel.best_sellers()
-        return {'books': [BooksModel.find_by_isbn(book).json(score=True) for book in isbns[:data['numBooks']]]}, 200
+
+        return {'books': list(islice(
+            filter(lambda book: book['vendible'], map(lambda x: BooksModel.find_by_isbn(x).json(score=True), isbns)),
+                              data['numBooks']))}, 200
