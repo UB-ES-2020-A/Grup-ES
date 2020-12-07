@@ -215,7 +215,9 @@ export default {
   },
   methods: {
     goStart () {
-      this.see_cart = false
+      if (this.see_cart) {
+        this.show_cart()
+      }
       this.$router.push({path: '/'})
     },
     gotobook (isbn) {
