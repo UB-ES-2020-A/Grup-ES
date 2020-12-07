@@ -260,8 +260,8 @@ export default {
       var input = document.getElementById('inputsearch').value
       for (var i = 0; i < datalist.length; i++) {
         if (datalist[i].value === input) {
+          this.search = ''
           this.gotobook(datalist[i].id)
-          console.log(datalist[i].id)
         }
       }
     },

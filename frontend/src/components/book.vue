@@ -178,11 +178,11 @@ export default {
   },
   created () {
     this.fetch_login_status()
-    this.load_book()
+    this.load_book(this.$route.query)
   },
   methods: {
-    load_book () {
-      const path = this.$API_URL + 'book/' + this.$route.query.bk
+    load_book (query) {
+      const path = this.$API_URL + 'book/' + query.bk
       const params = {
         reviews: true,
         score: true
@@ -239,7 +239,7 @@ export default {
       axios.post(path, {}, {auth: {username: this.user.token}})
         .then((res) => {
           this.review = ''
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -249,7 +249,7 @@ export default {
       const path = this.$API_URL + 'review/' + review.user_id + '/' + review.isbn
       axios.delete(path, {auth: {username: this.user.token}})
         .then((res) => {
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -278,7 +278,7 @@ export default {
       }
       axios.put(path, data, {auth: {username: this.user.token}})
         .then((res) => {
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -310,6 +310,10 @@ export default {
           console.error(error)
         })
     }
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.load_book(to.query)
+    next()
   }
 }
 </script>
