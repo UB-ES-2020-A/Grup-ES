@@ -124,8 +124,8 @@ class BooksList(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
-        books = BooksModel.query.filter_by(vendible=True)
         with lock:
+            books = BooksModel.query.filter_by(vendible=True)
             if data['param'] is None:
                 books = books.limit(data['numBooks']).all()
             else:
