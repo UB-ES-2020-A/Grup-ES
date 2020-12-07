@@ -178,11 +178,11 @@ export default {
   },
   created () {
     this.fetch_login_status()
-    this.load_book()
+    this.load_book(this.$route.query)
   },
   methods: {
-    load_book () {
-      const path = this.$API_URL + 'book/' + this.$route.query.bk
+    load_book (query) {
+      const path = this.$API_URL + 'book/' + query.bk
       const params = {
         reviews: true,
         score: true
@@ -190,6 +190,7 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.single_book = res.data.book
+          this.redirectNotFound(this.single_book)
           this.can_post = true
           var i
           console.log(this.single_book)
@@ -204,6 +205,12 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    redirectNotFound (book) {
+      if (book.vendible === false) {
+        // redirigir a not found page
+        console.log('not vendible')
+      }
     },
     getURL (book) {
       return book.url_imagen
@@ -232,7 +239,7 @@ export default {
       axios.post(path, {}, {auth: {username: this.user.token}})
         .then((res) => {
           this.review = ''
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -242,7 +249,7 @@ export default {
       const path = this.$API_URL + 'review/' + review.user_id + '/' + review.isbn
       axios.delete(path, {auth: {username: this.user.token}})
         .then((res) => {
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -271,7 +278,7 @@ export default {
       }
       axios.put(path, data, {auth: {username: this.user.token}})
         .then((res) => {
-          this.load_book()
+          this.load_book(this.$route.query)
         })
         .catch((error) => {
           console.error(error)
@@ -303,6 +310,10 @@ export default {
           console.error(error)
         })
     }
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.load_book(to.query)
+    next()
   }
 }
 </script>

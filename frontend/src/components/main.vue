@@ -107,6 +107,7 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.best_sellers = res.data.books
+          this.best_sellers = this.check_vendible(this.best_sellers)
         })
         .catch((error) => {
           console.error(error)
@@ -118,10 +119,21 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.new_releases = res.data.books
+          this.new_releases = this.check_vendible(this.new_releases)
         })
         .catch((error) => {
           console.error(error)
         })
+    },
+    check_vendible (array) {
+      var i
+      var arr = []
+      for (i = 0; i < array.length; i++) {
+        if (array[i].vendible) {
+          arr.push(array[i])
+        }
+      }
+      return arr
     },
     add_cart (book) {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
