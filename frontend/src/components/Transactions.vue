@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === adminRole">
 <navbar @changeShowState="show = !show"/>
 <br>
 <div class="body" v-if="show === true">
@@ -88,6 +88,7 @@ export default {
       search: '',
       show: true,
       user: {},
+      userRole: 'User',
       price: 0.0,
       selected: null,
       isbnSearch: null,
@@ -170,6 +171,11 @@ export default {
         variant: 'info',
         solid: true
       })
+    },
+    redirect () {
+      if (this.user.role === this.userRole) {
+        window.location.replace('/notfound')
+      }
     }
   },
   computed: {

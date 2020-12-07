@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === userRole">
  <navbar @changeShowState="show_c = !show_c"/>
 <!-- body -->
 <div class="body">
@@ -177,7 +177,8 @@ export default {
       card_cvc: 100,
       user: {},
       error: '',
-      show: false
+      show: false,
+      adminRole: 'Admin'
     }
   },
   created () {
@@ -189,6 +190,11 @@ export default {
       if (tmpuser !== null) {
         this.user = tmpuser
         this.session_boolean = true
+      }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
       }
     },
     checkForm: function (e) {

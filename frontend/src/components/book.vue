@@ -34,7 +34,7 @@
           </p>
         </b-col>
         <b-col class = "justify-content-center">
-        <b-container fluid class = "border bg-light" style="padding:15px">
+        <b-container fluid class = "border bg-light" style="padding:15px" v-if="user.role == userRole">
           <h5> Comprar el llibre </h5>
           <b>{{ this.single_book.precio }} $</b>
           <br>
@@ -51,7 +51,7 @@
   <!--Sección de reviews-->
   <b-container class='bg-info rounded'>
       <br>
-      <div v-if="can_post === true">
+      <div v-if="can_post === true && user.role === userRole">
         <form ref="review-form" v-if="session_boolean === true">
           <b-icon icon="star-fill" v-if="score >= 1" @click="score = 1" font-scale="2.5"></b-icon>
           <b-icon icon="star" v-if="score < 1" @click="score = 1" font-scale="2.5"></b-icon>
@@ -155,6 +155,7 @@ export default {
     return {
       // Roles
       adminRole: 'Admin',
+      userRole: 'User',
 
       show: true,
       can_post: true,

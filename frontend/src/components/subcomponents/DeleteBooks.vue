@@ -33,7 +33,10 @@ export default {
   methods: {
     deleteBook () {
       const path = this.$API_URL + 'book/' + this.$props.isbnNum
-      axios.delete(path)
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.delete(path, auth)
         .then((res) => {
           alert('Book Removed correctly')
         })

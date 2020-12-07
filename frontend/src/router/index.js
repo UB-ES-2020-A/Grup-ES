@@ -14,6 +14,7 @@ import Stock from '@/components/Stock.vue'
 import UserProfile from '@/components/UserProfile.vue'
 import Wishlist from '@/components/Wishlist.vue'
 import Transactions from '@/components/Transactions.vue'
+import NotFound from '@/components/NotFound.vue'
 
 Vue.use(Router)
 
@@ -89,6 +90,11 @@ export default new Router({
       path: '/stocktransactions',
       name: 'Transactions',
       component: Transactions
+    },
+    {
+      path: '/notfound',
+      name: 'NotFound',
+      component: NotFound
     }
   ]
 })

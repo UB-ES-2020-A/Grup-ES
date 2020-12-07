@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === userRole">
  <navbar @changeShowState="show = !show"/>
 <!-- body -->
 <div class="body">
@@ -93,11 +93,13 @@ export default {
 
       // Session
       user: {},
-      session_boolean: false
+      session_boolean: false,
+      adminRole: 'Admin'
     }
   },
   created () {
     this.fetch_session()
+    this.redirect()
     this.load_pedidos()
   },
   methods: {
@@ -123,6 +125,11 @@ export default {
       if (tmpuser !== null) {
         this.user = tmpuser
         this.session_boolean = true
+      }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
       }
     }
   }
