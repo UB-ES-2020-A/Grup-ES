@@ -92,7 +92,12 @@ class TransactionsModel(db.Model):
             transactions.append(transaction.json())
             db.session.add(transaction)
             user = UsersModel.find_by_id(user_id)
-            if LibraryModel.find_by_id_and_isbn(user.id, transaction.isbn) is None:
+
+            book_library = LibraryModel.find_by_id_and_isbn(user.id, transaction.isbn)
+            if book_library:  # if the book was already in library
+                if book_library.library_type == LibraryType.WishList:  # if it was in the wish list
+                    book_library.library_type = LibraryType.Bought  # change it to bought
+            else:  # if it wasnt in the library, enter it
                 entry = LibraryModel(book.isbn, user.id, LibraryType.Bought, State.Pending)
                 db.session.add(entry)
 
