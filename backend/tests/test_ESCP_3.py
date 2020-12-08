@@ -47,17 +47,10 @@ class UnitTestOfUS(BaseTest):
             args = {
                 "numBooks": 2,
             }
-<<<<<<< HEAD
             res = self.client.get('/api/trending', data=args)
             self.assertEqual(200, res.status_code)
 
             self.assertEqual(2, len(json.loads(res.data)['books']))  # veiem que n'hi ha dos com li hem demanat
-=======
-            res = self.client.get('/trending', data=args)
-            self.assertEqual(200, res.status_code)
-
-            self.assertEqual(len(json.loads(res.data)['books']), 2)  # veiem que n'hi ha dos com li hem demanat
->>>>>>> dev
             self.assertEqual(self.book2.isbn, json.loads(res.data)['books'][0]['isbn'])  # el més venut és el llibre amb isbn 2
 
     def test_get_best_sellers_2(self):
@@ -81,17 +74,10 @@ class UnitTestOfUS(BaseTest):
             args = {
                 "numBooks": 1,
             }
-<<<<<<< HEAD
             res = self.client.get('/api/trending', data=args)
             self.assertEqual(200, res.status_code)
 
             self.assertEqual(1, len(json.loads(res.data)['books']))  # ens retorna només 1
-=======
-            res = self.client.get('/trending', data=args)
-            self.assertEqual(200, res.status_code)
-
-            self.assertEqual(len(json.loads(res.data)['books']), 1)  # ens retorna només 1
->>>>>>> dev
             self.assertEqual(self.book2.isbn, json.loads(res.data)['books'][0]['isbn'])  # el més venut és el llibre amb isbn 2
 
     def test_get_best_sellers_no_transactions(self):
@@ -100,17 +86,10 @@ class UnitTestOfUS(BaseTest):
             args = {
                 "numBooks": 1,
             }
-<<<<<<< HEAD
             res = self.client.get('/api/trending', data=args)
             self.assertEqual(200, res.status_code)
 
             self.assertEqual(0, len(json.loads(res.data)['books']))  # encara que el numBooks sigui 1, retorna 0 perque no
-=======
-            res = self.client.get('/trending', data=args)
-            self.assertEqual(200, res.status_code)
-
-            self.assertEqual(len(json.loads(res.data)['books']), 0)  # encara que el numBooks sigui 1, retorna 0 perque no
->>>>>>> dev
             # hi ha cap transaction
 
     def test_get_best_sellers_no_vendible(self):
@@ -128,11 +107,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-<<<<<<< HEAD
             res = self.client.post("/api/transaction", data=dataTransaction, headers={
-=======
-            res = self.client.post("/transaction", data=dataTransaction, headers={
->>>>>>> dev
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -140,11 +115,7 @@ class UnitTestOfUS(BaseTest):
             args = {
                 "numBooks": 1,
             }
-<<<<<<< HEAD
             res = self.client.get('/api/trending', data=args)
-=======
-            res = self.client.get('/trending', data=args)
->>>>>>> dev
             self.assertEqual(200, res.status_code)
 
             # el llibre amb isbn=2 no és vendible així que el llibre més venut és el isbn=1.

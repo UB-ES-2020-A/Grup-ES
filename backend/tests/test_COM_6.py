@@ -172,7 +172,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)

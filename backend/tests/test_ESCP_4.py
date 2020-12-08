@@ -63,7 +63,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "fecha_de_publicacion",
                 "order": "desc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(vendible=True).order_by(desc('fecha_de_publicacion')).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
@@ -79,7 +79,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "fecha_de_publicacion",
                 "order": "desc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(vendible=True).
                                   order_by(desc('fecha_de_publicacion')).all()))
