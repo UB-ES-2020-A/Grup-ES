@@ -21,8 +21,6 @@
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
               <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
-              <hr>
-              <b-button block variant="primary" v-google-signin-button="clientId" class="google-signin-button"> Continue with Google</b-button>
       </div>
       </div>
       </div>
@@ -43,7 +41,6 @@ export default {
   data: () => ({
     show: true,
     id: '',
-    clientId: '374016962135-l70k72dvqf1ugd3pirf58ti292v8gk1a.apps.googleusercontent.com',
     username: '',
     email: '',
     password: '',
@@ -52,13 +49,6 @@ export default {
     userObject: {username: '', email: '', role: '', token: ''}
   }),
   methods: {
-    OnGoogleAuthSuccess (idToken) {
-      console.log(idToken)
-      // Receive the idToken and make your magic with the backend
-    },
-    OnGoogleAuthFail (error) {
-      console.log(error)
-    },
     checkLogin () {
       const parameters = {
         email: this.email,

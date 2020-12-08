@@ -7,8 +7,8 @@
       <b-col cols="3">
         <b-container>
         <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Bookshelter</h5>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisici elit,
-          sed eiusmod tempor incidunt ut labore et dolore magna aliqua.</p>
+        <p class="text-justify" ><strong>Bookshelter</strong> tiene más de 1.000.000 de referencias
+        de libros en venta convirtiéndose en la principal tienda online de libros.</p>
         </b-container>
       </b-col>
       <b-col cols="2">
@@ -34,8 +34,11 @@
         <b-container>
         <b-row>
          <h5 class="font-weight-bold text-uppercase mt-3 mb-4">Location</h5>
-         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+         <h6>Facultad de Matemáticas e Informática</h6>
+         <h6>Gran Via de les Corts Catalanes, 585</h6>
+         <h6>08007 Barcelona.</h6>
         </b-row>
+        <br>
         <b-row>
           <b-icon icon="envelope"></b-icon>
           <p style="margin-left:5px">bookshelter@info.com</p>

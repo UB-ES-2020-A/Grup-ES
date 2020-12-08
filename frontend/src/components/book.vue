@@ -49,7 +49,7 @@
   <br>
   <br>
   <!--Sección de reviews-->
-  <b-container class='bg-info rounded'>
+  <b-container v-if="single_book.reviews.length > 0" class='bg-info rounded'>
       <br>
       <div v-if="can_post === true && user.role === userRole">
         <form ref="review-form" v-if="session_boolean === true">
@@ -180,6 +180,7 @@ export default {
   created () {
     this.fetch_login_status()
     this.load_book(this.$route.query)
+    console.log(this.session_boolean)
   },
   methods: {
     load_book (query) {

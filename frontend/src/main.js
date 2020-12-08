@@ -3,7 +3,6 @@ import '@/../bootstrap/css/bootstrap.css'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index.js'
-import GoogleSignInButton from 'vue-google-signin-button-directive'
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
@@ -12,6 +11,5 @@ Vue.prototype.$API_URL = 'http://localhost:5000/' + 'api/'
 
 new Vue({
   router,
-  GoogleSignInButton,
   render: (h) => h(App)
 }).$mount('#app')
