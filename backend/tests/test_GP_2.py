@@ -1,5 +1,4 @@
 import base64
-import unittest
 import json
 from model.users import UsersModel
 from tests.base_test import BaseTest
@@ -11,7 +10,7 @@ class UnitTestOfUS(BaseTest):
         self.user.hash_password("test")
         self.user.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": "test"})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": "test"})
         self.token = json.loads(res.data)["token"]
 
     # TEST TASK 2
@@ -23,7 +22,7 @@ class UnitTestOfUS(BaseTest):
                 'username': 'francina',
                 'password': 'test'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -36,7 +35,7 @@ class UnitTestOfUS(BaseTest):
                 'email': 'francina@gmail.com',
                 'password': 'test'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -53,7 +52,7 @@ class UnitTestOfUS(BaseTest):
                 'username': user2.username,
                 'password': 'test'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(409, res.status_code)
@@ -69,7 +68,7 @@ class UnitTestOfUS(BaseTest):
                 'email': user2.email,
                 'password': 'test'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(409, res.status_code)
@@ -82,7 +81,7 @@ class UnitTestOfUS(BaseTest):
                 'new_password': 'asdf',
                 'password': 'test'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -96,7 +95,7 @@ class UnitTestOfUS(BaseTest):
                 'username': 'asdf',
                 'password': 'wrong'
             }
-            res = self.client.put(f"/user/{self.user.email}", data=data_new, headers={
+            res = self.client.put(f"/api/user/{self.user.email}", data=data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(401, res.status_code)
@@ -111,5 +110,5 @@ class UnitTestOfUS(BaseTest):
                 'username': 'asdf',
                 'password': 'wrong'
             }
-            res = self.client.put(f"/user/{user.email}", data=data_new)
+            res = self.client.put(f"/api/user/{user.email}", data=data_new)
             self.assertEqual(401, res.status_code)

@@ -163,7 +163,9 @@ export default {
         sinopsis: this.sinopsis
       }
       const path = this.$API_URL + 'book/' + this.$props.isbnNum
-      axios.put(path, parameters)
+      const headers = {'auth': { username: this.user.token },
+        params: parameters}
+      axios.put(path, headers)
         .then((res) => {
           alert('Book Modified correctly')
           this.clearModal()

@@ -67,8 +67,8 @@
     </b-nav-form>
     <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
       <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
-        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true && user.role == userRole" ><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true && user.role == userRole"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if= "session_boolean === false"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
         <li class="nav-item" v-if= "session_boolean === true">
           <b-button v-b-toggle.sidebar-right> {{ this.user.username }}</b-button>
@@ -81,7 +81,7 @@
                 <nav class="mb-3">
                 <b-nav vertical>
                   <b-nav-item active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
-                  <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
+                  <b-nav-item active v-if="user.role == userRole" @click="goLibrary()">Biblioteca</b-nav-item>
                   <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>

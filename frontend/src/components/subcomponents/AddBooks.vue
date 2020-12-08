@@ -161,8 +161,11 @@ export default {
         url_imagen: this.url,
         sinopsis: this.sinopsis
       }
+      const auth = {'auth': {
+        username: this.user.token}
+      }
       const path = this.$API_URL + 'book'
-      axios.post(path, parameters)
+      axios.post(path, parameters, auth)
         .then((res) => {
           alert('Book ADDED correctly')
           this.clearModal()

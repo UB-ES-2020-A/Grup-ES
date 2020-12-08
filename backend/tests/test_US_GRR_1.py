@@ -22,7 +22,7 @@ class UnitTestOfUS(BaseTest):
         self.book = BooksModel(2, 2, 2, "test")
         self.book.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.admin.email, "password": password})
+        res = self.client.post("/api/login", data={"email": self.admin.email, "password": password})
         self.token = json.loads(res.data)["token"]
 
     def test_delete_review_admin(self):
@@ -32,7 +32,7 @@ class UnitTestOfUS(BaseTest):
             review = ReviewsModel(self.book.isbn, self.user.id, 2, "test")
             review.save_to_db()
 
-            res = self.client.delete(f"/review/{self.user.id}/{self.book.isbn}", headers={
+            res = self.client.delete(f"api/review/{self.user.id}/{self.book.isbn}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)

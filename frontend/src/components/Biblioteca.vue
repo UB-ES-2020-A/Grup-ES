@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === userRole">
 <navbar @changeShowState="show = !show"/>
 <!--body-->
 <div class="body">
@@ -134,6 +134,7 @@ export default {
   data () {
     return {
       show: true,
+      adminRole: 'Admin',
       list: [],
       library: [],
       bought: [],
@@ -163,6 +164,7 @@ export default {
   },
   created () {
     this.fetch_cache()
+    this.redirect()
     this.load_library()
     this.list = this.bought
   },
@@ -436,6 +438,11 @@ export default {
       this.pending = []
       this.reading = []
       this.finished = []
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
+      }
     }
   },
   computed: {

@@ -4,7 +4,7 @@ from flask_restful import Resource
 from sqlalchemy import asc, desc
 
 from model.books import BooksModel
-from model.users import auth, UsersModel
+from model.users import auth, UsersModel, Roles
 from model.transactions import TransactionsModel
 from utils.lock import lock
 
@@ -24,7 +24,7 @@ def parse_transaction():
 
 
 class Transactions(Resource):
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def get(self, id_transaction):
         with lock:
             transaction = TransactionsModel.find_by_id(id_transaction)
@@ -34,7 +34,7 @@ class Transactions(Resource):
                 return {"message": "Invalid transaction, can only be yours"}, 401
         return {"transaction": transaction.json()}, 200
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def post(self):
         data = parse_transaction()
         with lock:
@@ -59,7 +59,7 @@ class Transactions(Resource):
 
 
 class TransactionsUser(Resource):
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def get(self, email):
         with lock:
             user = UsersModel.find_by_email(email)
@@ -73,7 +73,7 @@ class TransactionsUser(Resource):
 
 
 class TransactionsList(Resource):
-    @auth.login_required(role='Admin')
+    @auth.login_required(role=Roles.Admin)
     def get(self):
         with lock:
             parser = reqparse.RequestParser(bundle_errors=True)

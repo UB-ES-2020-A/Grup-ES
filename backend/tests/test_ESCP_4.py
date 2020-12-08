@@ -20,7 +20,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "isbn",
                 "order": "desc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.order_by(desc('isbn')).limit(2).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
@@ -31,7 +31,7 @@ class UnitTestOfUS(BaseTest):
             book.save_to_db()
             book = BooksModel(2, 1, 1, "as")
             book.save_to_db()
-            res = self.client.get('/books')
+            res = self.client.get('/api/books')
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
@@ -48,7 +48,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "titulo",
                 "order": "asc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(vendible=True).order_by(asc('titulo')).limit(2).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
@@ -63,7 +63,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "fecha_de_publicacion",
                 "order": "desc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(vendible=True).order_by(desc('fecha_de_publicacion')).all()))
             self.assertEqual(list_books, json.loads(res.data)["books"])
@@ -79,7 +79,7 @@ class UnitTestOfUS(BaseTest):
                 "param": "fecha_de_publicacion",
                 "order": "desc"
             }
-            res = self.client.get('/books', data=args)
+            res = self.client.get('/api/books', data=args)
             self.assertEqual(200, res.status_code)
             list_books = list(map(lambda u: u.json(), BooksModel.query.filter_by(vendible=True).
                                   order_by(desc('fecha_de_publicacion')).all()))
@@ -92,13 +92,13 @@ class UnitTestOfUS(BaseTest):
             book = BooksModel(1, 1, 1, "test")
             book.save_to_db()
 
-            res = self.client.get("/book/1")
+            res = self.client.get("/api/book/1")
             self.assertEqual(200, res.status_code)
             self.assertEqual(book.json(), json.loads(res.data)["book"])
 
     def test_get_invalid_book(self):
         with self.app.app_context():
-            res = self.client.get("/book/1")
+            res = self.client.get("/api/book/1")
             self.assertEqual(404, res.status_code)
 
 

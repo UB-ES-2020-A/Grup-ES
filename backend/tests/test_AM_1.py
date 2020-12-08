@@ -1,12 +1,23 @@
+import base64
 import unittest
 import json
 from datetime import datetime
 
 from model.books import BooksModel
+from model.users import UsersModel, Roles
 from tests.base_test import BaseTest
 
 
 class UnitTestOfUS(BaseTest):
+
+    def admin_setup(self):
+        password = "admin"
+        self.admin = UsersModel("admin", "admin", Roles.Admin)
+        self.admin.hash_password(password)
+        self.admin.save_to_db()
+
+        res = self.client.post("/api/login", data={"email": self.admin.email, "password": password})
+        self.token = json.loads(res.data)["token"]
 
     # TEST TASK 1
     def test_model_add(self):
@@ -39,6 +50,8 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 2
     def test_post_book(self):
         with self.app.app_context():
+            self.admin_setup()
+
             sinopsis = "For twelve thousand years the Galactic Empire has ruled supreme. Now it is dying. But only " \
                        "Hari Seldon, creator of the revolutionary science of psychohistory, can see into the future " \
                        "-- to a dark age of ignorance, barbarism, and warfare that will last thirty thousand years. " \
@@ -62,15 +75,21 @@ class UnitTestOfUS(BaseTest):
                 "fecha_de_publicacion": "2001-06-01"
             }
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("/api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
             self.assertEqual(BooksModel.find_by_isbn(isbn).json(), json.loads(res.data))
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("/api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(409, res.status_code)
 
     def test_post_book_with_minimum_attributes(self):
         with self.app.app_context():
+            self.admin_setup()
+
             isbn = 9780553803716
             data = {
                 "isbn": isbn,
@@ -79,22 +98,30 @@ class UnitTestOfUS(BaseTest):
                 "titulo": "Foundation",
             }
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("/api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
             self.assertEqual(BooksModel.find_by_isbn(isbn).json(), json.loads(res.data))
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("/api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(409, res.status_code)
 
     def test_post_book_with_less_than_minimum_attributes(self):
         with self.app.app_context():
+            self.admin_setup()
+
             isbn = 9780553803716
             data = {
                 "isbn": isbn,
                 "titulo": "Foundation",
             }
 
-            res = self.client.post("/book", data=data)
+            res = self.client.post("/api/book", data=data, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(400, res.status_code)
 
 

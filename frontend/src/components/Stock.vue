@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === adminRole">
 <navbar @changeShowState="show = !show"/>
 <br>
 <div class="body" v-if="show === true">
@@ -71,14 +71,25 @@ export default {
       search: '',
       show: true,
       bookIsbn: 0,
+      userRole: 'User',
       user: {}
     }
   },
   created () {
+    this.fetch_cache()
+    this.redirect()
     this.get_books()
     this.fetch_session()
   },
   methods: {
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
+    },
     get_books () {
       const path = this.$API_URL + 'books'
       axios.get(path)
@@ -121,6 +132,11 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    redirect () {
+      if (this.user.role === this.userRole) {
+        window.location.replace('/notfound')
+      }
     }
   },
   computed: {

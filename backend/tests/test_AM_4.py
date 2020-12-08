@@ -3,18 +3,18 @@ import unittest
 import json
 
 from model.books import BooksModel
-from model.users import UsersModel
+from model.users import UsersModel, Roles
 from tests.base_test import BaseTest
 
 
 class UnitTestOfUS(BaseTest):
 
     def basic_setup(self):
-        self.user = UsersModel("test", "bookshelterES@gmail.com", role='Admin')
+        self.user = UsersModel("test", "bookshelterES@gmail.com", role=Roles.Admin)
         self.user.hash_password("test")
         self.user.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": "test"})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": "test"})
         self.token = json.loads(res.data)["token"]
 
         self.sinopsis = "For twelve thousand years the Galactic Empire has ruled supreme. Now it is dying. But only " \
@@ -48,11 +48,13 @@ class UnitTestOfUS(BaseTest):
     def test_basic_put_book(self):
         with self.app.app_context():
             self.basic_setup()
-            res = self.client.post("/book", data=self.data_old)
+            res = self.client.post("/api/book", data=self.data_old, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
 
             self.assertEqual(BooksModel.find_by_isbn(self.isbn).json(), json.loads(res.data))
-            res = self.client.put(f"/book/{self.isbn}", data=self.data_new, headers={
+            res = self.client.put(f"/api/book/{self.isbn}", data=self.data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -60,11 +62,13 @@ class UnitTestOfUS(BaseTest):
     def test_basic_put_book_no_admin(self):
         with self.app.app_context():
             self.basic_setup()
-            res = self.client.post("/book", data=self.data_old)
+            res = self.client.post("/api/book", data=self.data_old, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
 
             self.assertEqual(BooksModel.find_by_isbn(self.isbn).json(), json.loads(res.data))
-            res = self.client.put(f"/book/{self.isbn}", data=self.data_new)
+            res = self.client.put(f"/api/book/{self.isbn}", data=self.data_new)
             self.assertEqual(401, res.status_code)
 
     # TEST TASK 2
@@ -78,11 +82,13 @@ class UnitTestOfUS(BaseTest):
                 "vendible": False
             }
 
-            res = self.client.post("/book", data=self.data_old)
+            res = self.client.post("/api/book", data=self.data_old, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
             self.assertEqual(201, res.status_code)
             self.assertEqual(BooksModel.find_by_isbn(self.isbn).json(), json.loads(res.data))
 
-            res = self.client.put(f"/book/{self.isbn}", data=self.data_new, headers={
+            res = self.client.put(f"/api/book/{self.isbn}", data=self.data_new, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)

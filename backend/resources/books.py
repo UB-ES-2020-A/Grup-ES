@@ -8,7 +8,7 @@ from sqlalchemy import desc, asc
 from db import db
 from model.books import BooksModel
 from model.transactions import TransactionsModel
-from model.users import auth
+from model.users import auth, Roles
 from utils.lock import lock
 
 
@@ -62,6 +62,7 @@ class Books(Resource):
             return {"message": f"Book with ['isbn':{isbn}] not found"}, 404
         return {"book": book.json(**data)}, 200
 
+    @auth.login_required(role=Roles.Admin)
     def post(self):
         data = parse_book()
         with lock:
@@ -77,7 +78,7 @@ class Books(Resource):
 
         return book.json(), 201
 
-    @auth.login_required(role='Admin')
+    @auth.login_required(role=Roles.Admin)
     def put(self, isbn):
         data = parse_book(minimal=True)
         with lock:
@@ -91,6 +92,7 @@ class Books(Resource):
 
             return {"book": book.json()}, 200
 
+    @auth.login_required(role=Roles.Admin)
     def delete(self, isbn):
         with lock:
             book = BooksModel.find_by_isbn(isbn)

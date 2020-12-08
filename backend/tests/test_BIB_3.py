@@ -24,7 +24,7 @@ class UnitTestOfUS(BaseTest):
         self.entry = LibraryModel(self.book.isbn, self.user.id, LibraryType.Bought)
         self.entry.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": password})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": password})
         self.token = json.loads(res.data)["token"]
 
     # TEST TASK 1
@@ -37,7 +37,7 @@ class UnitTestOfUS(BaseTest):
                 "library_type": LibraryType.WishList.name
             }
 
-            res = self.client.put(f"/library/{self.user.email}/{self.book.isbn}", data=new_data, headers={
+            res = self.client.put(f"/api/library/{self.user.email}/{self.book.isbn}", data=new_data, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -55,7 +55,7 @@ class UnitTestOfUS(BaseTest):
                 "library_type": LibraryType.WishList.name
             }
 
-            res = self.client.put(f"/library/invalid/{self.book.isbn}", data=new_data, headers={
+            res = self.client.put(f"/api/library/invalid/{self.book.isbn}", data=new_data, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -73,7 +73,7 @@ class UnitTestOfUS(BaseTest):
                 "library_type": LibraryType.WishList.name
             }
 
-            res = self.client.put(f"/library/{self.user.email}/invalid", data=new_data, headers={
+            res = self.client.put(f"/api/library/{self.user.email}/invalid", data=new_data, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -98,7 +98,7 @@ class UnitTestOfUS(BaseTest):
                 "library_type": LibraryType.WishList.name
             }
 
-            res = self.client.put(f"/library/{user2.email}/{self.book.isbn}", data=new_data, headers={
+            res = self.client.put(f"/api/library/{user2.email}/{self.book.isbn}", data=new_data, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
 
@@ -116,7 +116,7 @@ class UnitTestOfUS(BaseTest):
                 "library_type": LibraryType.WishList.name
             }
 
-            res = self.client.put(f"/library/invalid/{self.book.isbn}", data=new_data)
+            res = self.client.put(f"/api/library/invalid/{self.book.isbn}", data=new_data)
 
             self.assertEqual(401, res.status_code)
             self.assertEqual(self.entry.state, LibraryModel.find_by_id_and_isbn(self.user.id, self.book.isbn).state)

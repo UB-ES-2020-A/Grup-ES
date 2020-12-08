@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="app" v-if="user.role === userRole">
 <navbar @changeShowState="show = !show"/>
 <div class="body" v-if="show === true">
   <settings :user="user"/>
@@ -36,7 +36,7 @@
             <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="1.5"></b-icon>
             <b-icon icon="star" v-if="review.score < 1" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="1.5"></b-icon>
-            <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 2" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="1.5"></b-icon>
             <b-icon icon="star" v-if="review.score < 3" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="1.5"></b-icon>
@@ -124,6 +124,7 @@ export default {
   data () {
     return {
       show: true,
+      adminRole: 'Admin',
       user: {},
       transactions: [],
       pedidos: [],
@@ -138,6 +139,7 @@ export default {
   },
   created () {
     this.fetch_cache()
+    this.redirect()
     this.load_pedidos()
     this.load_library()
     this.load_wishlist()
@@ -226,6 +228,11 @@ export default {
         return array.length
       } else {
         return head
+      }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
       }
     },
     manage_transactions (ped) {

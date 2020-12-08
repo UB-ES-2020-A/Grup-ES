@@ -38,7 +38,7 @@
        <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
        <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
        <h6>{{ book.precio }}</h6>
-       <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+       <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
        </b-col>
    </b-row>
 </div>
@@ -63,7 +63,7 @@
         <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
         <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
         <h6>{{ book.precio }}</h6>
-        <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+        <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
       </b-col>
       </b-row>
   </div>
@@ -90,7 +90,9 @@ export default {
     return {
       best_sellers: [],
       new_releases: [],
-      show: true
+      show: true,
+      user: {},
+      userRole: 'User'
     }
   },
   created () {
@@ -98,6 +100,14 @@ export default {
     this.load_best_sellers()
   },
   methods: {
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
+    },
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
