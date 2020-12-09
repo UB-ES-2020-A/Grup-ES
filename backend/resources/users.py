@@ -3,6 +3,7 @@ import re
 from flask_restful import Resource, reqparse, abort
 from flask import g
 from model.users import UsersModel, auth
+from model.verify_email import VerifyModel
 from utils.lock import lock
 
 
@@ -81,6 +82,11 @@ class Users(Resource):
                 user = UsersModel(**data)
                 user.hash_password(password)
                 user.save_to_db()
+
+                url_root = 'www.test.com/'
+                verify = VerifyModel(user.id)
+                verify.save_to_db()
+                verify.send_email(user.email, url_root)
             except Exception as e:
                 return {"message": str(e)}, 500
 

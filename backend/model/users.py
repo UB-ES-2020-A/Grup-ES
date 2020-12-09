@@ -5,8 +5,8 @@ from passlib.apps import custom_app_context as pwd_context
 import datetime as dt
 from enum import Enum
 
-
 from db import db, secret_key
+from model.verify_email import VerifyModel
 
 auth = HTTPBasicAuth()
 
@@ -26,10 +26,12 @@ class UsersModel(db.Model):
     role = db.Column(db.Enum(Roles, name='roles_types'), nullable=False)
     state = db.Column(db.Boolean(), nullable=False)
     date = db.Column(db.DateTime(), nullable=False)
+    confirmed_email = db.Column(db.Boolean(), nullable=False)
 
     library = db.relationship('LibraryModel', backref='library', lazy=True)
     reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
     transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
+    # confirmed_email = db.relationship('VerifyModel', uselist=False, backref='user', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
@@ -37,6 +39,7 @@ class UsersModel(db.Model):
         self.role = role
         self.state = True
         self.date = dt.datetime.today()
+        self.confirmed_email = False
 
     def save_to_db(self):
         if 0 < self.query.filter_by(username=self.username, state=True).count():
