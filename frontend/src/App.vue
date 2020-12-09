@@ -28,4 +28,9 @@ export default {
 a, a label {
     cursor: pointer;
 }
+
+.carousel-item img {
+    height: 500px;
+    width: 100%;
+}
 </style>

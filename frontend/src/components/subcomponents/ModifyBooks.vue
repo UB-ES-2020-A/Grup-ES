@@ -153,8 +153,12 @@ export default {
       urlState: null,
       editorialState: null,
       dateState: null,
-      sinopsisState: null
+      sinopsisState: null,
+      user: {}
     }
+  },
+  created () {
+    this.fetch_cache()
   },
   methods: {
     addBook () {
@@ -178,8 +182,21 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
           this.clearModal()
         })
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
     },
     clearModal () {
       this.stock = ''

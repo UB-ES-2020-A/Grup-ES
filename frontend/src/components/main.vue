@@ -8,14 +8,15 @@
 <b-container v-if= "show === true">
   <b-carousel
   id="carousel"
+  fade
   style="text-shadow: 0px 0px 2px #0000"
-  :interval="2000"
-  img-width="550"
-  img-height="300"
+  :interval="5000"
   >
-  <b-carousel-slide v-for="i in 2" :key = "i"
-      :img-src="loadSlides(i)" style="height:550; width:300;"
-  ></b-carousel-slide>
+  <b-carousel-slide v-for="i in 3" :key = "i"
+      :img-src="loadSlides(i)"
+  >
+    <h1 style="color: black;"> Troba les millors novetats a BookShelter </h1>
+  </b-carousel-slide>
   <b-carousel>
 </b-container>
 <br>

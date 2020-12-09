@@ -9,21 +9,35 @@
    <b-row>
      <b-col  v-for="(book) in books" :key="book.isbn">
        <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-       <h5>{{ book.autor }}</h5>
-       <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
-       <h6>{{ book.precio }}</h6>
-       <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+       <b-card
+          img-alt="Image"
+          img-top
+          tag="article"
+          style="max-width: 15rem;"
+          class="mb-2"
+        >
+      <a> <b-card-img :src="getURL(book)"  @click = "gotobook(book.isbn)">
+        </b-card-img> </a>
+      <br>
+      <a> <b-card-title @click = "gotobook(book.isbn)"> {{ book.titulo }} </b-card-title> </a>
+      <b-card-text>
+        <h5>{{ book.autor }}</h5>
+      </b-card-text>
+      <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
+      <b-card-text>
+        <h6>Preu: {{ book.precio }}</h6>
+      </b-card-text>
+        <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
+      </b-card>
        </b-col>
    </b-row>
 </div>
