@@ -4,7 +4,6 @@ import json
 from tests.base_test import BaseTest
 from model.users import UsersModel, Roles
 from model.books import BooksModel
-from model.reviews import ReviewsModel
 
 
 class UnitTestOfUS(BaseTest):

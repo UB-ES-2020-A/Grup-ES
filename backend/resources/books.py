@@ -62,15 +62,15 @@ def check_constraints_book(data):
         abort(400, message={"message": "'stock' can't be negative"})
     if data.get("precio", None) is not None and data["precio"] < 0:
         abort(400, message={"message": "'precio' can't be negative"})
-    if data.get("titulo", None) is not None and len(data["titulo"]) == 0:
+    if data.get("titulo", None) is not None and not data["titulo"]:
         abort(400, message={"message": "'titulo' can't be empty"})
-    if data.get("autor", None) is not None and len(data["autor"]) == 0:
+    if data.get("autor", None) is not None and not data["autor"]:
         abort(400, message={"message": "'autor' can't be empty. Use None instead"})
-    if data.get("editorial", None) is not None and len(data["editorial"]) == 0:
+    if data.get("editorial", None) is not None and not data["editorial"]:
         abort(400, message={"message": "'editorial' can't be empty. Use None instead"})
-    if data.get("url_imagen", None) is not None and len(data["url_imagen"]) == 0:
+    if data.get("url_imagen", None) is not None and not data["url_imagen"]:
         abort(400, message={"message": "'url_imagen' can't be empty. Use None instead"})
-    if data.get("sinopsis", None) is not None and len(data["sinopsis"]) == 0:
+    if data.get("sinopsis", None) is not None and not data["sinopsis"]:
         abort(400, message={"message": "'sinopsis' can't be empty. Use None instead"})
 
 

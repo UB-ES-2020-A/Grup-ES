@@ -203,12 +203,12 @@ export default {
     },
     checkOk () {
       console.log(this.$props.isbnNum)
-      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && this.precio > 0) {
+      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && parseInt(this.precio) > 0) {
         this.precioState = true
       } else {
         this.precioState = false
       }
-      if (this.stock <= 0 || this.stock.length < 0) {
+      if (this.stock.length < 0 || parseInt(this.stock) <= 0) {
         this.stockState = false
       } else {
         this.stockState = true
