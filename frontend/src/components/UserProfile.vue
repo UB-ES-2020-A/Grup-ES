@@ -124,7 +124,10 @@ export default {
   data () {
     return {
       show: true,
+      // Roles
       adminRole: 'Admin',
+      userRole: 'User',
+
       user: {},
       transactions: [],
       pedidos: [],

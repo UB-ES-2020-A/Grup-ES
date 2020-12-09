@@ -9,12 +9,12 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 1
     def test_get_search_by_isbn(self):
         with self.app.app_context():
-            book = BooksModel(1, 1, 1, "test")
+            book = BooksModel(9780553803716, 1, 1, "test")
             book.save_to_db()
-            book = BooksModel(2, 1, 1, "as")
+            book = BooksModel(9780553803712, 1, 1, "test2")
             book.save_to_db()
             args = {
-                "isbn": 1
+                "isbn": 9780553803716
             }
             res = self.client.get('/api/search', data=args)
             self.assertEqual(200, res.status_code)
