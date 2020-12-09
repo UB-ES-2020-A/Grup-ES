@@ -88,7 +88,6 @@ export default {
       search: '',
       show: true,
       user: {},
-      userRole: 'User',
       price: 0.0,
       selected: null,
       isbnSearch: null,
@@ -97,7 +96,11 @@ export default {
         { value: null, text: 'Data' },
         { value: 'asc', text: 'Més antigues primer' },
         { value: 'desc', text: 'Més noves primer' }
-      ]
+      ],
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {

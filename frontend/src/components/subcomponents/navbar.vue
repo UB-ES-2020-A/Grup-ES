@@ -82,7 +82,7 @@
                 <b-nav vertical>
                   <b-nav-item active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
                   <b-nav-item active v-if="user.role == userRole" @click="goLibrary()">Biblioteca</b-nav-item>
-                  <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
+                  <b-nav-item active v-if="user.role == userRole" @click="goPedidos()">Comandes</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
                   <b-nav-item active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
                 </b-nav>
@@ -329,7 +329,9 @@ export default {
       this.$router.push({path: '/modify'})
     },
     onSearch () {
-      this.$router.push({ path: '/search', query: {titulo: this.search} })
+      if (this.search.length > 0) {
+        this.$router.push({ path: '/search', query: {titulo: this.search} })
+      }
     },
     goStock () {
       this.$router.push({path: '/shopstock'})

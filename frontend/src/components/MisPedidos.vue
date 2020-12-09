@@ -94,7 +94,10 @@ export default {
       // Session
       user: {},
       session_boolean: false,
-      adminRole: 'Admin'
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {

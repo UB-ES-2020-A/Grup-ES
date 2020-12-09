@@ -3,6 +3,7 @@ from flask_restful import Resource, reqparse
 
 from model.recovery import PasswordRecoveryModel
 from model.users import UsersModel
+from resources.users import check_constraints_user
 from utils.lock import lock
 
 
@@ -49,6 +50,7 @@ class PasswordRecovery(Resource):
 
     def put(self, key):
         data = parse_data(True)
+        check_constraints_user(data)
 
         with lock:
             recovery = PasswordRecoveryModel.find_by_key(key)

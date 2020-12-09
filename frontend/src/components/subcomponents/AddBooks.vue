@@ -56,7 +56,7 @@
     <b-form-group
       label="Stock"
       label-for="stock-input"
-      invalid-feedback="Stock field invalid, use a number"
+      invalid-feedback="Stock field invalid, use a postive number"
     >
     <b-form-input
       id="stock-input"
@@ -68,7 +68,7 @@
     <b-form-group
       label="Preu"
       label-for="price-input"
-      invalid-feedback="Price field invalid, use a number"
+      invalid-feedback="Price field invalid, use a postive number"
     >
     <b-form-input
       id="price-input"
@@ -232,12 +232,12 @@ export default {
       } else {
         this.isbnState = false
       }
-      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1) {
+      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && parseInt(this.precio) > 0) {
         this.precioState = true
       } else {
         this.precioState = false
       }
-      if (this.stock <= 0 || this.stock.length < 0) {
+      if (parseInt(this.stock) <= 0 || this.stock.length < 0) {
         this.stockState = false
       } else {
         this.stockState = true

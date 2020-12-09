@@ -87,7 +87,7 @@ class UnitTestOfUS(BaseTest):
             recovery = PasswordRecoveryModel(user.id)
             recovery.save_to_db()
 
-            new_password = "newPassword"
+            new_password = "Test1234"
             res = self.client.put(f"/api/recovery/{recovery.key}", data={"new_password": new_password})
             self.assertEqual(200, res.status_code)
             self.assertEqual(user.json(), json.loads(res.data)["user"])
@@ -99,7 +99,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test")
             user.save_to_db()
 
-            new_password = "newPassword"
+            new_password = "Test1234"
             res = self.client.put(f"/api/recovery/notImportant", data={"new_password": new_password})
             self.assertEqual(403, res.status_code)
 
@@ -113,8 +113,8 @@ class UnitTestOfUS(BaseTest):
             recovery.time -= 2 * PasswordRecoveryModel.VALID_UNTIL
             recovery.save_to_db()
 
-            new_password = "newPassword"
-            res = self.client.put(f"/api/recovery/{recovery.key}", data={"email": user.email, "new_password": new_password})
+            new_password = "Test1234"
+            res = self.client.put(f"/api/recovery/{recovery.key}", data={"new_password": new_password})
             self.assertEqual(403, res.status_code)
 
     # TASK 6

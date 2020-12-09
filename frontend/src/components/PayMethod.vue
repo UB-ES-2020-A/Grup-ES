@@ -178,7 +178,10 @@ export default {
       user: {},
       error: '',
       show: false,
-      adminRole: 'Admin'
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {

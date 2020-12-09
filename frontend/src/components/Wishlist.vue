@@ -53,7 +53,10 @@ export default {
       wishlist: [],
       user: {},
       book: {},
-      adminRole: 'Admin'
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {

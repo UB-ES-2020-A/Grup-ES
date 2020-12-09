@@ -12,6 +12,7 @@
               <b-form-group
               label="Username"
               label-for="inputUsername"
+              valid-feedback="El username es valido"
               :invalid-feedback="userInvalid"
               :state="userState"
               style="margin-top: 15px"
@@ -91,10 +92,9 @@ export default {
       return this.username.length >= 4
     },
     userInvalid () {
-      if (this.username.length > 0) {
-        return 'Introduce al menos 4 carácteres'
+      if (this.username.length < 4) {
+        return 'El usuario debe tener más de 4 carácteres'
       }
-      return 'El usuario debe tener más de 4 carácteres'
     },
     emailState () {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -113,7 +113,7 @@ export default {
     pwd1Invalid () {
       var pw = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/
       if (!pw.test(this.password1)) {
-        return 'la contraseña debe contener 6 carácteres, un número, una mayuscula, una minuscula.'
+        return 'La contraseña debe contener 6 carácteres, un número, una mayuscula, una minuscula.'
       }
     },
     pwd2State () {
