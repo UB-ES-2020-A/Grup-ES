@@ -1,4 +1,6 @@
-from flask_restful import Resource, reqparse
+import re
+
+from flask_restful import Resource, reqparse, abort
 from flask import g
 from model.users import UsersModel, auth
 from utils.lock import lock
@@ -33,6 +35,25 @@ def parse_reviews():
     return parser.parse_args()
 
 
+def check_constraints_user(data):
+    if data.get("email", None) is not None:
+        regex = r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' \
+                r'\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))'
+        if re.match(regex, data["email"]) is None:
+            abort(400, message={"message": "Invalid syntax email"})
+    if data.get("password", None) is not None:
+        regex = r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}'
+        if re.match(regex, data["password"]) is None:
+            abort(400, message={"message": "Invalid syntax password"})
+    if data.get("new_password", None) is not None:
+        regex = r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}'
+        if re.match(regex, data["new_password"]) is None:
+            abort(400, message={"message": "Invalid syntax password"})
+    if data.get("username", None) is not None:
+        if len(data["username"]) < 4:
+            abort(400, message={"message": "Invalid syntax username"})
+
+
 class Users(Resource):
 
     def get(self, email):
@@ -46,6 +67,7 @@ class Users(Resource):
 
     def post(self):
         data = parse_user()
+        check_constraints_user(data)
         with lock:
             user = UsersModel.find_by_username(data["username"])
             if user:
@@ -67,6 +89,7 @@ class Users(Resource):
     @auth.login_required
     def put(self, email):
         data = parse_modify_user()
+        check_constraints_user(data)
         with lock:
             user = UsersModel.find_by_email(email)
             if not user:

@@ -133,8 +133,11 @@ export default {
   },
   data () {
     return {
-      show: true,
+      // Roles
       adminRole: 'Admin',
+      userRole: 'User',
+
+      show: true,
       list: [],
       library: [],
       bought: [],

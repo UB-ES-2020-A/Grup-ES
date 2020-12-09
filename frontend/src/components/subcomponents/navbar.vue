@@ -356,7 +356,9 @@ export default {
       this.$router.push({path: '/modify'})
     },
     onSearch () {
-      this.$router.push({ path: '/search', query: {titulo: this.search} })
+      if (this.search.length > 0) {
+        this.$router.push({ path: '/search', query: {titulo: this.search} })
+      }
     },
     goStock () {
       this.$router.push({path: '/shopstock'})

@@ -51,11 +51,11 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 2
     def test_post_user(self):
         with self.app.app_context():
-            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "Test1234"})
             self.assertEqual(201, res.status_code)
             self.assertEqual(UsersModel.find_by_username("test2").json(), json.loads(res.data))
 
-            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "Test1234"})
             self.assertEqual(409, res.status_code)
 
     # TEST TASK 3
