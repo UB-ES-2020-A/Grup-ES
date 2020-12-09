@@ -248,7 +248,6 @@ export default {
         const path = this.$API_URL + 'transaction'
         axios.post(path, parameters, {auth: {username: this.user.token}})
           .then((res) => {
-            console.log('PAID SUCCESSFULLY')
             alert('Transaction correctly realized!')
             cartItems = []
             localStorage.setItem('cartItems', JSON.stringify(cartItems))

@@ -163,7 +163,6 @@ export default {
         .then((res) => {
           this.pedidos = res.data.transactions
           this.manage_transactions(this.pedidos)
-          // console.log(this.pedidos)
         })
         .catch((error) => {
           console.error(error)
@@ -177,7 +176,6 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.library = res.data.library
-          console.log(this.library)
         })
         .catch((error) => {
           console.error(error)
@@ -192,7 +190,6 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.wishlist = res.data.library
-          // console.log(this.wishlist)
         })
         .catch((error) => {
           console.error(error)
@@ -250,7 +247,6 @@ export default {
       }
       this.transactions.reverse()
       this.transactions = this.transactions.slice(0, 3)
-      console.log(this.transactions)
     },
     goPedidos () {
       this.$router.push({path: '/mispedidos'})

@@ -24,4 +24,8 @@ export default {
   position:sticky;
   width:100%;
 }
+
+a, a label {
+    cursor: pointer;
+}
 </style>

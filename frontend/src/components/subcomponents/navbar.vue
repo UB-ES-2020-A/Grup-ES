@@ -2,7 +2,7 @@
   <div ref="navbar">
    <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand @click="goStart()">
-    <img src="../../assets/Bookshelter.png" class="d-inline-block align-top" width="200" height="60">
+    <a> <img src="../../assets/bookshelter_icon1.png" class="d-inline-block align-top" width="200" height="100"> </a>
     </b-navbar-brand>
     <b-nav-form>
        <b-form-input autocomplete="off" v-model="search" @change="onInputDataList()" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
@@ -138,15 +138,14 @@
              <hr/>
          </b-row>
          </b-container>
+         <b-container v-if= "see_cart === true && cartItems.length === 0">
+            <h4 class = "text-muted">
+              No tens cap llibre a la teva cistella
+              <b-icon icon="basket2" font-scale="2.5"></b-icon>
+            </h4>
+         </b-container>
          </b-col>
          <b-col>
-          <b-container fluid class = "border bg-light" style="padding:15px">
-           <p> Tens un codi de descompte? </p>
-           <b-nav-form>
-              <b-form-input size="sm" class="mr-sm-2" placeholder="Introdueix el teu codi descompte"></b-form-input>
-              <b-button size="sm" class="my-2 my-sm-0" type="submit">Validar</b-button>
-           </b-nav-form>
-         </b-container>
          <b-container fluid class = "border bg-light" style="padding:15px; margin-top:10px">
          <br>
            <h5> Resum </h5>
@@ -379,7 +378,6 @@ export default {
         }
       }
       localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-      console.log(quantity)
     },
     finalizePurchase () {
       this.$router.push({path: '/paymethod'})

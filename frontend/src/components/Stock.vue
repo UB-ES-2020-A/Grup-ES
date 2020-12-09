@@ -72,6 +72,7 @@ export default {
       show: true,
       bookIsbn: 0,
       userRole: 'User',
+      adminRole: 'Admin',
       user: {}
     }
   },

@@ -139,7 +139,6 @@ export default {
       axios.get(path, headers)
         .then((res) => {
           this.allTransactions = res.data.transactions
-          console.log(res.data.transactions)
         })
         .catch((error) => {
           console.error(error)

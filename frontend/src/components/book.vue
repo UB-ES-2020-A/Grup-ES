@@ -194,10 +194,7 @@ export default {
           this.redirectNotFound(this.single_book)
           this.can_post = true
           var i
-          console.log(this.single_book)
-          console.log(this.single_book.reviews)
           for (i = 0; i < this.single_book.reviews.length; i++) {
-            console.log(this.single_book.reviews[i])
             if (this.single_book.reviews[i].user_id === this.user.id) {
               this.can_post = false
             }
@@ -209,8 +206,7 @@ export default {
     },
     redirectNotFound (book) {
       if (book.vendible === false) {
-        // redirigir a not found page
-        console.log('not vendible')
+        window.location.replace('/notfound')
       }
     },
     getURL (book) {
@@ -305,7 +301,6 @@ export default {
       const auth = {auth: {username: this.user.token}}
       axios.post(path, parameters, auth)
         .then((res) => {
-          console.log('BOOK ADDED TO WISHLIST')
         })
         .catch((error) => {
           console.error(error)

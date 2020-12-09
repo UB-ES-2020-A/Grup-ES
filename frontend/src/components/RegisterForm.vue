@@ -152,7 +152,6 @@ export default {
       axios.post(path, parameters)
         .then((res) => {
           this.initForm()
-          console.log('ACCOUNT CREATED')
           alert('Account created')
           this.$refs.c.$bvToast.show('toast')
           setTimeout(() => this.$router.push({path: '/userlogin'}), 5000)
