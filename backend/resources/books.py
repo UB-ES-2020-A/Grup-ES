@@ -151,7 +151,7 @@ class BooksList(Resource):
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
         with lock:
-            books = BooksModel.query.filter_by(vendible=True)
+            books = db.session.query(BooksModel)
             if data['param'] is None:
                 books = books.limit(data['numBooks']).all()
             else:

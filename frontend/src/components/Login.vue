@@ -77,7 +77,7 @@ export default {
           this.email = dataget.data.user.email
           this.role = dataget.data.user.role
           this.createUserObject(this.id, this.username, this.email, this.role, this.token)
-          this.$router.push({path: '/'})
+          window.location.replace('/')
           this.initForm()
         }))
         .catch((error) => {
