@@ -71,8 +71,10 @@ export default {
       search: '',
       show: true,
       bookIsbn: 0,
-      userRole: 'User',
-      user: {}
+      user: {},
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {

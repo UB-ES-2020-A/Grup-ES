@@ -1,7 +1,7 @@
 import datetime as dt
 from itertools import islice
 
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from flask_restful import reqparse
 from sqlalchemy import desc, asc
 
@@ -38,7 +38,10 @@ def parse_book(minimal=False):
                         help="In this field goes the date of the book in YYYY-MM-DD format")
     data = parser.parse_args()
     if data["fecha_de_publicacion"] is not None:
-        data["fecha_de_publicacion"] = dt.datetime.strptime(data["fecha_de_publicacion"], '%Y-%m-%d')
+        try:
+            data["fecha_de_publicacion"] = dt.datetime.strptime(data["fecha_de_publicacion"], '%Y-%m-%d')
+        except ValueError:
+            abort(400, message={"message": "'fecha_de_publicacion' should have the sytnax: YYYY-MM-DD"})
 
     return data
 
@@ -50,6 +53,25 @@ def parse_reviews():
     parser.add_argument('score', type=bool, required=False,
                         help="Indicates if returning the score of the book is needed .")
     return parser.parse_args()
+
+
+def check_constraints_book(data):
+    if data.get("isbn", None) is not None and len(str(data["isbn"])) != 13:
+        abort(400, message={"message": "'isbn' should be made by 13 digits"})
+    if data.get("stock", None) is not None and data["stock"] < 0:
+        abort(400, message={"message": "'stock' can't be negative"})
+    if data.get("precio", None) is not None and data["precio"] < 0:
+        abort(400, message={"message": "'precio' can't be negative"})
+    if data.get("titulo", None) is not None and not data["titulo"]:
+        abort(400, message={"message": "'titulo' can't be empty"})
+    if data.get("autor", None) is not None and not data["autor"]:
+        abort(400, message={"message": "'autor' can't be empty. Use None instead"})
+    if data.get("editorial", None) is not None and not data["editorial"]:
+        abort(400, message={"message": "'editorial' can't be empty. Use None instead"})
+    if data.get("url_imagen", None) is not None and not data["url_imagen"]:
+        abort(400, message={"message": "'url_imagen' can't be empty. Use None instead"})
+    if data.get("sinopsis", None) is not None and not data["sinopsis"]:
+        abort(400, message={"message": "'sinopsis' can't be empty. Use None instead"})
 
 
 class Books(Resource):
@@ -65,6 +87,7 @@ class Books(Resource):
     @auth.login_required(role=Roles.Admin)
     def post(self):
         data = parse_book()
+        check_constraints_book(data)
         with lock:
             book = BooksModel.find_by_isbn(data["isbn"])
             if book:
@@ -81,6 +104,7 @@ class Books(Resource):
     @auth.login_required(role=Roles.Admin)
     def put(self, isbn):
         data = parse_book(minimal=True)
+        check_constraints_book(data)
         with lock:
             book = BooksModel.find_by_isbn(isbn)
             if book is None:
@@ -155,6 +179,7 @@ class SearchBooks(Resource):
         parser.add_argument('score', type=bool, required=False,
                             help="Indicates if returning the score of the book is needed .")
         data = parser.parse_args()
+        check_constraints_book(data)
         if not any(v is not None for k, v in data.items() if k not in ['reviews', 'score']):
             return {"message": "Missing parameters to search by."}, 406
 
