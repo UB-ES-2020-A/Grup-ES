@@ -1,7 +1,7 @@
 <template>
 <div id="app">
 <!-- container for static pics -->
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <br>
 <br>
 <div class="body">

@@ -1,6 +1,6 @@
 <template>
 <div id="app" v-if="user.role === userRole">
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <!--body-->
 <div class="body">
 <div v-if= "show === true">
@@ -214,7 +214,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as finished')
+          this.$refs.c.showToast(['Info', 'Libro marcado como leido'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -239,7 +239,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as pending')
+          this.$refs.c.showToast(['Info', 'Libro marcado como pendiente'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -264,7 +264,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as reading')
+          this.$refs.c.showToast(['Info', 'Leyendo el libro actualmente'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -402,7 +402,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((datadelete, dataget) => {
-          alert('Book moved to archive')
+          this.$refs.c.showToast(['Info', 'Libro archivado'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -422,7 +422,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((datapost, dataget) => {
-          alert('Book moved to books')
+          this.$refs.c.showToast(['Info', 'Libro desarchivado'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()

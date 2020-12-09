@@ -167,7 +167,7 @@ export default {
       const path = this.$API_URL + 'book'
       axios.post(path, parameters, auth)
         .then((res) => {
-          alert('Book ADDED correctly')
+          this.$refs.c.showToast(['Info', 'Libro añadido a nuestra página'])
           this.clearModal()
         })
         .catch((error) => {

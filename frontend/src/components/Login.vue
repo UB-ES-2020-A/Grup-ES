@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
@@ -67,13 +67,14 @@ export default {
           this.email = dataget.data.user.email
           this.role = dataget.data.user.role
           this.createUserObject(this.id, this.username, this.email, this.role, this.token)
-          this.$router.push({path: '/'})
+          this.$refs.c.showToast(['Info', 'Log in realizado con exito'])
+          setTimeout(() => this.$router.push({path: '/'}), 3000)
           this.initForm()
         }))
         .catch((error) => {
           console.error(error)
           this.initForm()
-          alert('La dirección o la contraseña son incorrectas')
+          this.$refs.c.showToast(['Error', 'Correo o contraseña incorrectas'])
         })
     },
     createUserObject (id, username, email, role, token) {

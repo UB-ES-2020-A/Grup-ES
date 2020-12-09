@@ -1,6 +1,6 @@
 <template>
 <div id="app" v-if="user.role === userRole">
- <navbar @changeShowState="show_c = !show_c"/>
+ <navbar ref="c" @changeShowState="show_c = !show_c"/>
 <!-- body -->
 <div class="body">
 <b-container v-if= "show_c === true">
@@ -249,10 +249,10 @@ export default {
         axios.post(path, parameters, {auth: {username: this.user.token}})
           .then((res) => {
             console.log('PAID SUCCESSFULLY')
-            alert('Transaction correctly realized!')
+            this.$refs.c.showToast(['Info', 'Transacción realizada correctamente'])
             cartItems = []
             localStorage.setItem('cartItems', JSON.stringify(cartItems))
-            this.$router.push({path: '/'})
+            setTimeout(() => this.$router.push({path: '/'}), 3000)
           })
           .catch((error) => {
             console.error(error)

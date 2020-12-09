@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
       <div class="col-md-4">
@@ -104,8 +104,8 @@ export default {
       axios.put(path, parameters)
         .then((res) => {
           console.log('PASSWORD UPDATED')
-          alert('Password updated correctly')
-          this.goLogin()
+          this.$refs.c.showToast(['Info', 'Contraseña actualizada correctamente'])
+          setTimeout(() => this.$router.push({path: '/userlogin'}), 3000)
         })
         .catch((error) => {
           console.error(error)
@@ -122,14 +122,11 @@ export default {
           console.error(error)
         })
     },
-    goLogin () {
-      this.$router.push({path: '/userlogin'})
-    },
     checkPassword () {
       if (this.pwd1State && this.pwd2State) {
         this.resetPassword()
       } else {
-        alert('Algún parametro es incorrecto o no ha sido introducido')
+        this.$refs.c.showToast(['Info', 'Algún parametro no ha sido introducido'])
       }
     }
   }

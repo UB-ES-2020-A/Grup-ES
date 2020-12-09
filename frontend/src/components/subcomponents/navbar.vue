@@ -223,6 +223,33 @@ export default {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
     },
+    showToast (message) {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement
+      // Increment the toast count
+      this.count++
+      // Create the message
+      const vNodesMsg = h(
+        'p',
+        { class: ['text-center', 'mb-0'] },
+        [message[1]]
+      )
+      // Create the title
+      const vNodesTitle = h(
+        'div',
+        { class: ['d-flex', 'flex-grow-1', 'align-items-baseline', 'mr-2'] },
+        [
+          h('strong', { class: 'mb-0' }, message[0])
+        ]
+      )
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        toaster: 'b-toaster-top-center',
+        solid: true,
+        variant: 'info'
+      })
+    },
     logIn () {
       if (this.session_boolean === false) {
         this.$router.push({path: '/userlogin'})
@@ -232,9 +259,8 @@ export default {
         this.cartItems.splice(0, this.cartItems.length)
         this.session_status = 'Log In'
         this.session_boolean = false
-        alert('Log out successfully')
-        this.$router.push({path: '/'})
-        location.reload()
+        this.showToast(['Info', 'Has cerrado sesion correctamente'])
+        setTimeout(() => location.reload(), 2000)
       }
     },
     fetch_cache () {

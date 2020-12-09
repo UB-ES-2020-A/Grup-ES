@@ -167,7 +167,7 @@ export default {
         params: parameters}
       axios.put(path, headers)
         .then((res) => {
-          alert('Book Modified correctly')
+          this.$refs.c.showToast(['Info', 'Libro modificado correctamente'])
           this.clearModal()
         })
         .catch((error) => {

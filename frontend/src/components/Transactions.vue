@@ -1,6 +1,6 @@
 <template>
 <div id="app" v-if="user.role === adminRole">
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <br>
 <div class="body" v-if="show === true">
 <b-container>

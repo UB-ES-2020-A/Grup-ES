@@ -1,6 +1,6 @@
 <template>
 <div id="app" v-if="user.role === userRole">
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <div class="body" v-if="show === true">
   <settings :user="user"/>
   <b-container>

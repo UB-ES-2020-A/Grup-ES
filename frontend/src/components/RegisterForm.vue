@@ -153,14 +153,13 @@ export default {
         .then((res) => {
           this.initForm()
           console.log('ACCOUNT CREATED')
-          alert('Account created')
-          this.$refs.c.$bvToast.show('toast')
+          this.$refs.c.showToast(['Usuario nuevo', 'El usuario se ha creado con exito'])
           setTimeout(() => this.$router.push({path: '/userlogin'}), 5000)
         })
         .catch((error) => {
           console.error(error)
           this.initForm()
-          alert('Username already in use')
+          this.$refs.c.showToast(['Error', 'El usuario ya esta en uso'])
         })
     },
     initForm () {
@@ -173,7 +172,7 @@ export default {
       if (this.userState && this.emailState && this.pwd1State && this.pwd2State) {
         this.createUser()
       } else {
-        alert('Algún parametro es incorrecto o no ha sido introducido')
+        this.$refs.c.showToast(['Info', 'Algún parametro no ha sido introducido'])
       }
     }
   }

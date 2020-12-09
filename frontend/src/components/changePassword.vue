@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
       <div class="col-md-4">
