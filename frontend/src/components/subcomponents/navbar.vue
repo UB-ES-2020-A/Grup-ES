@@ -2,8 +2,10 @@
   <div ref="navbar">
    <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand @click="goStart()">
-    <a> <img src="../../assets/bookshelter_icon1.png" class="d-inline-block align-top" width="200" height="100"> </a>
+    <a> <img src="../../assets/bookshelter_icon1.png" class="d-inline-block align-top" width="252" height="108"> </a>
     </b-navbar-brand>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+    <b-collapse id="nav-collapse" is-nav>
     <b-nav-form>
        <b-form-input autocomplete="off" v-model="search" @change="onInputDataList()" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
        <datalist id="booksearch">
@@ -68,10 +70,13 @@
     <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
       <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
         <li class="nav-item" v-if="session_boolean === true && user.role == userRole" ><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
-        <li class="nav-item" v-if="session_boolean === true && user.role == userRole"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true && user.role == userRole"><a class="nav-link"><b-icon title="Cistella" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if= "session_boolean === false"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
         <li class="nav-item" v-if= "session_boolean === true">
-          <b-button v-b-toggle.sidebar-right> {{ this.user.username }}</b-button>
+        <a> <b-list-group-item class="align-items-center">
+         <b-avatar v-b-toggle.sidebar-right class="mr-3"></b-avatar>
+         <span v-b-toggle.sidebar-right class="mr-auto">{{ this.user.username }}</span>
+        </b-list-group-item> </a>
         </li>
        </ul>
        <div>
@@ -80,11 +85,13 @@
                 <h4> Hola {{ this.user.username }} </h4>
                 <nav class="mb-3">
                 <b-nav vertical>
-                  <b-nav-item active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
-                  <b-nav-item active v-if="user.role == userRole" @click="goLibrary()">Biblioteca</b-nav-item>
-                  <b-nav-item active v-if="user.role == userRole" @click="goPedidos()">Comandes</b-nav-item>
-                  <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
-                  <b-nav-item active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="show_cart()">La meva cistella</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goWishlist()">Llista de desitjos</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goLibrary()">Biblioteca</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goPedidos()">Comandes</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
                 </b-nav>
                 </nav>
              </div>
@@ -96,6 +103,7 @@
           </b-sidebar>
       </div>
     </b-navbar-nav>
+    </b-collapse>
    </b-navbar>
    <!-- cart -->
    <b-container v-if= "see_cart === true">

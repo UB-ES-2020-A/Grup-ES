@@ -7,7 +7,7 @@
    <br>
    <b-container v-if= "show === true">
       <b-row>
-        <b-col class="text-center" cols="4">
+        <b-col class="text-center" sm="12" md="4" lg="4" xl="4">
           <br>
           <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
           <br>
@@ -23,7 +23,7 @@
           <b-icon icon="star-fill" v-if="single_book.score >= 5" font-scale="3"></b-icon>
           <b-icon icon="star" v-if="single_book.score < 5" font-scale="3"></b-icon>
         </b-col>
-        <b-col cols="5">
+        <b-col sm="12" md="5" lg="5" xl="5">
           <br>
           <h2> {{ this.single_book.titulo }} </h2>
           <p> <h4> de {{ this.single_book.autor }} </h4> <p>

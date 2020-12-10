@@ -22,6 +22,8 @@
 <br>
 <div class="container" v-if= "show === true">
    <h3> Best sellers </h3>
+   <br>
+   <h5> Els llibres que arrasen <h5>
    <b-row>
      <b-col  v-for="(book) in best_sellers" :key="book.isbn">
        <br>
@@ -61,6 +63,8 @@
    <br>
   <div class="container" v-if= "show === true">
       <h3> New releases </h3>
+      <br>
+      <h5> Nous llibres que no et deixaran indiferent <h5>
       <b-row>
       <b-col  v-for="(book) in new_releases" :key="book.isbn">
         <br>

@@ -5,7 +5,7 @@
 <div class="container" v-if= "show === true">
   <br>
   <br>
-   <h3> Resultados de la búsqueda </h3>
+   <h3> Resultats de la cerca </h3>
    <b-row>
      <b-col  v-for="(book) in books" :key="book.isbn">
        <br>
@@ -40,6 +40,12 @@
       </b-card>
        </b-col>
    </b-row>
+   <b-row v-if="books.length === 0">
+    <h3 class = "text-muted">
+      No hi han hagut resultats coincidents amb la cerca
+      <b-icon icon="search" font-scale="2.5"></b-icon>
+    </h3>
+   </b-row>
 </div>
 
 <!-- footer -->
@@ -63,16 +69,26 @@ export default {
   data () {
     return {
       show: true,
-
-      books: []
+      user: {},
+      books: [],
+      userRole: 'User'
     }
   },
   created () {
+    this.fetch_cache()
     this.load_search(this.$route.query)
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
     },
     load_search (query) {
       const path = this.$API_URL + 'search'
