@@ -1,5 +1,4 @@
 import datetime as dt
-import json
 from sqlalchemy import desc
 from sqlalchemy.util import OrderedSet
 
@@ -85,11 +84,13 @@ class TransactionsModel(db.Model):
     @classmethod
     def save_transaction(cls, user_id, isbns, prices, quantities):
         transactions = []
+        email_trans = []
         for isbn, price, quantity in zip(isbns, prices, quantities):
             book = BooksModel.find_by_isbn(isbn)
             cls.check_stock(book, quantity)
             transaction = TransactionsModel(user_id, isbn, price, quantity)
             transactions.append(transaction.json())
+            email_trans.append(transaction.email_text())
             db.session.add(transaction)
             user = UsersModel.find_by_id(user_id)
 
@@ -103,9 +104,15 @@ class TransactionsModel(db.Model):
 
         cls.it_transaction += 1
         db.session.commit()
-        recipient = UsersModel.find_by_id(user_id).email
-        send_email(recipient, 'Order confirmation', json.dumps(transactions))
+        cls.send_email(user_id, email_trans)
         return transactions
+
+    @classmethod
+    def send_email(cls, user_id, transactions):
+        recipient = UsersModel.find_by_id(user_id).email
+
+        msg = "Has comprat els seguents llibres:\n - " + ",\n - ".join(transactions)
+        send_email(recipient, 'Confirmacio del correu', msg)
 
     @classmethod
     def check_stock(cls, book, quantity):
@@ -130,3 +137,6 @@ class TransactionsModel(db.Model):
         grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in
                                 OrderedSet(t.id_transaction for t in transactions)]
         return grouped_transactions
+
+    def email_text(self):
+        return f"[isbn={self.isbn}, price={self.price}, quantity={self.quantity}]"
