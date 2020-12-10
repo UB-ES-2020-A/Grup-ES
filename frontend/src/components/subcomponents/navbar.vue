@@ -260,7 +260,10 @@ export default {
         this.session_status = 'Log In'
         this.session_boolean = false
         this.showToast(['Info', 'Has cerrado sesion correctamente'])
-        setTimeout(() => location.reload(), 2000)
+        setTimeout(() => {
+          this.$router.push({path: '/'})
+          location.reload()
+        }, 2000)
       }
     },
     fetch_cache () {

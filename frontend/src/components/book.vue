@@ -307,6 +307,7 @@ export default {
       axios.post(path, parameters, auth)
         .then((res) => {
           console.log('BOOK ADDED TO WISHLIST')
+          this.$refs.c.showToast(['Info', 'El libro ha sido añadido a la lista de desados'])
         })
         .catch((error) => {
           console.error(error)
