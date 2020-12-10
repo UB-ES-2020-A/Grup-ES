@@ -5,7 +5,7 @@
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
-      <div class="col-md-4">
+      <b-col sm="3" md="6" lg="6" xl="4">
       <div class="form-control  bg-light" style="margin-top: 150px">
       <div class="form-label-group">
               <b-button variant="link" style="margin-left: 100px" @click="goRegister()">¿Quieres crear una cuenta?</b-button>
@@ -23,7 +23,7 @@
               <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
       </div>
       </div>
-      </div>
+      </b-col>
       </div>
     </b-container>
   </div>

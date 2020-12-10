@@ -10,7 +10,7 @@
     <b-row>
       <div class="form-control bg-light">
        <b-row>
-       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+       <b-col sm="3" md="5" lg="4" xl="3" style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
          <b-card-group>
          <b-card
            :img-src="getURL(book)"
@@ -26,7 +26,7 @@
            <h6 class="card-subtitle">{{book.autor}}</h6>
          </b-card>
          </b-card-group>
-       </div>
+       </b-col>
        </b-row>
        </div>
        <!--archive-->

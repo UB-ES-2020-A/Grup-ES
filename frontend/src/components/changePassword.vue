@@ -1,10 +1,10 @@
 <template>
   <div id="app">
   <div>
-    <navbar ref="c" @changeShowState="show = !show"/>
+    <navbar @changeShowState="show = !show"/>
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
-      <div class="col-md-4">
+      <b-col sm="3" md="6" lg="6" xl="4">
       <div class="form-control  bg-light" style="margin-top: 150px">
       <div class="form-label-group">
         <b-container style="padding: 20px" v-if=" send === false">
@@ -24,7 +24,7 @@
         </b-container>
       </div>
       </div>
-      </div>
+      </b-col>
       </div>
     </b-container>
   </div>

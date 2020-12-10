@@ -153,7 +153,7 @@ export default {
         .then((res) => {
           this.initForm()
           console.log('ACCOUNT CREATED')
-          this.$refs.c.showToast(['Usuario nuevo', 'El usuario se ha creado con exito'])
+          this.$refs.c.showToast(['Usuario nuevo', 'El usuario se ha creado con exito. Se le ha enviado un correo de confirmación'])
           setTimeout(() => this.$router.push({path: '/userlogin'}), 5000)
         })
         .catch((error) => {

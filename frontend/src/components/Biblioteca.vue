@@ -7,7 +7,7 @@
   <b-container fluid="sm" style="margin-left:100px; margin-right:50px">
   <b-container fluid style="height: 100px; background: #808080;" >
   <b-row align-h="end">
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
       <b-input-group class="mb-2" style="margin-top:25px">
       <b-input-group-prepend is-text>
         <b-icon icon="search"></b-icon>
@@ -19,7 +19,7 @@
   </b-container>
   <!--select biblio-->
   <b-row>
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
      <b-nav tabs style="margin-top: 40px">
        <b-nav-item @click="choose_bought()" v-on:click="archived = false">Mis Libros</b-nav-item>
        <b-nav-item @click="choose_archive()">Archivo</b-nav-item>
@@ -27,7 +27,7 @@
     </b-col>
   </b-row>
   <b-row align-h="between" style="margin-top: 20px">
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
     <b-form-select
       v-model="selected"
       :options="options"
@@ -39,7 +39,7 @@
       v-if="archived === false"
     ></b-form-select>
     </b-col>
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
     <b-form-select
       v-model="sFilter"
       :options="filters"
@@ -59,7 +59,7 @@
     <b-row>
       <div class="form-control bg-light" v-if="archived===false">
        <b-row>
-       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
+       <b-col sm="3" md="5" lg="5" xl="4" style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
        <b-card-group>
        <b-card
          :img-src="getURL(book)"
@@ -90,13 +90,13 @@
          <h6 class="card-subtitle">{{book.autor}}</h6>
        </b-card>
        </b-card-group>
-       </div>
+       </b-col>
        </b-row>
        </div>
        <!--archive-->
        <div class="form-control bg-light" v-if="archived===true">
         <b-row>
-        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
+        <b-col sm="3" md="5" lg="5" xl="4" style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
         <b-card-group>
         <b-card
           :img-src="getURL(book)"
@@ -124,7 +124,7 @@
           <h6 class="card-subtitle">{{book.autor}}</h6>
         </b-card>
         </b-card-group>
-        </div>
+        </b-col>
         </b-row>
         </div>
     </b-row>
