@@ -98,21 +98,10 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.books = res.data.books
-          this.books = this.check_vendible(this.books)
         })
         .catch((error) => {
           console.error(error)
         })
-    },
-    check_vendible (array) {
-      var i
-      var arr = []
-      for (i = 0; i < array.length; i++) {
-        if (array[i].vendible) {
-          arr.push(array[i])
-        }
-      }
-      return arr
     },
     add_cart (book) {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))

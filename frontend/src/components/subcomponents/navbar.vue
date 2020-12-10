@@ -399,7 +399,7 @@ export default {
   computed: {
     filteredList () {
       if (this.booksquery.length !== 0 && this.search !== '') {
-        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()) && book.vendible)
+        return this.booksquery.books.filter(book => book.titulo.toLowerCase().includes(this.search.toLowerCase()))
       } else {
         return ''
       }

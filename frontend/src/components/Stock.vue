@@ -67,7 +67,7 @@ export default {
   data () {
     return {
       showadd: false,
-      booksquery: [],
+      booksquery: null,
       search: '',
       show: true,
       bookIsbn: 0,
@@ -93,7 +93,8 @@ export default {
     },
     get_books () {
       const path = this.$API_URL + 'books'
-      axios.get(path)
+      const params = { showOnlyVendibles: false }
+      axios.get(path, { params: params })
         .then((res) => {
           this.booksquery = res.data
         })
