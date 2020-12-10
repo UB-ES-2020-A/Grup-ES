@@ -9,9 +9,9 @@ from resources.users import Login, Users, UsersList
 from resources.library import Library, LibraryVisibility, LibraryEntry
 from resources.transactions import Transactions, TransactionsUser, TransactionsList
 from resources.reviews import Reviews
+from resources.verify_email import VerifyEmail
 
 from db import db, init_db
-from resources.verify_email import VerifyEmail
 from utils.mail import mail
 
 

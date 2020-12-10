@@ -11,7 +11,7 @@ class VerifyModel(db.Model):
     __table_args__ = (db.UniqueConstraint('key'),)
 
     SIZE = 32
-    VALID_UNTIL = timedelta(hours=1)
+    VALID_UNTIL = timedelta(hours=24)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'), primary_key=True)
     key = db.Column(db.String(SIZE), nullable=False)
@@ -37,12 +37,6 @@ class VerifyModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
-        """
-        Updates through a dictionary with paris of string of name of attribute and it's value. Following same structure
-        as json(). In case of wanting to modify an attribute of an enum use the string name of one of the values.
-
-        Will raise Exception in case of invalid enum value if it isn't contained inside the possible values of the enum.
-        """
         for attr, newValue in data.items():
             if newValue is not None:
                 setattr(self, attr, newValue)
