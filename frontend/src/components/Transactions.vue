@@ -116,6 +116,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     fetch_session () {
@@ -142,10 +147,14 @@ export default {
       axios.get(path, headers)
         .then((res) => {
           this.allTransactions = res.data.transactions
-          console.log(res.data.transactions)
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     parseParameters () {

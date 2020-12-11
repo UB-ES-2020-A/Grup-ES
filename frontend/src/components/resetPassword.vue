@@ -53,7 +53,6 @@ export default {
       }
       axios.put(path, parameters)
         .then((res) => {
-          console.log('PASSWORD UPDATED')
           alert('Password updated correctly')
           this.goLogin()
         })
@@ -66,7 +65,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.user = res.data.user
-          console.log(this.user)
         })
         .catch((error) => {
           console.error(error)

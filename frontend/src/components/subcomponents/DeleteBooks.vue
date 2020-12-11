@@ -30,6 +30,14 @@ export default {
   props: {
     isbnNum: Number
   },
+  data () {
+    return {
+      user: {}
+    }
+  },
+  created () {
+    this.fetch_cache()
+  },
   methods: {
     deleteBook () {
       const path = this.$API_URL + 'book/' + this.$props.isbnNum
@@ -43,7 +51,20 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
     }
   }
 }

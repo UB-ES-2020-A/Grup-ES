@@ -102,25 +102,31 @@
     :state = "urlState"
   ></b-form-input>
 </b-form-group>
-<b-form-group
-  label="Sinopsis"
-  label-for="sinopsis-input"
-  invalid-feedback="Sinopsis field required"
->
-<b-form-input
-  id="sinopsis-input"
-  v-model="sinopsis"
-  :state="sinopsisState"
-></b-form-input>
-</b-form-group>
 </b-col>
 <b-col>
 <img :src="browseURL()" style="height:209px; width:140px;">
 </b-col>
 </b-row>
-    </form>
-    </b-modal>
-  </div>
+</form>
+<b-row>
+<b-col>
+<b-form-group
+  label="Sinopsis"
+  label-for="sinopsis-input"
+  invalid-feedback="Sinopsis field required"
+>
+<b-form-textarea
+  id="sinopsis-input"
+  rows="3"
+  max-rows="6"
+  v-model="sinopsis"
+  :state="sinopsisState"
+></b-form-textarea>
+</b-form-group>
+</b-col>
+</b-row>
+</b-modal>
+</div>
 </template>
 
 <script>
@@ -147,8 +153,12 @@ export default {
       urlState: null,
       editorialState: null,
       dateState: null,
-      sinopsisState: null
+      sinopsisState: null,
+      user: {}
     }
+  },
+  created () {
+    this.fetch_cache()
   },
   methods: {
     addBook () {
@@ -172,8 +182,21 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
           this.clearModal()
         })
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
     },
     clearModal () {
       this.stock = ''

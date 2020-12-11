@@ -1,6 +1,6 @@
 import re
 
-from flask_restful import Resource, reqparse, abort
+from flask_restful import Resource, reqparse, abort, inputs
 from flask import g
 from model.users import UsersModel, auth
 from utils.lock import lock
@@ -30,7 +30,7 @@ def parse_modify_user():
 
 def parse_reviews():
     parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument('reviews', type=bool, required=False,
+    parser.add_argument('reviews', type=inputs.boolean, required=False,
                         help="Indicates if returning the reviews of the book is needed.")
     return parser.parse_args()
 

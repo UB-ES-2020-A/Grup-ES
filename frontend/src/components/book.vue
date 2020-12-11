@@ -7,7 +7,7 @@
    <br>
    <b-container v-if= "show === true">
       <b-row>
-        <b-col class="text-center" cols="4">
+        <b-col class="text-center" sm="12" md="4" lg="4" xl="4">
           <br>
           <img :src="getURL(this.single_book)" style="height:436px; width:280px;" alt="" >
           <br>
@@ -23,7 +23,7 @@
           <b-icon icon="star-fill" v-if="single_book.score >= 5" font-scale="3"></b-icon>
           <b-icon icon="star" v-if="single_book.score < 5" font-scale="3"></b-icon>
         </b-col>
-        <b-col cols="5">
+        <b-col sm="12" md="5" lg="5" xl="5">
           <br>
           <h2> {{ this.single_book.titulo }} </h2>
           <p> <h4> de {{ this.single_book.autor }} </h4> <p>
@@ -194,10 +194,7 @@ export default {
           this.redirectNotFound(this.single_book)
           this.can_post = true
           var i
-          console.log(this.single_book)
-          console.log(this.single_book.reviews)
           for (i = 0; i < this.single_book.reviews.length; i++) {
-            console.log(this.single_book.reviews[i])
             if (this.single_book.reviews[i].user_id === this.user.id) {
               this.can_post = false
             }
@@ -205,12 +202,16 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     redirectNotFound (book) {
       if (book.vendible === false) {
-        // redirigir a not found page
-        console.log('not vendible')
+        window.location.replace('/notfound')
       }
     },
     getURL (book) {
@@ -244,6 +245,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     delete_review (review) {
@@ -254,6 +260,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     delete_visibility (review) {
@@ -283,6 +294,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     set_focus (review) {
@@ -305,10 +321,14 @@ export default {
       const auth = {auth: {username: this.user.token}}
       axios.post(path, parameters, auth)
         .then((res) => {
-          console.log('BOOK ADDED TO WISHLIST')
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     }
   },
