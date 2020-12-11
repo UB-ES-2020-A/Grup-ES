@@ -68,7 +68,7 @@ export default {
           this.role = dataget.data.user.role
           this.createUserObject(this.id, this.username, this.email, this.role, this.token)
           this.$refs.c.showToast(['Info', 'Log in realizado con exito'])
-          setTimeout(() => this.$router.push({path: '/'}), 3000)
+          setTimeout(() => window.location.replace('/'), 3000)
           this.initForm()
         }))
         .catch((error) => {

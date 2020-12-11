@@ -1,7 +1,7 @@
 import datetime as dt
 from itertools import islice
 
-from flask_restful import Resource, abort
+from flask_restful import Resource, abort, inputs
 from flask_restful import reqparse
 from sqlalchemy import desc, asc
 
@@ -20,7 +20,7 @@ def parse_book(minimal=False):
                         help="In this field goes the isbn of the book" + str_variable)
     parser.add_argument('stock', type=int, required=not minimal,
                         help="In this field goes the stock of the book" + str_variable)
-    parser.add_argument('vendible', type=bool, required=False,
+    parser.add_argument('vendible', type=inputs.boolean, required=False,
                         help="In this field goes if the book is available" + str_variable)
     parser.add_argument('precio', type=float, required=not minimal,
                         help="In this field goes the price of the book" + str_variable)
@@ -48,9 +48,9 @@ def parse_book(minimal=False):
 
 def parse_reviews():
     parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument('reviews', type=bool, required=False,
+    parser.add_argument('reviews', type=inputs.boolean, required=False,
                         help="Indicates if returning the reviews of the book is needed.")
-    parser.add_argument('score', type=bool, required=False,
+    parser.add_argument('score', type=inputs.boolean, required=False,
                         help="Indicates if returning the score of the book is needed .")
     return parser.parse_args()
 
@@ -145,13 +145,16 @@ class BooksList(Resource):
                             help="In this field goes the param you want to order")
         parser.add_argument('order', type=str, required=False,
                             help="In this field goes the order (asc, desc) of what you would like to show")
-        parser.add_argument('reviews', type=bool, required=False,
+        parser.add_argument('reviews', type=inputs.boolean, required=False,
                             help="Indicates if returning the reviews of the book is needed.")
-        parser.add_argument('score', type=bool, required=False,
+        parser.add_argument('score', type=inputs.boolean, required=False,
                             help="Indicates if returning the score of the book is needed .")
+        parser.add_argument('showOnlyVendibles', type=inputs.boolean, required=False)
         data = parser.parse_args()
         with lock:
-            books = BooksModel.query.filter_by(vendible=True)
+            books = db.session.query(BooksModel)
+            if data['showOnlyVendibles'] is None or data['showOnlyVendibles']:
+                books = books.filter_by(vendible=True)
             if data['param'] is None:
                 books = books.limit(data['numBooks']).all()
             else:
@@ -174,19 +177,22 @@ class SearchBooks(Resource):
                             help="In this field goes the author of the book")
         parser.add_argument('editorial', type=str, required=False,
                             help="In this field goes the editorial of the book")
-        parser.add_argument('reviews', type=bool, required=False,
+        parser.add_argument('reviews', type=inputs.boolean, required=False,
                             help="Indicates if returning the reviews of the book is needed.")
-        parser.add_argument('score', type=bool, required=False,
+        parser.add_argument('score', type=inputs.boolean, required=False,
                             help="Indicates if returning the score of the book is needed .")
+        parser.add_argument('showOnlyVendibles', type=inputs.boolean, required=False)
         data = parser.parse_args()
         check_constraints_book(data)
-        if not any(v is not None for k, v in data.items() if k not in ['reviews', 'score']):
+        if not any(v is not None for k, v in data.items() if k not in ['reviews', 'score', 'showOnlyVendibles']):
             return {"message": "Missing parameters to search by."}, 406
 
         with lock:
             books = db.session.query(BooksModel)
+            if data['showOnlyVendibles'] is None or data['showOnlyVendibles']:
+                books = books.filter_by(vendible=True)
             for k, v in data.items():
-                if v is not None and k not in ['reviews', 'score']:
+                if v is not None and k not in ['reviews', 'score', 'showOnlyVendibles']:
                     books = books.filter(getattr(BooksModel, k).like(f"%{v}%"))
 
         return {'books': [book.json(reviews=data['reviews'], score=data['score']) for book in books]}, 200

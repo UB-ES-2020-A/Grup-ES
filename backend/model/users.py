@@ -99,7 +99,7 @@ class UsersModel(db.Model):
     def check_password(self, password):
         return pwd_context.verify(password, self.password)
 
-    def generate_auth_token(self, expiration=600):
+    def generate_auth_token(self, expiration=3600):
         s = Serializer(secret_key, expires_in=expiration)
         return s.dumps({'username': self.username})
 

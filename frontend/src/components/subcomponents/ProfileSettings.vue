@@ -186,6 +186,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     changePassword () {
@@ -204,6 +209,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     changeEmail () {
@@ -223,6 +233,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     checkUsernameChange () {
@@ -301,6 +316,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     checkDeactivateAccount () {

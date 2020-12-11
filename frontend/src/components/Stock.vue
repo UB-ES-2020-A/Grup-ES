@@ -67,14 +67,13 @@ export default {
   data () {
     return {
       showadd: false,
-      booksquery: [],
+      booksquery: null,
       search: '',
       show: true,
       bookIsbn: 0,
-      user: {},
-      // Roles
+      userRole: 'User',
       adminRole: 'Admin',
-      userRole: 'User'
+      user: {}
     }
   },
   created () {
@@ -94,7 +93,8 @@ export default {
     },
     get_books () {
       const path = this.$API_URL + 'books'
-      axios.get(path)
+      const params = { showOnlyVendibles: false }
+      axios.get(path, { params: params })
         .then((res) => {
           this.booksquery = res.data
         })
@@ -133,6 +133,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     redirect () {

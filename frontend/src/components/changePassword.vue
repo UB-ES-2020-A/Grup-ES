@@ -56,7 +56,6 @@ export default {
       axios.post(path, parameters)
         .then((res) => {
           this.send = true
-          console.log('email sended')
         })
         .catch((error) => {
           console.error(error)
