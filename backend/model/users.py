@@ -5,7 +5,6 @@ from passlib.apps import custom_app_context as pwd_context
 import datetime as dt
 from enum import Enum
 
-
 from db import db, secret_key
 
 auth = HTTPBasicAuth()
@@ -30,6 +29,7 @@ class UsersModel(db.Model):
     library = db.relationship('LibraryModel', backref='library', lazy=True)
     reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
     transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
+    confirmed_email = db.relationship('VerifyModel', uselist=False, backref='user', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username

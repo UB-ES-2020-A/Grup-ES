@@ -9,6 +9,7 @@ from resources.users import Login, Users, UsersList
 from resources.library import Library, LibraryVisibility, LibraryEntry
 from resources.transactions import Transactions, TransactionsUser, TransactionsList
 from resources.reviews import Reviews
+from resources.verify_email import VerifyEmail
 
 from db import db, init_db
 from utils.mail import mail
@@ -33,6 +34,8 @@ def init_api(api):
     api.add_resource(TransactionsList, '/api/allTransactions')
 
     api.add_resource(PasswordRecovery, '/api/recovery/<string:key>', '/api/recovery')
+
+    api.add_resource(VerifyEmail, '/api/verify/<string:key>')
 
     api.add_resource(Reviews, '/api/review', '/api/review/<int:user_id>/<int:isbn>')
 
