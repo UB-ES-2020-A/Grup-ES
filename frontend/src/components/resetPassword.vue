@@ -38,12 +38,10 @@ export default {
     show: true,
 
     key: '',
-    user: {},
     password: ''
   }),
   created () {
     this.key = this.$route.query.key
-    this.load_user()
   },
   methods: {
     resetPassword () {
@@ -53,7 +51,6 @@ export default {
       }
       axios.put(path, parameters)
         .then((res) => {
-          console.log('PASSWORD UPDATED')
           alert('Password updated correctly')
           this.goLogin()
         })

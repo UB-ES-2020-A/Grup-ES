@@ -24,4 +24,13 @@ export default {
   position:sticky;
   width:100%;
 }
+
+a, a label {
+    cursor: pointer;
+}
+
+.carousel-item img {
+    height: 500px;
+    width: 100%;
+}
 </style>

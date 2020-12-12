@@ -8,25 +8,80 @@
 <b-container v-if= "show === true">
   <b-carousel
   id="carousel"
+  fade
   style="text-shadow: 0px 0px 2px #0000"
-  :interval="2000"
-  img-width="550"
-  img-height="300"
+  :interval="5000"
   >
-  <b-carousel-slide v-for="i in 2" :key = "i"
-      :img-src="loadSlides(i)" style="height:550; width:300;"
-  ></b-carousel-slide>
+  <b-carousel-slide v-for="i in 3" :key = "i"
+      :img-src="loadSlides(i)"
+  >
+    <h1 style="color: black;"> Troba les millors novetats a BookShelter </h1>
+  </b-carousel-slide>
   <b-carousel>
 </b-container>
 <br>
 <div class="container" v-if= "show === true">
    <h3> Best sellers </h3>
+   <br>
+   <h5> Els llibres que arrasen <h5>
    <b-row>
      <b-col  v-for="(book) in best_sellers" :key="book.isbn">
        <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-       <h5>{{ book.autor }}</h5>
+       <b-card
+          img-alt="Image"
+          img-top
+          tag="article"
+          style="max-width: 15rem;"
+          class="mb-2"
+        >
+      <a> <b-card-img :src="getURL(book)"  @click = "gotobook(book.isbn)">
+        </b-card-img> </a>
+      <br>
+      <a> <b-card-title @click = "gotobook(book.isbn)"> {{ book.titulo }} </b-card-title> </a>
+      <b-card-text>
+        <h5>{{ book.autor }}</h5>
+      </b-card-text>
+      <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
+      <b-card-text>
+        <h6>Preu: {{ book.precio }}</h6>
+      </b-card-text>
+        <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
+      </b-card>
+      </b-col>
+   </b-row>
+</div>
+   <br>
+   <br>
+  <div class="container" v-if= "show === true">
+      <h3> New releases </h3>
+      <br>
+      <h5> Nous llibres que no et deixaran indiferent <h5>
+      <b-row>
+      <b-col  v-for="(book) in new_releases" :key="book.isbn">
+        <br>
+        <b-card
+           img-alt="Image"
+           img-top
+           tag="article"
+           style="max-width: 15rem;"
+           class="mb-2"
+         >
+       <a> <b-card-img :src="getURL(book)"  @click = "gotobook(book.isbn)">
+         </b-card-img> </a>
+       <br>
+       <a> <b-card-title @click = "gotobook(book.isbn)"> {{ book.titulo }} </b-card-title> </a>
+       <b-card-text>
+         <h5>{{ book.autor }}</h5>
+       </b-card-text>
        <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
        <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
        <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
@@ -37,33 +92,11 @@
        <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
        <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
        <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
-       <h6>{{ book.precio }}</h6>
-       <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
-       </b-col>
-   </b-row>
-</div>
-   <br>
-   <br>
-  <div class="container" v-if= "show === true">
-      <h3> New releases </h3>
-      <b-row>
-      <b-col  v-for="(book) in new_releases" :key="book.isbn">
-        <br>
-        <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-        <h6 @click = "gotobook(book.isbn)">  {{ book.titulo }}</h6>
-        <h5>{{ book.autor }}</h5>
-        <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
-        <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
-        <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
-        <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
-        <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
-        <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
-        <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
-        <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
-        <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
-        <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
-        <h6>{{ book.precio }}</h6>
-        <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
+       <b-card-text>
+         <h6>Preu: {{ book.precio }}</h6>
+       </b-card-text>
+         <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
+       </b-card>
       </b-col>
       </b-row>
   </div>
@@ -96,6 +129,7 @@ export default {
     }
   },
   created () {
+    this.fetch_cache()
     this.load_new_releases()
     this.load_best_sellers()
   },
@@ -117,7 +151,6 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.best_sellers = res.data.books
-          this.best_sellers = this.check_vendible(this.best_sellers)
         })
         .catch((error) => {
           console.error(error)
@@ -129,21 +162,10 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.new_releases = res.data.books
-          this.new_releases = this.check_vendible(this.new_releases)
         })
         .catch((error) => {
           console.error(error)
         })
-    },
-    check_vendible (array) {
-      var i
-      var arr = []
-      for (i = 0; i < array.length; i++) {
-        if (array[i].vendible) {
-          arr.push(array[i])
-        }
-      }
-      return arr
     },
     add_cart (book) {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))

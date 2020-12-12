@@ -76,11 +76,15 @@ export default {
       })
         .then((res) => {
           this.library = res.data.library
-          console.log(this.library)
           this.manage_wishlist()
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     getURL (book) {
@@ -90,7 +94,6 @@ export default {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))
       if (tmpuser !== null) {
         this.user = tmpuser
-        console.log(this.user.username)
         this.session_status = 'Log Out'
         this.session_boolean = true
       }
@@ -100,7 +103,6 @@ export default {
       for (i = 0; i < this.library.length; i++) {
         this.wishlist.push(this.library[i].book)
       }
-      console.log(this.wishlist)
     },
     redirect () {
       if (this.user.role === this.adminRole) {

@@ -182,11 +182,15 @@ export default {
       })
         .then((res) => {
           this.library = res.data.library
-          console.log(this.library)
           this.manage_library()
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     getURL (book) {
@@ -196,7 +200,6 @@ export default {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))
       if (tmpuser !== null) {
         this.user = tmpuser
-        console.log(this.user.username)
         this.session_status = 'Log Out'
         this.session_boolean = true
       }
@@ -224,6 +227,11 @@ export default {
         }))
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     markPending (book) {
@@ -249,6 +257,11 @@ export default {
         }))
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     markReading (book) {
@@ -274,6 +287,11 @@ export default {
         }))
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     goPedidos () {
@@ -300,7 +318,6 @@ export default {
           this.archive.push(this.library[i].book)
         }
       }
-      console.log(this.bought)
     },
     choose_bought () {
       this.list = this.bought
@@ -319,7 +336,6 @@ export default {
       this.list = this.reading
     },
     getItem (event) {
-      console.log(this.selected)
       switch (this.selected) {
         case 'A':
           this.choose_bought()
@@ -336,7 +352,6 @@ export default {
       }
     },
     getFilter (event) {
-      console.log(this.sFilter)
       switch (this.sFilter) {
         case 'A':
           this.list.sort(function (a, b) {
@@ -412,6 +427,11 @@ export default {
         }))
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     moveBooks (book) {
@@ -432,6 +452,11 @@ export default {
         }))
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     update_changes () {

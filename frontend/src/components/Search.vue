@@ -5,26 +5,46 @@
 <div class="container" v-if= "show === true">
   <br>
   <br>
-   <h3> Resultados de la búsqueda </h3>
+   <h3> Resultats de la cerca </h3>
    <b-row>
      <b-col  v-for="(book) in books" :key="book.isbn">
        <br>
-       <img :src="getURL(book)" style="height:209px; width:140px;" alt=""  @click = "gotobook(book.isbn)">
-       <h6  @click = "gotobook(book.isbn)">{{ book.titulo }}</h6>
-       <h5>{{ book.autor }}</h5>
-       <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
-       <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
-       <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
-       <h6>{{ book.precio }}</h6>
-       <b-button variant="danger" @click="add_cart(book)">Add to cart</b-button>
+       <b-card
+          img-alt="Image"
+          img-top
+          tag="article"
+          style="max-width: 15rem;"
+          class="mb-2"
+        >
+      <a> <b-card-img :src="getURL(book)"  @click = "gotobook(book.isbn)">
+        </b-card-img> </a>
+      <br>
+      <a> <b-card-title @click = "gotobook(book.isbn)"> {{ book.titulo }} </b-card-title> </a>
+      <b-card-text>
+        <h5>{{ book.autor }}</h5>
+      </b-card-text>
+      <b-icon icon="star-fill" v-if="book.score >= 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 1" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 2" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 3" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 4" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score<4" font-scale="1.5"></b-icon>
+      <b-icon icon="star-fill" v-if="book.score >= 5" font-scale="1.5"></b-icon>
+      <b-icon icon="star" v-if="book.score < 5" font-scale="1.5"></b-icon>
+      <b-card-text>
+        <h6>Preu: {{ book.precio }}</h6>
+      </b-card-text>
+        <b-button v-if="user.role == userRole" variant="danger" @click="add_cart(book)">Add to cart</b-button>
+      </b-card>
        </b-col>
+   </b-row>
+   <b-row v-if="books.length === 0">
+    <h3 class = "text-muted">
+      No hi han hagut resultats coincidents amb la cerca
+      <b-icon icon="search" font-scale="2.5"></b-icon>
+    </h3>
    </b-row>
 </div>
 
@@ -49,16 +69,26 @@ export default {
   data () {
     return {
       show: true,
-
-      books: []
+      user: {},
+      books: [],
+      userRole: 'User'
     }
   },
   created () {
+    this.fetch_cache()
     this.load_search(this.$route.query)
   },
   methods: {
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
+    },
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
     },
     load_search (query) {
       const path = this.$API_URL + 'search'
@@ -68,21 +98,10 @@ export default {
       axios.get(path, { params: params })
         .then((res) => {
           this.books = res.data.books
-          this.books = this.check_vendible(this.books)
         })
         .catch((error) => {
           console.error(error)
         })
-    },
-    check_vendible (array) {
-      var i
-      var arr = []
-      for (i = 0; i < array.length; i++) {
-        if (array[i].vendible) {
-          arr.push(array[i])
-        }
-      }
-      return arr
     },
     add_cart (book) {
       var tmpitems = JSON.parse(localStorage.getItem('cartItems'))
