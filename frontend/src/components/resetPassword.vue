@@ -61,17 +61,6 @@ export default {
           console.error(error)
         })
     },
-    load_user () {
-      const path = this.$API_URL + 'recovery/' + this.key
-      axios.get(path)
-        .then((res) => {
-          this.user = res.data.user
-          console.log(this.user)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    },
     goLogin () {
       this.$router.push({path: '/userlogin'})
     }

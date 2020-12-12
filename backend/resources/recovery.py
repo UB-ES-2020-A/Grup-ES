@@ -22,7 +22,7 @@ class PasswordRecovery(Resource):
             recovery = PasswordRecoveryModel.find_by_key(key)
             if recovery is None:
                 return {"message": f"Password Recovery with ['key':{key}] is invalid"}, 404
-            return {"user": UsersModel.find_by_id(recovery.user_id).json()}, 200
+            return {"recovery": recovery.json()}, 200
 
     def post(self):
         email = parse_data()['email']
@@ -33,23 +33,21 @@ class PasswordRecovery(Resource):
                 return {"message": f"Password Recovery with ['email':{email}] is not found"}, 404
 
             recovery = PasswordRecoveryModel.find_by_id(user.id)
-            if recovery is not None:
-                try:
-                    recovery.delete_from_db()
-                except Exception as e:
-                    return {"message": str(e)}, 500
 
             try:
+                if recovery is not None:
+                    recovery.delete_from_db()
                 recovery = PasswordRecoveryModel(user.id)
                 recovery.save_to_db()
             except Exception as e:
                 return {"message": str(e)}, 500
 
         recovery.send_email(email, request.url_root)
-        return {"recovery": recovery.json()}, 201
+        return {"user": user.json()}, 201
 
     def put(self, key):
         data = parse_data(True)
+        del data["email"]
         check_constraints_user(data)
 
         with lock:
@@ -58,14 +56,15 @@ class PasswordRecovery(Resource):
                 return {"message": f"Password Recovery with ['key':{key}] is invalid."}, 403
 
             if recovery.has_time_expired():
-                return {"message": f"Password Recovery time has expired."}, 403
+                return {"message": "Password Recovery time has expired."}, 403
 
             user = UsersModel.find_by_id(recovery.user_id)
-            if user is None:
-                return {"message": f"User doesn't exist."}
+            if user is None or not user.state:
+                return {"message": "User doesn't exist or has deleted the account."}, 404
 
             try:
                 user.update_password_from_db(data['new_password'])
+                recovery.delete_from_db()
             except Exception as e:
                 return {"message": str(e)}, 500
 

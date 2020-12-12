@@ -35,7 +35,7 @@ class UnitTestOfUS(BaseTest):
             res = self.client.post(f"/api/recovery", data={"email": user.email})
             self.assertEqual(201, res.status_code)
             self.assertEqual(1, len(outbox))
-            self.assertEqual(PasswordRecoveryModel.find_by_id(user.id).json(), json.loads(res.data)["recovery"])
+            self.assertEqual(user.json(), json.loads(res.data)["user"])
 
     def test_post_inavlid_recovery(self):
         with self.app.app_context(), mail.record_messages() as outbox:
@@ -129,7 +129,7 @@ class UnitTestOfUS(BaseTest):
 
             res = self.client.get(f"/api/recovery/{recovery.key}")
             self.assertEqual(200, res.status_code)
-            self.assertEqual(UsersModel.find_by_id(user.id).json(), json.loads(res.data)["user"])
+            self.assertEqual(recovery.json(), json.loads(res.data)["recovery"])
 
     def test_get_invalid_validation(self):
         with self.app.app_context():

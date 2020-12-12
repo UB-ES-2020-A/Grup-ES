@@ -15,7 +15,7 @@ def convert_option_to_enum(data):
     """
     if data['library_type'] is not None:
         if data['library_type'] not in LibraryType.__members__:
-            abort(409, message={"message": f"Invalid type ['library_type': {data['library_type']} should be one of: "
+            abort(409, message={"message": f"Invalid type ['library_type': {data['library_type']}] should be one of: "
                                            f"{LibraryType.__members__}"})
         data['library_type'] = LibraryType[data['library_type']]
     else:
@@ -23,7 +23,7 @@ def convert_option_to_enum(data):
     if 'state' in data:
         if data['state'] is not None:
             if data['state'] not in State.__members__:
-                abort(409, message={"message": f"Invalid type ['state': {data['state']} should be one of: "
+                abort(409, message={"message": f"Invalid type ['state': {data['state']}] should be one of: "
                                                f"{State.__members__}"})
             data['state'] = State[data['state']]
         else:
@@ -111,16 +111,16 @@ class LibraryEntry(Resource):
     @auth.login_required(role=Roles.User)
     def put(self, email, isbn):
         data = parse_entry(False)
+        del data['isbn']
         with lock:
             library = check_keys(email, isbn)
 
-            del data['isbn']
             try:
                 library.update_from_db(data)
             except Exception as e:
                 return {"message": str(e)}, 500
 
-        return {"message": f"Entry with ['email': {email}, 'isbn': {isbn}] has been made visible"}, 200
+        return {"library": library.json()}, 200
 
 
 class LibraryVisibility(Resource):
