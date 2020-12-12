@@ -6,7 +6,6 @@ import datetime as dt
 from enum import Enum
 
 from db import db, secret_key
-from model.verify_email import VerifyModel
 
 auth = HTTPBasicAuth()
 

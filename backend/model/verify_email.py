@@ -81,11 +81,3 @@ class VerifyModel(db.Model):
             new_key = ''.join(
                 random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(cls.SIZE))
         return new_key
-
-        new_key = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(cls.SIZE))
-        dup = cls.find_by_key(new_key)
-        while dup:
-            new_key = ''.join(random.choice(string.ascii_letters + string.digits) for i in range(cls.SIZE))
-        return new_key
-
-        # return 'asdfghjkl'
