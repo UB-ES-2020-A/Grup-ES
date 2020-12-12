@@ -1,9 +1,5 @@
 # Grup-ES
 
-
-# Tests
-From terminal inside backend folder run "python -m unittest discover -v" for running the tests.
-But first build test_data.db running the following 3 commands inside tests folders.
-"flask db init"
-"flask db migrate"
-"flask db upgrade"
+[![Coverage Status](https://coveralls.io/repos/github/UB-ES-2020-A/Grup-ES/badge.svg?branch=coverage)](https://coveralls.io/github/UB-ES-2020-A/Grup-ES?branch=coverage)
+[![Build Status](https://travis-ci.com/UB-ES-2020-A/Grup-ES.svg?branch=main)](https://travis-ci.com/UB-ES-2020-A/Grup-ES)
+![GitHub release](https://img.shields.io/github/v/release/UB-ES-2020-A/Grup-ES)
