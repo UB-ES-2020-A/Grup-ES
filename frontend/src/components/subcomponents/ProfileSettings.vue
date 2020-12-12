@@ -179,7 +179,7 @@ export default {
       }
       axios.put(path, parameters, auth)
         .then((res) => {
-          alert('Username Modified correctly')
+          this.$refs.c.showToast(['Info', 'Nombre de usuario actualizado'])
           this.changeLocalStorage(res.data.user.username, null, res.data.token)
           this.$bvModal.hide('settings')
           location.reload()
@@ -203,7 +203,7 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          alert('Password Modified correctly')
+          this.$refs.c.showToast(['Info', 'Contraseña actualizada'])
           this.$bvModal.hide('settings')
           location.reload()
         })
@@ -226,7 +226,7 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          alert('Email Modified correctly')
+          this.$refs.c.showToast(['Info', 'Correo electrónico actualizado'])
           this.changeLocalStorage(null, res.data.user.email, res.data.token)
           this.$bvModal.hide('settings')
           location.reload()
@@ -309,10 +309,10 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          alert('Email Modified correctly')
+          this.$refs.c.showToast(['Info', 'Su cuenta ha sido desactivada'])
           this.$bvModal.hide('settings')
           localStorage.removeItem('user_sesion')
-          this.$router.push({ path: '/' })
+          setTimeout(() => this.$router.push({path: '/'}), 3000)
         })
         .catch((error) => {
           console.error(error)

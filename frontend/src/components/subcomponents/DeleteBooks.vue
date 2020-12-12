@@ -46,7 +46,7 @@ export default {
       }
       axios.delete(path, auth)
         .then((res) => {
-          alert('Book Removed correctly')
+          this.$refs.c.showToast(['Info', 'El libro ha sido borrado de la página'])
           location.reload()
         })
         .catch((error) => {
