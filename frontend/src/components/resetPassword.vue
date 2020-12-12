@@ -93,7 +93,6 @@ export default {
   }),
   created () {
     this.key = this.$route.query.key
-    this.load_user()
   },
   methods: {
     resetPassword () {
