@@ -1,6 +1,6 @@
 <template>
 <div id="app" v-if="user.role === adminRole">
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <br>
 <div class="body" v-if="show === true">
 <b-container>
@@ -128,7 +128,7 @@ export default {
       }
       axios.put(path, parameters, auth)
         .then((res) => {
-          alert('Book Reactivated correctly')
+          this.$refs.c.showToast(['Info', 'El libro ha sido reactivado'])
           location.reload()
         })
         .catch((error) => {

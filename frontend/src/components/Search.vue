@@ -1,6 +1,6 @@
 <template>
 <div id="app">
- <navbar @changeShowState="show = !show"/>
+ <navbar ref="c" @changeShowState="show = !show"/>
 <div class="body">
 <div class="container" v-if= "show === true">
   <br>

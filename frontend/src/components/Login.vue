@@ -1,11 +1,11 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
-      <div class="col-md-4">
+      <b-col sm="3" md="6" lg="6" xl="4">
       <div class="form-control  bg-light" style="margin-top: 150px">
       <div class="form-label-group">
               <b-button variant="link" style="margin-left: 100px" @click="goRegister()">¿Quieres crear una cuenta?</b-button>
@@ -21,11 +21,9 @@
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
               <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
-              <hr>
-              <b-button block variant="primary" v-google-signin-button="clientId" class="google-signin-button"> Continue with Google</b-button>
       </div>
       </div>
-      </div>
+      </b-col>
       </div>
     </b-container>
   </div>
@@ -43,7 +41,6 @@ export default {
   data: () => ({
     show: true,
     id: '',
-    clientId: '374016962135-l70k72dvqf1ugd3pirf58ti292v8gk1a.apps.googleusercontent.com',
     username: '',
     email: '',
     password: '',
@@ -52,13 +49,6 @@ export default {
     userObject: {username: '', email: '', role: '', token: ''}
   }),
   methods: {
-    OnGoogleAuthSuccess (idToken) {
-      console.log(idToken)
-      // Receive the idToken and make your magic with the backend
-    },
-    OnGoogleAuthFail (error) {
-      console.log(error)
-    },
     checkLogin () {
       const parameters = {
         email: this.email,
@@ -77,13 +67,14 @@ export default {
           this.email = dataget.data.user.email
           this.role = dataget.data.user.role
           this.createUserObject(this.id, this.username, this.email, this.role, this.token)
-          window.location.replace('/')
+          this.$refs.c.showToast(['Info', 'Log in realizado con exito'])
+          setTimeout(() => window.location.replace('/'), 3000)
           this.initForm()
         }))
         .catch((error) => {
           console.error(error)
           this.initForm()
-          alert('La dirección o la contraseña son incorrectas')
+          this.$refs.c.showToast(['Error', 'Correo o contraseña incorrectas'])
         })
     },
     createUserObject (id, username, email, role, token) {

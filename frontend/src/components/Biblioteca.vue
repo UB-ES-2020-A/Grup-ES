@@ -1,13 +1,13 @@
 <template>
 <div id="app" v-if="user.role === userRole">
-<navbar @changeShowState="show = !show"/>
+<navbar ref="c" @changeShowState="show = !show"/>
 <!--body-->
 <div class="body">
 <div v-if= "show === true">
   <b-container fluid="sm" style="margin-left:100px; margin-right:50px">
   <b-container fluid style="height: 100px; background: #808080;" >
   <b-row align-h="end">
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
       <b-input-group class="mb-2" style="margin-top:25px">
       <b-input-group-prepend is-text>
         <b-icon icon="search"></b-icon>
@@ -19,7 +19,7 @@
   </b-container>
   <!--select biblio-->
   <b-row>
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
      <b-nav tabs style="margin-top: 40px">
        <b-nav-item @click="choose_bought()" v-on:click="archived = false">Mis Libros</b-nav-item>
        <b-nav-item @click="choose_archive()">Archivo</b-nav-item>
@@ -27,7 +27,7 @@
     </b-col>
   </b-row>
   <b-row align-h="between" style="margin-top: 20px">
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
     <b-form-select
       v-model="selected"
       :options="options"
@@ -39,7 +39,7 @@
       v-if="archived === false"
     ></b-form-select>
     </b-col>
-    <b-col cols="3">
+    <b-col sm="3" md="5" lg="5" xl="4">
     <b-form-select
       v-model="sFilter"
       :options="filters"
@@ -59,56 +59,72 @@
     <b-row>
       <div class="form-control bg-light" v-if="archived===false">
        <b-row>
-       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
-       <b-col align-self="center">
-       <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
-       <b-row>
-       <b-col align-self="center" style="margin-top: 10px" cols="10">
-       <h5 @click = "gotobook(book)">  {{ book.titulo }} </h5>
+       <b-col sm="3" md="5" lg="5" xl="4" style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
+       <b-card-group>
+       <b-card
+         :img-src="getURL(book)"
+         img-alt="Image"
+         img-top
+         tag="article"
+         style="max-width: 20rem;"
+         class="mb-2"
+       >
+          <div class="card-title">
+          <b-row>
+            <b-col cols="9">
+              <h5>{{book.titulo}}<h5>
+            </b-col>
+            <b-col cols="2">
+              <b-dropdown variant="link" no-caret>
+               <template #button-content>
+                <b-icon icon="three-dots"></b-icon>
+               </template>
+               <b-dropdown-item @click="markFinished(book)">Marcar como Leido</b-dropdown-item>
+               <b-dropdown-item @click="markPending(book)">Marcar como Pendientes</b-dropdown-item>
+               <b-dropdown-item @click="markReading(book)">Leyendo Actualmente</b-dropdown-item>
+               <b-dropdown-item @click="moveArchive(book)">Archivar</b-dropdown-item>
+              <b-dropdown-item-button>
+            </b-col>
+          </b-row>
+         </div>
+         <h6 class="card-subtitle">{{book.autor}}</h6>
+       </b-card>
+       </b-card-group>
        </b-col>
-       <b-col align-self="center" style="margin-top: 10px" cols="2">
-       <b-dropdown variant="link" no-caret>
-        <template #button-content>
-          <b-icon icon="three-dots"></b-icon>
-        </template>
-        <b-dropdown-item @click="markFinished(book)">Marcar como Leido</b-dropdown-item>
-        <b-dropdown-item @click="markPending(book)">Marcar como Pendientes</b-dropdown-item>
-        <b-dropdown-item @click="markReading(book)">Leyendo Actualmente</b-dropdown-item>
-        <b-dropdown-item @click="moveArchive(book)">Archivar</b-dropdown-item>
-       <b-dropdown-item-button>
-       </b-col>
-       </b-row>
-       <b-col>
-       <h7>{{ book.autor }}</h7>
-       </b-col>
-       </b-col>
-       </div>
        </b-row>
        </div>
        <!--archive-->
        <div class="form-control bg-light" v-if="archived===true">
         <b-row>
-        <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
-        <b-col align-self="center">
-        <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
-        <b-row>
-        <b-col align-self="center" style="margin-top: 10px" cols="10">
-        <h5 @click = "gotobook(book)">  {{ book.titulo }} </h5>
+        <b-col sm="3" md="5" lg="5" xl="4" style="margin-left:30px; margin-top:50px" v-for="(book) in filteredList" v-bind:key="book.isbn">
+        <b-card-group>
+        <b-card
+          :img-src="getURL(book)"
+          img-alt="Image"
+          img-top
+          tag="article"
+          style="max-width: 20rem; max-height: 10;"
+          class="mb-2 h-100"
+        >
+          <div class="card-title">
+            <b-row>
+              <b-col cols="9">
+                <h5>{{book.titulo}}<h5>
+              </b-col>
+              <b-col cols="2">
+                <b-dropdown variant="link" no-caret>
+                <template #button-content>
+                  <b-icon icon="three-dots"></b-icon>
+                </template>
+                <b-dropdown-item @click="moveBooks(book)">Sacar del Archivo</b-dropdown-item>
+                <b-dropdown-item-button>
+              </b-col>
+            </b-row>
+          </div>
+          <h6 class="card-subtitle">{{book.autor}}</h6>
+        </b-card>
+        </b-card-group>
         </b-col>
-        <b-col align-self="center" style="margin-top: 10px" cols="2">
-        <b-dropdown variant="link" no-caret>
-         <template #button-content>
-           <b-icon icon="three-dots"></b-icon>
-         </template>
-         <b-dropdown-item @click="moveBooks(book)">Sacar del Archivo</b-dropdown-item>
-        <b-dropdown-item-button>
-        </b-col>
-        </b-row>
-        <b-col>
-        <h7>{{ book.autor }}</h7>
-        </b-col>
-        </b-col>
-        </div>
         </b-row>
         </div>
     </b-row>
@@ -220,7 +236,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as finished')
+          this.$refs.c.showToast(['Info', 'Libro marcado como leido'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -250,7 +266,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as pending')
+          this.$refs.c.showToast(['Info', 'Libro marcado como pendiente'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -280,7 +296,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((dataput, dataget) => {
-          alert('Book marked as reading')
+          this.$refs.c.showToast(['Info', 'Leyendo el libro actualmente'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -420,7 +436,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((datadelete, dataget) => {
-          alert('Book moved to archive')
+          this.$refs.c.showToast(['Info', 'Libro archivado'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
@@ -445,7 +461,7 @@ export default {
         axios.get(path2, auth)
       ])
         .then(axios.spread((datapost, dataget) => {
-          alert('Book moved to books')
+          this.$refs.c.showToast(['Info', 'Libro desarchivado'])
           this.update_changes()
           this.library = dataget.data.library
           this.manage_library()
