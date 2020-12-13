@@ -63,12 +63,12 @@ The page will also be the place where users can comment on the books and rate th
 
 ### Built With
 
-TODO
+Bookshelter web is divided in two parts: Frontend and Backend.
 
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
+In the Backend part, the programming language used is [Python 3.8](https://www.python.org/). We have designed an API to manage all requests and data. So we used a popular light framework called [Flask](https://flask.palletsprojects.com/en/1.1.x/).
+
+In the Frontend part, we have used web-oriented programming languages like [HTML](https://www.w3.org/html/) and [Javascript](https://www.javascript.com/). To make it easier, we've used [Vue.js](https://vuejs.org/) to design the user interface.
+If we talk about Bookshelter's web design and appeareance, we have used [Bootstrap](https://getbootstrap.com) along with [BootstrapVue](https://bootstrap-vue.org/).
 
 
 
