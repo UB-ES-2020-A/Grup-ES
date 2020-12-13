@@ -18,6 +18,8 @@
     <a href="https://github.com/UB-ES-2020-A/Grup-ES/issues">Report Bug</a>
     .
     <a href="https://github.com/UB-ES-2020-A/Grup-ES/issues">Request Feature</a>
+    .
+    <a href="https://app.swaggerhub.com/apis-docs/grup-es/bookshelter/1.0.0">API documentation</a>
   </p>
 </p>
 
@@ -119,15 +121,10 @@ See the [open issues](https://github.com/UB-ES-2020-A/Grup-ES/issues) for a list
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
-* [Logo creator](https://logomaster.ai/es/)
+* [Python](https://www.python.org/)
+* [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+* [Postgres](https://www.postgresql.org/)
+* [Sqlite](https://www.sqlite.org/index.html)
+* [Pycharm](https://www.jetbrains.com/pycharm/)
+* [Vue.js](https://vuejs.org/)
+* [SQLAlchemy](https://www.sqlalchemy.org/)
