@@ -130,3 +130,4 @@ See the [open issues](https://github.com/UB-ES-2020-A/Grup-ES/issues) for a list
 * [Sticky Kit](http://leafo.net/sticky-kit)
 * [JVectorMap](http://jvectormap.com)
 * [Font Awesome](https://fontawesome.com)
+* [Logo creator](https://logomaster.ai/es/)
