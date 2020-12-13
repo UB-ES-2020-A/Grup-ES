@@ -49,7 +49,8 @@
   <br>
   <br>
   <!--Sección de reviews-->
-  <b-container class='bg-info rounded'>
+  <b-container v-if="!session_boolean && single_book.reviews.length === 0"></b-container>
+  <b-container v-if="session_boolean && can_post && single_book.reviews.length === 0 || single_book.reviews.length > 0 " class='bg-info rounded'>
       <br>
       <div v-if="can_post === true && user.role === userRole">
         <form ref="review-form" v-if="session_boolean === true">
@@ -129,6 +130,8 @@
         <br>
       </v-row>
   </b-container>
+  <br>
+  <br>
   </div>
   </div>
   <foot/>
