@@ -98,6 +98,7 @@ class TransactionsModel(db.Model):
             if book_library:  # if the book was already in library
                 if book_library.library_type == LibraryType.WishList:  # if it was in the wish list
                     book_library.library_type = LibraryType.Bought  # change it to bought
+                    book_library.state = State.Pending
             else:  # if it wasnt in the library, enter it
                 entry = LibraryModel(book.isbn, user.id, LibraryType.Bought, State.Pending)
                 db.session.add(entry)

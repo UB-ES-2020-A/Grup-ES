@@ -27,6 +27,7 @@
           <br>
           <h2> {{ this.single_book.titulo }} </h2>
           <p> <h4> de {{ this.single_book.autor }} </h4> <p>
+          <p> <h5> ISBN: {{ this.single_book.isbn }} </h5> <p>
           <hr/>
           <h5> Sinopsis </h5>
           <p>
@@ -40,7 +41,6 @@
           <br>
           <br>
           <b-button style="width:100%" variant="danger" @click="add_cart(single_book)">Afegir a la cistella</b-button><br><br>
-          <b-button style="width:100%" variant="dark">Comprar ara</b-button><br><br>
           <b-button style="width:100%" variant="dark" @click="add_wishlist(single_book)"> Afegir a la llista de desitjos</b-button>
           </b-container>
         </b-col>
@@ -49,7 +49,8 @@
   <br>
   <br>
   <!--Sección de reviews-->
-  <b-container v-if="single_book.reviews.length > 0" class='bg-info rounded'>
+  <b-container v-if="!session_boolean && single_book.reviews.length === 0"></b-container>
+  <b-container v-if="session_boolean && can_post && single_book.reviews.length === 0 || single_book.reviews.length > 0 " class='bg-info rounded'>
       <br>
       <div v-if="can_post === true && user.role === userRole">
         <form ref="review-form" v-if="session_boolean === true">
@@ -73,7 +74,7 @@
         </form>
         <hr>
       </div>
-      <v-row v-for="(review) in this.single_book.reviews" :key="review.user_id">
+      <v-row v-if="single_book.reviews.length > 0" v-for="(review) in this.single_book.reviews" :key="review.user_id">
         <div class="card">
           <div class="card-body">
             <div v-if="!is_modifying(review)">
@@ -129,6 +130,8 @@
         <br>
       </v-row>
   </b-container>
+  <br>
+  <br>
   </div>
   </div>
   <foot/>

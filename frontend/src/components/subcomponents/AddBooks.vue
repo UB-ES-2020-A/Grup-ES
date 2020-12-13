@@ -158,6 +158,33 @@ export default {
     this.fetch_cache()
   },
   methods: {
+    showToast (message) {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement
+      // Increment the toast count
+      this.count++
+      // Create the message
+      const vNodesMsg = h(
+        'p',
+        { class: ['text-center', 'mb-0'] },
+        [message[1]]
+      )
+      // Create the title
+      const vNodesTitle = h(
+        'div',
+        { class: ['d-flex', 'flex-grow-1', 'align-items-baseline', 'mr-2'] },
+        [
+          h('strong', { class: 'mb-0' }, message[0])
+        ]
+      )
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        toaster: 'b-toaster-top-center',
+        solid: true,
+        variant: 'info'
+      })
+    },
     addBook () {
       const parameters = {
         isbn: this.isbn,
@@ -176,8 +203,13 @@ export default {
       const path = this.$API_URL + 'book'
       axios.post(path, parameters, auth)
         .then((res) => {
-          this.$refs.c.showToast(['Info', 'Libro añadido a nuestra página'])
+          this.showToast(['Info', 'Libro añadido a nuestra página'])
           this.clearModal()
+          setTimeout(() => {
+            this.$bvModal.hide('addboks')
+            location.reload()
+            this.clearModal()
+          }, 2000)
         })
         .catch((error) => {
           console.error(error)
@@ -186,7 +218,6 @@ export default {
             localStorage.removeItem('cartItems')
             window.location.replace('/userlogin')
           }
-          this.clearModal()
         })
     },
     fetch_cache () {
@@ -232,7 +263,7 @@ export default {
       } else {
         this.isbnState = false
       }
-      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && parseInt(this.precio) > 0) {
+      if (!isNaN(this.precio) && parseInt(this.precio) > 0) {
         this.precioState = true
       } else {
         this.precioState = false
