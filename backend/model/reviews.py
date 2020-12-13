@@ -24,6 +24,8 @@ class ReviewsModel(db.Model):
         """
         _ignore = self.isbn  # Forces execution to parse properly the class, fixing the bug of transient data
         atr = self.__dict__.copy()
+        user = UsersModel.find_by_id(self.user_id)
+        atr['username'] = user.username if user.state else None
         del atr["_sa_instance_state"]
         return atr
 
@@ -43,6 +45,21 @@ class ReviewsModel(db.Model):
     def delete_from_db(self):
         ScoresModel.remove_review(self)
         db.session.delete(self)
+        db.session.commit()
+
+    def update_from_db(self, data: dict):
+        if data.get('score', None) is not None and (data['score'] < 1 or data['score'] > 5):
+            raise ValueError("Invalid value for score attribute: Value must be an integer from 1 to 5, both included.")
+
+        # Attributes that can't be modified
+        data.pop('isbn', None)
+        data.pop('user_id', None)
+        
+        previous_score = self.score
+        for attr, newValue in data.items():
+            if newValue is not None:
+                setattr(self, attr, newValue)
+        ScoresModel.modify_review(self, previous_score)
         db.session.commit()
 
     @classmethod
@@ -108,3 +125,12 @@ class ScoresModel(db.Model):
             score.score = (score.n_reviews * score.score - review.score) / (score.n_reviews - 1)
             score.n_reviews -= 1
             score.save_to_db()
+
+    @classmethod
+    def modify_review(cls, review: ReviewsModel, previous_score: int):
+        score = cls.find_by_isbn(review.isbn)
+        if score is None:
+            raise Exception("No review to update.")
+        else:
+            score.score = (score.n_reviews * score.score + review.score - previous_score) / score.n_reviews
+            db.session.commit()

@@ -1,6 +1,6 @@
 <template>
-<div id="app">
- <navbar @changeShowState="show_c = !show_c"/>
+<div id="app" v-if="user.role === userRole">
+ <navbar ref="c" @changeShowState="show_c = !show_c"/>
 <!-- body -->
 <div class="body">
 <b-container v-if= "show_c === true">
@@ -177,7 +177,11 @@ export default {
       card_cvc: 100,
       user: {},
       error: '',
-      show: false
+      show: false,
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {
@@ -189,6 +193,11 @@ export default {
       if (tmpuser !== null) {
         this.user = tmpuser
         this.session_boolean = true
+      }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
       }
     },
     checkForm: function (e) {
@@ -243,9 +252,10 @@ export default {
         axios.post(path, parameters, {auth: {username: this.user.token}})
           .then((res) => {
             console.log('PAID SUCCESSFULLY')
-            alert('Transaction correctly realized!')
+            this.$refs.c.showToast(['Info', 'Transacción realizada correctamente'])
             cartItems = []
             localStorage.setItem('cartItems', JSON.stringify(cartItems))
+            setTimeout(() => this.$router.push({path: '/'}), 3000)
           })
           .catch((error) => {
             console.error(error)

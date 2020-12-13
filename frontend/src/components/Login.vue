@@ -1,11 +1,11 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
-      <div class="col-md-4">
+      <b-col sm="3" md="6" lg="6" xl="4">
       <div class="form-control  bg-light" style="margin-top: 150px">
       <div class="form-label-group">
               <b-button variant="link" style="margin-left: 100px" @click="goRegister()">¿Quieres crear una cuenta?</b-button>
@@ -21,11 +21,9 @@
               </b-form-text>
               <b-button block variant="danger" style="margin-top: 20px" @click="checkLogin()">Log In</b-button>
               <b-button block variant="link" style="margin-top: 10px" @click="changePassword()">¿Olvidaste contraseña?</b-button>
-              <hr>
-              <b-button block variant="primary" v-google-signin-button="clientId" class="google-signin-button"> Continue with Google</b-button>
       </div>
       </div>
-      </div>
+      </b-col>
       </div>
     </b-container>
   </div>
@@ -42,8 +40,7 @@ export default {
   },
   data: () => ({
     show: true,
-
-    clientId: '374016962135-l70k72dvqf1ugd3pirf58ti292v8gk1a.apps.googleusercontent.com',
+    id: '',
     username: '',
     email: '',
     password: '',
@@ -52,13 +49,6 @@ export default {
     userObject: {username: '', email: '', role: '', token: ''}
   }),
   methods: {
-    OnGoogleAuthSuccess (idToken) {
-      console.log(idToken)
-      // Receive the idToken and make your magic with the backend
-    },
-    OnGoogleAuthFail (error) {
-      console.log(error)
-    },
     checkLogin () {
       const parameters = {
         email: this.email,
@@ -72,26 +62,29 @@ export default {
       ])
         .then(axios.spread((datapost, dataget) => {
           this.token = datapost.data.token
+          this.id = dataget.data.user.id
           this.username = dataget.data.user.username
           this.email = dataget.data.user.email
           this.role = dataget.data.user.role
-          this.createUserObject(this.username, this.email, this.role, this.token)
-          this.$router.push({path: '/'})
+          this.createUserObject(this.id, this.username, this.email, this.role, this.token)
+          this.$refs.c.showToast(['Info', 'Log in realizado con exito'])
+          setTimeout(() => window.location.replace('/'), 3000)
           this.initForm()
         }))
         .catch((error) => {
           console.error(error)
           this.initForm()
-          alert('La dirección o la contraseña son incorrectas')
+          this.$refs.c.showToast(['Error', 'Correo o contraseña incorrectas'])
         })
     },
-    createUserObject (username, email, role, token) {
+    createUserObject (id, username, email, role, token) {
+      this.userObject.id = id
       this.userObject.username = username
       this.userObject.email = email
       this.userObject.role = role
       this.userObject.token = token
       localStorage.setItem('user_session', JSON.stringify(this.userObject))
-      console.log(this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
+      console.log(this.userObject.id, this.userObject.username, this.userObject.email, this.userObject.role, this.userObject.token)
     },
     goRegister () {
       this.$router.push({path: '/userregister'})

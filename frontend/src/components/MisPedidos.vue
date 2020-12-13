@@ -1,6 +1,6 @@
 <template>
-<div id="app">
- <navbar @changeShowState="show = !show"/>
+<div id="app" v-if="user.role === userRole">
+ <navbar ref="c" @changeShowState="show = !show"/>
 <!-- body -->
 <div class="body">
   <div v-if="show === true">
@@ -9,31 +9,52 @@
       <br>
       <div class="container">
         <h3> Mis Pedidos </h3>
-        <b-row  v-for="(fact) in pedidos" :key="fact[0].id_transaction">
+        <b-row class="rounded" v-for="(fact) in pedidos" :key="fact[0].id_transaction">
           <!-- ATR:
           .isbn,
           .price,
           .id_user,
           .quantity,
           .date-->
-          <br>
-          <div class="card">
-            <div class="card-header">Factura: {{ fact[0].id_transaction}}</div>
-            <div class="card-body">
-              <b-col v-for="(line) in fact" :key="line.book.isbn">
-                <hr>
-                <b-col>
-                <img :src="getURL(line.book)" style="height:109px; width:70px;" alt=""  @click = "gotobook(line.book.isbn)">
-                </b-col>
+          <b-col cols=12>
+            <b-row class="bg-info">
+              <b-col>
                 <br>
-                <h6 @click = "gotobook(line.book.isbn)">Título del libro: {{ line.book.titulo }}</h6>
-                <h6>Autor del libro: {{ line.book.autor }}</h6>
-                <h6>Precio: {{ line.price}}</h6>
-                <h6>Cantidad: {{ line.quantity}}</h6>
-                <h6>Fecha de compra: {{ line.date}}</h6>
+                <h4>Factura {{ fact[0].id_transaction}}</h4>
+                <h6 class="text-white">{{ fact[0].date}}<h6>
               </b-col>
-            </div>
-          </div>
+            </b-row>
+            <b-row style="background-color: rgb(212, 225, 248)">
+              <b-col v-for="(line) in fact" :key="line.book.isbn" cols="1">
+                <img :src="getURL(line.book)" style="height:150px; width:100px;" alt=""  @click = "gotobook(line.book.isbn)">
+              </b-col>
+            </b-row>
+            <b-row class="bg-light">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col" width=25%>ISBN</th>
+                      <th scope="col" width=45%>Título</th>
+                      <th scope="col" width=15%>Precio</th>
+                      <th scope="col" width=15%>Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(line) in fact" :key="line.book.isbn">
+                      <th scope="row">{{line.book.isbn}}</th>
+                      <td>{{line.book.titulo}}</td>
+                      <td>{{line.price}}€</td>
+                      <td>{{line.quantity}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </b-row>
+            <b-row>
+              <br>
+            </b-row>
+          </b-col>
         </b-row>
       </div>
     </div>
@@ -72,11 +93,16 @@ export default {
 
       // Session
       user: {},
-      session_boolean: false
+      session_boolean: false,
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {
     this.fetch_session()
+    this.redirect()
     this.load_pedidos()
   },
   methods: {
@@ -92,6 +118,11 @@ export default {
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     getURL (book) {
@@ -102,6 +133,11 @@ export default {
       if (tmpuser !== null) {
         this.user = tmpuser
         this.session_boolean = true
+      }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
       }
     }
   }

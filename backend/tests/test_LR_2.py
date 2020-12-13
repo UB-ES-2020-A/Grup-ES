@@ -51,11 +51,11 @@ class UnitTestOfUS(BaseTest):
     # TEST TASK 2
     def test_post_user(self):
         with self.app.app_context():
-            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "Test1234"})
             self.assertEqual(201, res.status_code)
             self.assertEqual(UsersModel.find_by_username("test2").json(), json.loads(res.data))
 
-            res = self.client.post("/user", data={"username": "test2", "email": "test2@email.com", "password": "test2"})
+            res = self.client.post("/api/user", data={"username": "test2", "email": "test2@email.com", "password": "Test1234"})
             self.assertEqual(409, res.status_code)
 
     # TEST TASK 3
@@ -65,7 +65,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test3")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": "test3@email.com", "password": "test3"})
+            res = self.client.post("/api/login", data={"email": "test3@email.com", "password": "test3"})
             self.assertEqual(200, res.status_code)
             self.assertEqual(user, UsersModel.verify_auth_token(json.loads(res.data)["token"]))
 
@@ -76,11 +76,11 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test")
             user.save_to_db()
 
-            res = self.client.get("/user/test@email.com")
+            res = self.client.get("/api/user/test@email.com")
             self.assertEqual(200, res.status_code)
             self.assertEqual(user.json(), json.loads(res.data)["user"])
 
-            res = self.client.get("/user/doesntexist")
+            res = self.client.get("/api/user/doesntexist")
             self.assertEqual(404, res.status_code)
 
     def test_delete_user(self):
@@ -89,11 +89,11 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test4")
             user.save_to_db()
 
-            res = self.client.post("/login", data={"email": "test4@email.com", "password": "test4"})
+            res = self.client.post("/api/login", data={"email": "test4@email.com", "password": "test4"})
             self.assertEqual(200, res.status_code)
 
             token = json.loads(res.data)["token"]
-            res = self.client.delete("/user/test4@email.com", headers={
+            res = self.client.delete("/api/user/test4@email.com", headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -104,7 +104,7 @@ class UnitTestOfUS(BaseTest):
             user.hash_password("test5")
             user.save_to_db()
 
-            res = self.client.get("/users")
+            res = self.client.get("/api/users")
             self.assertEqual(200, res.status_code)
             list_users = list(map(lambda u: u.json(), UsersModel.query.all()))
             self.assertEqual(list_users, json.loads(res.data)["users"])

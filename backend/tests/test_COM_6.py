@@ -4,6 +4,7 @@ import json
 import datetime as dt
 
 from model.books import BooksModel
+from model.library import LibraryModel, LibraryType, State
 from model.users import UsersModel
 from tests.base_test import BaseTest
 from model.transactions import TransactionsModel
@@ -24,7 +25,7 @@ class UnitTestOfUS(BaseTest):
         self.book = BooksModel(1, 1, 1, "book1")
         self.book.save_to_db()
 
-        res = self.client.post("/login", data={"email": self.user.email, "password": "test"})
+        res = self.client.post("/api/login", data={"email": self.user.email, "password": "test"})
         self.token = json.loads(res.data)["token"]
 
     # TEST TASK 1
@@ -115,7 +116,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -143,12 +144,46 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
             self.assertEqual(self.book.isbn, self.user.library[0].isbn)
             self.assertEqual(book2.isbn, self.user.library[1].isbn)
+            self.assertEqual(2, len(self.user.library))
+
+    def test_post_add_library_delete_from_wishlist(self):
+        with self.app.app_context():
+            self.basic_setup()
+            book2 = BooksModel(2, 10, 13.1, "book2")
+            book2.save_to_db()
+
+            # enter book to wishlist
+            entry = LibraryModel(self.book.isbn, 1, LibraryType.WishList, State.Pending)
+            entry.save_to_db()
+            self.assertEqual(entry, LibraryModel.find_by_id_and_isbn(1, 1))
+
+            isbns = [self.book.isbn, book2.isbn]
+            prices = [self.book.precio, book2.precio]
+            quantities = [1, 1]
+            dataTransaction = {
+                "isbns": isbns,
+                'prices': prices,
+                'quantities': quantities,
+                "email": self.user.email,
+            }
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
+                "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
+            })
+            self.assertEqual(201, res.status_code)
+
+            # check if book is in library
+            self.assertEqual(self.book.isbn, self.user.library[0].isbn)
+            self.assertEqual(book2.isbn, self.user.library[1].isbn)
+
+            # check if type of book2 has changed: was in wishlist, now bought
+            self.assertEqual(LibraryType.Bought, self.user.library[1].library_type)
+
             self.assertEqual(2, len(self.user.library))
 
     def test_post_no_stock(self):
@@ -166,7 +201,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -186,7 +221,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -208,7 +243,7 @@ class UnitTestOfUS(BaseTest):
                 'quantities': quantities,
                 "email": self.user.email,
             }
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -238,12 +273,12 @@ class UnitTestOfUS(BaseTest):
                 "email": self.user.email,
             }
 
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
 
-            res = self.client.get(f"/transactions/{self.user.email}", headers={
+            res = self.client.get(f"/api/transactions/{self.user.email}", headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(200, res.status_code)
@@ -269,7 +304,7 @@ class UnitTestOfUS(BaseTest):
             dataTransaction = {
             }
 
-            res = self.client.post("/transaction", data=dataTransaction)
+            res = self.client.post("/api/transaction", data=dataTransaction)
             self.assertEqual(401, res.status_code)
 
     def test_get_transactions_other_user(self):
@@ -288,7 +323,7 @@ class UnitTestOfUS(BaseTest):
                 "email": self.user.email,
             }
 
-            res = self.client.post("/transaction", data=dataTransaction, headers={
+            res = self.client.post("/api/transaction", data=dataTransaction, headers={
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -296,7 +331,7 @@ class UnitTestOfUS(BaseTest):
             user2.hash_password('test2')
             UsersModel.save_to_db(user2)
 
-            res = self.client.get('/transactions/' + user2.email, headers={  # user tries to get user2 transactions
+            res = self.client.get('/api/transactions/' + user2.email, headers={  # user tries to get user2 transactions
                 "Authorization": 'Basic ' + base64.b64encode((self.token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(401, res.status_code)

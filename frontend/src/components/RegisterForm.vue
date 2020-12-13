@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <div>
-    <navbar @changeShowState="show = !show"/>
+    <navbar ref="c" @changeShowState="show = !show"/>
 
     <b-container v-if= "show === true">
       <div class="row d-flex justify-content-center">
@@ -12,6 +12,7 @@
               <b-form-group
               label="Username"
               label-for="inputUsername"
+              valid-feedback="El username es valido"
               :invalid-feedback="userInvalid"
               :state="userState"
               style="margin-top: 15px"
@@ -91,10 +92,9 @@ export default {
       return this.username.length >= 4
     },
     userInvalid () {
-      if (this.username.length > 0) {
-        return 'Introduce al menos 4 carácteres'
+      if (this.username.length < 4) {
+        return 'El usuario debe tener más de 4 carácteres'
       }
-      return 'El usuario debe tener más de 4 carácteres'
     },
     emailState () {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -113,7 +113,7 @@ export default {
     pwd1Invalid () {
       var pw = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/
       if (!pw.test(this.password1)) {
-        return 'la contraseña debe contener 6 carácteres, un número, una mayuscula, una minuscula.'
+        return 'La contraseña debe contener 6 carácteres, un número, una mayuscula, una minuscula.'
       }
     },
     pwd2State () {
@@ -153,13 +153,13 @@ export default {
         .then((res) => {
           this.initForm()
           console.log('ACCOUNT CREATED')
-          alert('Account created')
-          this.$router.push({path: '/userlogin'})
+          this.$refs.c.showToast(['Usuario nuevo', 'El usuario se ha creado con exito. Se le ha enviado un correo de confirmación'])
+          setTimeout(() => this.$router.push({path: '/userlogin'}), 5000)
         })
         .catch((error) => {
           console.error(error)
           this.initForm()
-          alert('Username already in use')
+          this.$refs.c.showToast(['Error', 'El usuario ya esta en uso'])
         })
     },
     initForm () {
@@ -172,7 +172,7 @@ export default {
       if (this.userState && this.emailState && this.pwd1State && this.pwd2State) {
         this.createUser()
       } else {
-        alert('Algún parametro es incorrecto o no ha sido introducido')
+        this.$refs.c.showToast(['Info', 'Algún parametro no ha sido introducido'])
       }
     }
   }

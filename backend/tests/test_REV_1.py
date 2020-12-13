@@ -1,4 +1,3 @@
-import base64
 import json
 import unittest
 
@@ -12,7 +11,7 @@ class UnitTestOfUS(BaseTest):
 
     @classmethod
     def dummy_book(cls):
-        return BooksModel(1, 1, 1, "title")
+        return BooksModel(9780553803716, 1, 1, "title")
 
     @classmethod
     def dummy_user(cls):
@@ -22,7 +21,7 @@ class UnitTestOfUS(BaseTest):
 
     @classmethod
     def dummy_review(cls):
-        return ReviewsModel(1, 1, 5, "This book is so good!")
+        return ReviewsModel(9780553803716, 1, 5, "This book is so good!")
 
     # TEST TASK 3
     def test_get_book_reviews(self):
@@ -36,7 +35,7 @@ class UnitTestOfUS(BaseTest):
             review = self.dummy_review()
             review.save_to_db()
 
-            res = self.client.get(f"/book/{book.isbn}", data={'reviews': True, 'score': True})
+            res = self.client.get(f"/api/book/{book.isbn}", data={'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["book"])
 
     def test_get_books_reviews(self):
@@ -50,7 +49,7 @@ class UnitTestOfUS(BaseTest):
             review = self.dummy_review()
             review.save_to_db()
 
-            res = self.client.get(f"/books", data={'reviews': True, 'score': True})
+            res = self.client.get(f"/api/books", data={'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["books"][0])
 
     def test_get_search_by_isbn_reviews(self):
@@ -64,7 +63,7 @@ class UnitTestOfUS(BaseTest):
             review = self.dummy_review()
             review.save_to_db()
 
-            res = self.client.get(f"/search", data={"isbn": 1, 'reviews': True, 'score': True})
+            res = self.client.get(f"/api/search", data={"isbn": 9780553803716, 'reviews': True, 'score': True})
             self.assertEqual(book.json(reviews=True, score=True), json.loads(res.data)["books"][0])
 
     def test_get_user_reviews(self):
@@ -78,7 +77,7 @@ class UnitTestOfUS(BaseTest):
             review = self.dummy_review()
             review.save_to_db()
 
-            res = self.client.get(f"/user/{user.email}", data={"isbn": 1, 'reviews': True, 'score': True})
+            res = self.client.get(f"/api/user/{user.email}", data={"isbn": 1, 'reviews': True, 'score': True})
             self.assertEqual(user.json(reviews=True), json.loads(res.data)["user"])
 
 

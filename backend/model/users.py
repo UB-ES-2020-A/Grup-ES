@@ -5,7 +5,6 @@ from passlib.apps import custom_app_context as pwd_context
 import datetime as dt
 from enum import Enum
 
-
 from db import db, secret_key
 
 auth = HTTPBasicAuth()
@@ -14,9 +13,6 @@ auth = HTTPBasicAuth()
 class Roles(Enum):
     User = 1
     Admin = 2
-
-    def __str__(self):
-        return self.name
 
 
 class UsersModel(db.Model):
@@ -33,6 +29,7 @@ class UsersModel(db.Model):
     library = db.relationship('LibraryModel', backref='library', lazy=True)
     reviews = db.relationship('ReviewsModel', backref='user', lazy=True)
     transactions = db.relationship('TransactionsModel', backref='transactions', lazy=True)
+    confirmed_email = db.relationship('VerifyModel', uselist=False, backref='user', lazy=True)
 
     def __init__(self, username, email, role=Roles.User):
         self.username = username
@@ -51,9 +48,10 @@ class UsersModel(db.Model):
             db.session.commit()
 
     def json(self, reviews=False):
-        user = {"username": self.username,
+        user = {"id": self.id,
+                "username": self.username,
                 "email": self.email,
-                "role": str(self.role)}
+                "role": self.role.name}
         if reviews:
             user['reviews'] = [review.json() for review in self.reviews]
         return user
@@ -67,9 +65,11 @@ class UsersModel(db.Model):
         db.session.commit()
 
     def update_from_db(self, data):
-        if 0 < self.query.filter_by(username=data['username'] and id != self.id, state=True).count():
+        if 0 < self.query.filter(UsersModel.username == data['username'], UsersModel.id != self.id,
+                                 UsersModel.state).count():
             raise Exception("Username already in use")
-        if 0 < self.query.filter_by(email=data['email'] and id != self.id, state=True).count():
+        if 0 < self.query.filter(UsersModel.username == data['username'], UsersModel.id != self.id,
+                                 UsersModel.state).count():
             raise Exception("Email already in use")
 
         for attr, newValue in data.items():
@@ -99,7 +99,7 @@ class UsersModel(db.Model):
     def check_password(self, password):
         return pwd_context.verify(password, self.password)
 
-    def generate_auth_token(self, expiration=600):
+    def generate_auth_token(self, expiration=3600):
         s = Serializer(secret_key, expires_in=expiration)
         return s.dumps({'username': self.username})
 
@@ -124,4 +124,4 @@ class UsersModel(db.Model):
 
     @auth.get_user_roles
     def get_user_roles(user):
-        return user.role.name
+        return user.role

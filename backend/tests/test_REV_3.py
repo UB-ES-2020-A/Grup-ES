@@ -22,7 +22,7 @@ class UnitTestOfUS(BaseTest):
 
     @classmethod
     def login_dummy_user(cls, client):
-        res = client.post("/login", data={"email": "email@gmail.com", "password": "p4ssw0rd!"})
+        res = client.post("/api/login", data={"email": "email@gmail.com", "password": "p4ssw0rd!"})
         return json.loads(res.data)["token"]
 
     # TEST TASK 2
@@ -162,7 +162,7 @@ class UnitTestOfUS(BaseTest):
                 'review': "This book is good!"
             }
 
-            res = self.client.post("/review", data=parameters, headers={
+            res = self.client.post("/api/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(201, res.status_code)
@@ -176,7 +176,7 @@ class UnitTestOfUS(BaseTest):
             book = self.dummy_book()
             book.save_to_db()
 
-            res = self.client.post("/review")
+            res = self.client.post("/api/review")
             self.assertEqual(401, res.status_code)
 
     def test_post_review_non_existing_book(self):
@@ -193,7 +193,7 @@ class UnitTestOfUS(BaseTest):
                 'review': "This is a extensive review of how this book is so good!"
             }
 
-            res = self.client.post("/review", data=parameters, headers={
+            res = self.client.post("/api/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(404, res.status_code)
@@ -215,10 +215,10 @@ class UnitTestOfUS(BaseTest):
                 'review': "This is a extensive review of how this book is so good!"
             }
 
-            res = self.client.post("/review", data=parameters, headers={
+            res = self.client.post("/api/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
-            res = self.client.post("/review", data=parameters, headers={
+            res = self.client.post("/api/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(403, res.status_code)
@@ -240,7 +240,7 @@ class UnitTestOfUS(BaseTest):
                 'review': "Wow such book should not exist"
             }
 
-            res = self.client.post("/review", data=parameters, headers={
+            res = self.client.post("/api/review", data=parameters, headers={
                 "Authorization": 'Basic ' + base64.b64encode((token + ":").encode('ascii')).decode('ascii')
             })
             self.assertEqual(418, res.status_code)

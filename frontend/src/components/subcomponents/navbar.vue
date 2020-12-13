@@ -2,10 +2,12 @@
   <div ref="navbar">
    <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand @click="goStart()">
-    <img src="../../assets/Bookshelter.png" class="d-inline-block align-top" width="200" height="60">
+    <a> <img src="../../assets/bookshelter_icon1.png" class="d-inline-block align-top" width="252" height="108"> </a>
     </b-navbar-brand>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+    <b-collapse id="nav-collapse" is-nav>
     <b-nav-form>
-       <b-form-input autocomplete="off" v-model="search" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
+       <b-form-input autocomplete="off" v-model="search" @change="onInputDataList()" list="booksearch" id="inputsearch" size="md" class="mr-sm-2" placeholder="Search"></b-form-input>
        <datalist id="booksearch">
          <option v-for="book in filteredList" :key="book.isbn" :value="book.titulo" :id="book.isbn">
            {{ book.autor }}
@@ -67,11 +69,14 @@
     </b-nav-form>
     <b-navbar-nav class="ml-auto"> <!-- Right aligned -->
       <ul id="menu-main-nav" class="navbar-nav nav-fill w-100">
-        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
-        <li class="nav-item" v-if="session_boolean === true"><a class="nav-link"><b-icon title="Strikethrough" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true && user.role == userRole" ><a class="nav-link"><b-icon icon="bookmark-heart" @click="goWishlist()" font-scale="2.5"></b-icon></a></li>
+        <li class="nav-item" v-if="session_boolean === true && user.role == userRole"><a class="nav-link"><b-icon title="Cistella" @click="show_cart(); calculate_total_price()" icon="basket" font-scale="2.5"></b-icon></a></li>
         <li class="nav-item" v-if= "session_boolean === false"><a class="nav-link"><b-button variant="danger" @click="logIn()">{{ session_status }}</b-button></a></li>
         <li class="nav-item" v-if= "session_boolean === true">
-          <b-button v-b-toggle.sidebar-right> {{ this.user.username }}</b-button>
+        <a> <b-list-group-item class="align-items-center">
+         <b-avatar v-b-toggle.sidebar-right class="mr-3"></b-avatar>
+         <span v-b-toggle.sidebar-right class="mr-auto">{{ this.user.username }}</span>
+        </b-list-group-item> </a>
         </li>
        </ul>
        <div>
@@ -80,10 +85,13 @@
                 <h4> Hola {{ this.user.username }} </h4>
                 <nav class="mb-3">
                 <b-nav vertical>
-                  <b-nav-item active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
-                  <b-nav-item active @click="goLibrary()">Biblioteca</b-nav-item>
-                  <b-nav-item active @click="goPedidos()">Comandes</b-nav-item>
-                  <b-nav-item active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === userRole" @click="goProfile()">El meu Perfil</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="show_cart()">La meva cistella</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goWishlist()">Llista de desitjos</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goLibrary()">Biblioteca</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role == userRole" @click="goPedidos()">Comandes</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === adminRole" @click="goStock()">Stock</b-nav-item>
+                  <b-nav-item v-b-toggle.sidebar-right active v-if="user.role === adminRole" @click="goTransactions()">Transaccions</b-nav-item>
                 </b-nav>
                 </nav>
              </div>
@@ -95,9 +103,11 @@
           </b-sidebar>
       </div>
     </b-navbar-nav>
+    </b-collapse>
    </b-navbar>
    <!-- cart -->
    <b-container v-if= "see_cart === true">
+     <br>
      <br>
      <br>
      <h2> CISTELLA {{ this.cartItems.length }} PRODUCTES </h2>
@@ -117,13 +127,18 @@
              </b-col>
              <b-col>
              <b-row>
-             <h6>{{ total_amount(item.book, item.quantity) }} $</h6>
+             <div>
+             <label for="sb-inline">Quantitat</label>
+             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)" min="1">
+             </b-form-spinbutton>
+             </div>
              </b-row>
              <br>
+             <br>
              <b-row>
-             <b-form-spinbutton id="sb-inline" v-model="item.quantity" @change="save_quantity(item.book, item.quantity)"
-              min="1" style="width:45%"></b-form-spinbutton>
+             <h6>Preu: {{ total_amount(item.book, item.quantity) }} $</h6>
              </b-row>
+             <br>
              </b-col>
              <b-col>
                <b-button variant="danger" @click="return_book(item)">Eliminar</b-button>
@@ -131,15 +146,14 @@
              <hr/>
          </b-row>
          </b-container>
+         <b-container v-if= "see_cart === true && cartItems.length === 0">
+            <h4 class = "text-muted">
+              No tens cap llibre a la teva cistella
+              <b-icon icon="basket2" font-scale="2.5"></b-icon>
+            </h4>
+         </b-container>
          </b-col>
          <b-col>
-          <b-container fluid class = "border bg-light" style="padding:15px">
-           <p> Tens un codi de descompte? </p>
-           <b-nav-form>
-              <b-form-input size="sm" class="mr-sm-2" placeholder="Introdueix el teu codi descompte"></b-form-input>
-              <b-button size="sm" class="my-2 my-sm-0" type="submit">Validar</b-button>
-           </b-nav-form>
-         </b-container>
          <b-container fluid class = "border bg-light" style="padding:15px; margin-top:10px">
          <br>
            <h5> Resum </h5>
@@ -150,11 +164,26 @@
            <hr/>
            <h5> Total : {{ calculate_total_price() }} $ </h5>
            <br>
-           <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
+           <b-button :disabled="cartItems.length === 0" style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
            </b-container>
          </b-col>
+         <b-icon icon="arrow-left-circle-fill" variant="info" font-scale="3" @click="show_cart()"
+         style="position: fixed; left: 100; top: 150;"></b-icon>
        </b-row>
    </b-container>
+   <!--toast-->
+   <b-toast id="toast" toaster="b-toaster-top-center" variant="primary" solid autoHideDelay="5000">
+     <template #toast-title>
+       <div class="d-flex flex-grow-1 align-items-baseline">
+         <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+         <strong class="mr-auto">Notice!</strong>
+       </div>
+     </template>
+     <b-row style="margin-left:5px">
+     Se ha enviado un correo de confirmación a su cuenta.
+     </b-row>
+     <br>
+   </b-toast>
   </div>
 </template>
 
@@ -193,10 +222,40 @@ export default {
   },
   methods: {
     goStart () {
+      if (this.see_cart) {
+        this.show_cart()
+      }
       this.$router.push({path: '/'})
     },
     gotobook (isbn) {
       this.$router.push({ path: '/book', query: {bk: isbn} })
+    },
+    showToast (message) {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement
+      // Increment the toast count
+      this.count++
+      // Create the message
+      const vNodesMsg = h(
+        'p',
+        { class: ['text-center', 'mb-0'] },
+        [message[1]]
+      )
+      // Create the title
+      const vNodesTitle = h(
+        'div',
+        { class: ['d-flex', 'flex-grow-1', 'align-items-baseline', 'mr-2'] },
+        [
+          h('strong', { class: 'mb-0' }, message[0])
+        ]
+      )
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        toaster: 'b-toaster-top-center',
+        solid: true,
+        variant: 'info'
+      })
     },
     logIn () {
       if (this.session_boolean === false) {
@@ -207,9 +266,11 @@ export default {
         this.cartItems.splice(0, this.cartItems.length)
         this.session_status = 'Log In'
         this.session_boolean = false
-        alert('Log out successfully')
-        this.$router.push({path: '/'})
-        location.reload()
+        this.showToast(['Info', 'Has cerrado sesion correctamente'])
+        setTimeout(() => {
+          this.$router.push({path: '/'})
+          location.reload()
+        }, 2000)
       }
     },
     fetch_cache () {
@@ -241,30 +302,39 @@ export default {
       var input = document.getElementById('inputsearch').value
       for (var i = 0; i < datalist.length; i++) {
         if (datalist[i].value === input) {
-          // this.gotobook(datalist[i].id)
-          break
+          this.search = ''
+          this.gotobook(datalist[i].id)
         }
       }
     },
     checkOk () {
-      if (this.isbn.length === 13) {
-        this.isbnState = true
-      } else {
-        this.isbnState = false
-      }
-      if (this.isbnState || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
+      if ((this.isbn.length <= 13 && this.isbn.length > 0) || (this.title.length > 0 || this.autor.length > 0 || this.editorial.length > 0)) {
         this.$nextTick(() => {
           this.$bvModal.hide('modal-1')
         })
         this.isbnState = true
-        this.clearModal()
         return true
       }
       return false
     },
     handleOk (bvModalEvt) {
       bvModalEvt.preventDefault()
-      this.checkOk()
+      if (this.checkOk()) {
+        var params = {}
+        if (this.isbn !== '') {
+          params['isbn'] = this.isbn
+        }
+        if (this.title !== '') {
+          params['titulo'] = this.title
+        }
+        if (this.autor !== '') {
+          params['autor'] = this.autor
+        }
+        if (this.editorial !== '') {
+          params['editorial'] = this.editorial
+        }
+        this.$router.push({ path: '/search', query: params })
+      }
     },
     clearModal () {
       this.isbn = ''
@@ -296,7 +366,9 @@ export default {
       this.$router.push({path: '/modify'})
     },
     onSearch () {
-      this.$router.push({ path: '/search', query: {titulo: this.search} })
+      if (this.search.length > 0) {
+        this.$router.push({ path: '/search', query: {titulo: this.search} })
+      }
     },
     goStock () {
       this.$router.push({path: '/shopstock'})
@@ -307,6 +379,9 @@ export default {
     goProfile () {
       this.$router.push({path: '/profile'})
     },
+    goTransactions () {
+      this.$router.push({path: '/stocktransactions'})
+    },
     // Cart
     show_cart () {
       this.see_cart = !this.see_cart
@@ -316,16 +391,16 @@ export default {
       this.$emit('changeShowState')
     },
     total_amount (book, quantity) {
-      return Number(book.precio * quantity).toFixed(2)
+      var preu = book.precio * quantity
+      return parseFloat(preu.toFixed(2))
     },
     calculate_total_price () {
       var price = 0.0
       var i
       for (i = 0; i < this.cartItems.length; i++) {
-        price += this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
+        price = price + this.total_amount(this.cartItems[i].book, this.cartItems[i].quantity)
       }
-      this.price = price
-      return Number(this.price).toFixed(2)
+      return parseFloat(price.toFixed(2))
     },
     return_book (item) {
       var deleteIdx = this.cartItems.indexOf(item)
@@ -336,14 +411,12 @@ export default {
     },
     save_quantity (book, quantity) {
       var i
-      console.log('hola')
       for (i = 0; i < this.cartItems.length; i++) {
         if (book.isbn === this.cartItems[i].book.isbn) {
           this.cartItems[i].quantity = quantity
         }
       }
       localStorage.setItem('cartItems', JSON.stringify(this.cartItems))
-      console.log(quantity)
     },
     finalizePurchase () {
       this.$router.push({path: '/paymethod'})

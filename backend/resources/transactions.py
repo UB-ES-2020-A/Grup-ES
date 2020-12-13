@@ -1,9 +1,10 @@
 from flask import g
 from flask_restful import reqparse
 from flask_restful import Resource
+from sqlalchemy import asc, desc
 
 from model.books import BooksModel
-from model.users import auth, UsersModel
+from model.users import auth, UsersModel, Roles
 from model.transactions import TransactionsModel
 from utils.lock import lock
 
@@ -23,7 +24,7 @@ def parse_transaction():
 
 
 class Transactions(Resource):
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def get(self, id_transaction):
         with lock:
             transaction = TransactionsModel.find_by_id(id_transaction)
@@ -33,7 +34,7 @@ class Transactions(Resource):
                 return {"message": "Invalid transaction, can only be yours"}, 401
         return {"transaction": transaction.json()}, 200
 
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def post(self):
         data = parse_transaction()
         with lock:
@@ -50,14 +51,15 @@ class Transactions(Resource):
                     return {"message": "Not enough stock for book with 'isbn': " + str(isbn) + "only "
                                        + str(book.stock) + " available"}, 404
             try:
-                transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'], data['quantities'])
+                transactions = TransactionsModel.save_transaction(user.id, data['isbns'], data['prices'],
+                                                                  data['quantities'])
             except Exception as ex:
                 return {'message': str(ex)}, 500
         return {'transactions': transactions}, 201
 
 
 class TransactionsUser(Resource):
-    @auth.login_required
+    @auth.login_required(role=Roles.User)
     def get(self, email):
         with lock:
             user = UsersModel.find_by_email(email)
@@ -66,5 +68,46 @@ class TransactionsUser(Resource):
             if g.user != user:
                 return {"message": "Invalid user, can only be yourself"}, 401
             transactions = TransactionsModel.query.filter_by(user_id=user.id).all()
-            grouped_transactions = [[t.json() for t in transactions if t.id_transaction == i] for i in set(t.id_transaction for t in transactions)]
+            grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
+            return {'transactions': grouped_transactions}, 200
+
+
+class TransactionsList(Resource):
+    @auth.login_required(role=Roles.Admin)
+    def get(self):
+        with lock:
+            parser = reqparse.RequestParser(bundle_errors=True)
+
+            parser.add_argument('isbn', type=int, required=False,
+                                help="In this field goes the isbn of the transactions")
+            # parser.add_argument('titulo', type=str, required=False,
+            # help="In this field goes the tittle of the book")
+            parser.add_argument('user_id', type=int, required=False,
+                                help="In this field goes the user_id of the transactions")
+            parser.add_argument('date', type=str, required=False,
+                                help="In this field goes the date order (asc, desc) of the transactions")
+            data = parser.parse_args()
+
+            transactions = TransactionsModel.query
+            if not any(v is not None for k, v in data.items()):  # no filter asked
+                grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
+                return {'transactions': grouped_transactions}, 200
+            else:
+                if data['isbn'] is not None:
+                    # Get transactions with isbn = isbn
+                    transactions_containing_isbn = transactions.filter_by(isbn=data['isbn'])
+                    # Ids of the transactions that have the isbn
+                    ids_transactions = [t.id_transaction for t in transactions_containing_isbn]
+
+                    # All transactions with the ids
+                    transactions = TransactionsModel.query.filter(
+                        TransactionsModel.id_transaction.in_(ids_transactions))
+                if data['user_id'] is not None:
+                    transactions = transactions.filter_by(user_id=data['user_id'])
+                if data['date'] == str('asc'):
+                    transactions = transactions.order_by(asc('date'))
+                elif data['date'] == str('desc'):
+                    transactions = transactions.order_by(desc('date'))
+
+            grouped_transactions = TransactionsModel.group_transactions_by_id(transactions)
             return {'transactions': grouped_transactions}, 200

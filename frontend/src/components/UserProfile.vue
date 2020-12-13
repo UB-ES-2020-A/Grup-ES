@@ -1,6 +1,6 @@
 <template>
-<div id="app">
-<navbar @changeShowState="show = !show"/>
+<div id="app" v-if="user.role === userRole">
+<navbar ref="c" @changeShowState="show = !show"/>
 <div class="body" v-if="show === true">
   <settings :user="user"/>
   <b-container>
@@ -36,7 +36,7 @@
             <b-icon icon="star-fill" v-if="review.score >= 1" font-scale="1.5"></b-icon>
             <b-icon icon="star" v-if="review.score < 1" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 2" font-scale="1.5"></b-icon>
-            <b-icon icon="star" v-if="review.score < 2" font-scale="2.5"></b-icon>
+            <b-icon icon="star" v-if="review.score < 2" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 3" font-scale="1.5"></b-icon>
             <b-icon icon="star" v-if="review.score < 3" font-scale="1.5"></b-icon>
             <b-icon icon="star-fill" v-if="review.score >= 4" font-scale="1.5"></b-icon>
@@ -70,18 +70,14 @@
       <br>
       <b-row>
         <h3> Les teves últimes compres </h3>
+        <br>
       </b-row>
       <b-row>
-        <b-col  v-if="ped <= transtoshow" v-for="ped in showPartialList (pedidos, transtoshow)" :key="ped">
-        <br>
-        <img :src="getURL(pedidos[ped - 1].book)" style="height:209px; width:140px;" alt="">
-        <h6>{{ pedidos[ped - 1].book.titulo }}</h6>
-        <h5>{{ pedidos[ped - 1].book.autor }}</h5>
-        </b-col>
+        <b-table striped hover :items="transactions"></b-table>
       </b-row>
       <br>
       <b-row>
-        <b-button pill variant="outline-secondary" :disabled = "pedidos.length <= transtoshow" @click="transtoshow += 3"> + Veure'n més</b-button>
+        <b-button pill variant="outline-secondary" @click="goPedidos()"> + Veure'n més</b-button>
       </b-row>
       <br>
       <br>
@@ -128,7 +124,12 @@ export default {
   data () {
     return {
       show: true,
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User',
+
       user: {},
+      transactions: [],
       pedidos: [],
       library: [],
       reviews: [],
@@ -141,6 +142,7 @@ export default {
   },
   created () {
     this.fetch_cache()
+    this.redirect()
     this.load_pedidos()
     this.load_library()
     this.load_wishlist()
@@ -163,10 +165,15 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.pedidos = res.data.transactions
-          console.log(this.pedidos)
+          this.manage_transactions(this.pedidos)
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     load_library () {
@@ -177,10 +184,14 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.library = res.data.library
-          console.log(this.library)
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     load_wishlist () {
@@ -192,10 +203,14 @@ export default {
       axios.get(path, auth)
         .then((res) => {
           this.wishlist = res.data.library
-          console.log(this.wishlist)
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     getURL (book) {
@@ -217,8 +232,8 @@ export default {
     getBookTitle (isbn, array) {
       var i
       for (i = 0; i < array.length; i++) {
-        if (array[i].book.isbn === isbn) {
-          return array[i].book.titulo
+        if (array[i][0].book.isbn === isbn) {
+          return array[i][0].book.titulo
         }
       }
       return ''
@@ -229,6 +244,30 @@ export default {
       } else {
         return head
       }
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
+      }
+    },
+    manage_transactions (ped) {
+      var i, j
+      for (i = 0; i < ped.length; i++) {
+        for (j = 0; j < ped[i].length; j++) {
+          this.transactions.push({
+            isbn: ped[i][j].isbn,
+            titulo: ped[i][j].book.titulo,
+            fecha: ped[i][j].date,
+            precio: ped[i][j].book.precio,
+            cantidad: ped[i][j].quantity
+          })
+        }
+      }
+      this.transactions.reverse()
+      this.transactions = this.transactions.slice(0, 3)
+    },
+    goPedidos () {
+      this.$router.push({path: '/mispedidos'})
     }
   }
 }

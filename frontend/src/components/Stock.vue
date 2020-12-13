@@ -1,6 +1,6 @@
 <template>
-<div id="app">
-<navbar @changeShowState="show = !show"/>
+<div id="app" v-if="user.role === adminRole">
+<navbar ref="c" @changeShowState="show = !show"/>
 <br>
 <div class="body" v-if="show === true">
 <b-container>
@@ -67,25 +67,47 @@ export default {
   data () {
     return {
       showadd: false,
-      booksquery: [],
+      booksquery: null,
       search: '',
       show: true,
-      bookIsbn: 0
+      bookIsbn: 0,
+      userRole: 'User',
+      adminRole: 'Admin',
+      user: {}
     }
   },
   created () {
+    this.fetch_cache()
+    this.redirect()
     this.get_books()
+    this.fetch_session()
   },
   methods: {
+    fetch_cache () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_status = 'Log Out'
+        this.session_boolean = true
+      }
+    },
     get_books () {
       const path = this.$API_URL + 'books'
-      axios.get(path)
+      const params = { showOnlyVendibles: false }
+      axios.get(path, { params: params })
         .then((res) => {
           this.booksquery = res.data
         })
         .catch((error) => {
           console.error(error)
         })
+    },
+    fetch_session () {
+      var tmpuser = JSON.parse(localStorage.getItem('user_session'))
+      if (tmpuser !== null) {
+        this.user = tmpuser
+        this.session_boolean = true
+      }
     },
     getisbn (book) {
       this.bookIsbn = book.isbn
@@ -101,13 +123,27 @@ export default {
       const parameters = {
         vendible: true
       }
-      axios.put(path, parameters)
+      const auth = {'auth': {
+        username: this.user.token}
+      }
+      axios.put(path, parameters, auth)
         .then((res) => {
-          alert('Book Reactivated correctly')
+          this.$refs.c.showToast(['Info', 'El libro ha sido reactivado'])
+          location.reload()
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
+    },
+    redirect () {
+      if (this.user.role === this.userRole) {
+        window.location.replace('/notfound')
+      }
     }
   },
   computed: {

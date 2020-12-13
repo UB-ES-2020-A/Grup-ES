@@ -1,6 +1,6 @@
 <template>
-<div id="app">
-<navbar @changeShowState="show = !show"/>
+<div id="app" v-if="user.role === userRole">
+<navbar ref="c" @changeShowState="show = !show"/>
 <!--body-->
 <div class="body">
 <div v-if= "show === true">
@@ -10,19 +10,23 @@
     <b-row>
       <div class="form-control bg-light">
        <b-row>
-       <div class="col-2"  style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
-       <b-col align-self="center">
-       <img :src="getURL(book)" style="height:409px; width:240px;" alt=""  @click = "gotobook(book)">
-       <b-row>
-       <b-col align-self="center" style="margin-top: 10px">
-       <h5 @click = "gotobook(book)">  {{ book.titulo }} </h5>
+       <b-col sm="3" md="5" lg="4" xl="3" style="margin-left:30px; margin-top:50px" v-for="(book) in list" v-bind:key="book.isbn">
+         <b-card-group>
+         <b-card
+           :img-src="getURL(book)"
+           img-alt="Image"
+           img-top
+           tag="article"
+           style="max-width: 20rem; max-height: 10;"
+           class="mb-2 h-100"
+         >
+           <div class="card-title">
+             <h5>{{book.titulo}}<h5>
+           </div>
+           <h6 class="card-subtitle">{{book.autor}}</h6>
+         </b-card>
+         </b-card-group>
        </b-col>
-       </b-row>
-       <b-col>
-       <h7>{{ book.autor }}</h7>
-       </b-col>
-       </b-col>
-       </div>
        </b-row>
        </div>
        <!--archive-->
@@ -52,11 +56,16 @@ export default {
       list: [],
       wishlist: [],
       user: {},
-      book: {}
+      book: {},
+
+      // Roles
+      adminRole: 'Admin',
+      userRole: 'User'
     }
   },
   created () {
     this.fetch_cache()
+    this.redirect()
     this.load_library()
     this.list = this.wishlist
   },
@@ -71,11 +80,15 @@ export default {
       })
         .then((res) => {
           this.library = res.data.library
-          console.log(this.library)
           this.manage_wishlist()
         })
         .catch((error) => {
           console.error(error)
+          if (error.response.status === 401) {
+            localStorage.removeItem('user_session')
+            localStorage.removeItem('cartItems')
+            window.location.replace('/userlogin')
+          }
         })
     },
     getURL (book) {
@@ -85,7 +98,6 @@ export default {
       var tmpuser = JSON.parse(localStorage.getItem('user_session'))
       if (tmpuser !== null) {
         this.user = tmpuser
-        console.log(this.user.username)
         this.session_status = 'Log Out'
         this.session_boolean = true
       }
@@ -95,7 +107,11 @@ export default {
       for (i = 0; i < this.library.length; i++) {
         this.wishlist.push(this.library[i].book)
       }
-      console.log(this.wishlist)
+    },
+    redirect () {
+      if (this.user.role === this.adminRole) {
+        window.location.replace('/notfound')
+      }
     }
   }
 }

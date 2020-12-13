@@ -7,33 +7,37 @@ from resources.books import Books, BooksList, SearchBooks, BestSellers
 from resources.recovery import PasswordRecovery
 from resources.users import Login, Users, UsersList
 from resources.library import Library, LibraryVisibility, LibraryEntry
-from resources.transactions import Transactions, TransactionsUser
+from resources.transactions import Transactions, TransactionsUser, TransactionsList
 from resources.reviews import Reviews
+from resources.verify_email import VerifyEmail
 
 from db import db, init_db
 from utils.mail import mail
 
 
 def init_api(api):
-    api.add_resource(Books, '/book/<int:isbn>', '/book')
-    api.add_resource(BooksList, '/books')
-    api.add_resource(SearchBooks, '/search')
-    api.add_resource(BestSellers, '/trending')
+    api.add_resource(Books, '/api/book/<int:isbn>', '/api/book')
+    api.add_resource(BooksList, '/api/books')
+    api.add_resource(SearchBooks, '/api/search')
+    api.add_resource(BestSellers, '/api/trending')
 
-    api.add_resource(Users, '/user/<string:email>', '/user')
-    api.add_resource(UsersList, '/users')
-    api.add_resource(Login, '/login')
+    api.add_resource(Users, '/api/user/<string:email>', '/api/user')
+    api.add_resource(UsersList, '/api/users')
+    api.add_resource(Login, '/api/login')
 
-    api.add_resource(Library, '/userLibrary/<string:email>')
-    api.add_resource(LibraryVisibility, '/library/<string:email>/visibility/<string:isbn>')
-    api.add_resource(LibraryEntry, '/library/<string:email>/<string:isbn>', '/library/<string:email>')
+    api.add_resource(Library, '/api/userLibrary/<string:email>')
+    api.add_resource(LibraryVisibility, '/api/library/<string:email>/visibility/<string:isbn>')
+    api.add_resource(LibraryEntry, '/api/library/<string:email>/<string:isbn>', '/api/library/<string:email>')
 
-    api.add_resource(Transactions, '/transaction/<int:id_transaction>', '/transaction')
-    api.add_resource(TransactionsUser, '/transactions/<string:email>')
+    api.add_resource(Transactions, '/api/transaction/<int:id_transaction>', '/api/transaction')
+    api.add_resource(TransactionsUser, '/api/transactions/<string:email>')
+    api.add_resource(TransactionsList, '/api/allTransactions')
 
-    api.add_resource(PasswordRecovery, '/recovery/<string:key>', '/recovery')
+    api.add_resource(PasswordRecovery, '/api/recovery/<string:key>', '/api/recovery')
 
-    api.add_resource(Reviews, '/review')
+    api.add_resource(VerifyEmail, '/api/verify/<string:key>')
+
+    api.add_resource(Reviews, '/api/review', '/api/review/<int:user_id>/<int:isbn>')
 
 
 def init(environment):
