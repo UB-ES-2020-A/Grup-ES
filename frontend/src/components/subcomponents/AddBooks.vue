@@ -208,6 +208,7 @@ export default {
           setTimeout(() => {
             this.$bvModal.hide('addboks')
             location.reload()
+            this.clearModal()
           }, 2000)
         })
         .catch((error) => {
@@ -217,7 +218,6 @@ export default {
             localStorage.removeItem('cartItems')
             window.location.replace('/userlogin')
           }
-          this.clearModal()
         })
     },
     fetch_cache () {
@@ -263,7 +263,7 @@ export default {
       } else {
         this.isbnState = false
       }
-      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && parseInt(this.precio) > 0) {
+      if (!isNaN(this.precio) && parseInt(this.precio) > 0) {
         this.precioState = true
       } else {
         this.precioState = false

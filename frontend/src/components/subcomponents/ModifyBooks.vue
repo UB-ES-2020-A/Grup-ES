@@ -200,15 +200,15 @@ export default {
         sinopsis: this.sinopsis
       }
       const path = this.$API_URL + 'book/' + this.$props.isbnNum
-      const headers = {'auth': { username: this.user.token },
-        params: parameters}
-      axios.put(path, headers)
+      const auth = { auth: { username: this.user.token } }
+      axios.put(path, parameters, auth)
         .then((res) => {
           this.showToast(['Info', 'Libro modificado correctamente'])
           this.clearModal()
           setTimeout(() => {
             this.$bvModal.hide('modifybooks')
             location.reload()
+            this.clearModal()
           }, 2000)
         })
         .catch((error) => {
@@ -218,7 +218,6 @@ export default {
             localStorage.removeItem('cartItems')
             window.location.replace('/userlogin')
           }
-          this.clearModal()
         })
     },
     fetch_cache () {
@@ -257,7 +256,7 @@ export default {
     },
     checkOk () {
       console.log(this.$props.isbnNum)
-      if (!isNaN(this.precio) && this.precio.toString().indexOf('.') !== -1 && parseInt(this.precio) > 0) {
+      if (!isNaN(this.precio) && parseInt(this.precio) > 0) {
         this.precioState = true
       } else {
         this.precioState = false

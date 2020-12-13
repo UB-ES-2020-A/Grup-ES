@@ -100,6 +100,7 @@ export default {
           this.books = res.data.books
         })
         .catch((error) => {
+          this.books = []
           console.error(error)
         })
     },

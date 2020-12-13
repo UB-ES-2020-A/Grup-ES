@@ -27,6 +27,7 @@
           <br>
           <h2> {{ this.single_book.titulo }} </h2>
           <p> <h4> de {{ this.single_book.autor }} </h4> <p>
+          <p> <h5> ISBN: {{ this.single_book.isbn }} </h5> <p>
           <hr/>
           <h5> Sinopsis </h5>
           <p>
