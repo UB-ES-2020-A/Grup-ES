@@ -168,6 +168,33 @@ export default {
     }
   },
   methods: {
+    showToast (message) {
+      // Use a shorter name for this.$createElement
+      const h = this.$createElement
+      // Increment the toast count
+      this.count++
+      // Create the message
+      const vNodesMsg = h(
+        'p',
+        { class: ['text-center', 'mb-0'] },
+        [message[1]]
+      )
+      // Create the title
+      const vNodesTitle = h(
+        'div',
+        { class: ['d-flex', 'flex-grow-1', 'align-items-baseline', 'mr-2'] },
+        [
+          h('strong', { class: 'mb-0' }, message[0])
+        ]
+      )
+      // Pass the VNodes as an array for message and title
+      this.$bvToast.toast([vNodesMsg], {
+        title: [vNodesTitle],
+        toaster: 'b-toaster-top-center',
+        solid: true,
+        variant: 'info'
+      })
+    },
     changeUsername () {
       const path = this.$API_URL + 'user/' + this.$props.user.email
       const auth = {
@@ -179,10 +206,12 @@ export default {
       }
       axios.put(path, parameters, auth)
         .then((res) => {
-          this.$refs.c.showToast(['Info', 'Nombre de usuario actualizado'])
+          this.showToast(['Info', 'Nombre de usuario actualizado'])
           this.changeLocalStorage(res.data.user.username, null, res.data.token)
-          this.$bvModal.hide('settings')
-          location.reload()
+          setTimeout(() => {
+            this.$bvModal.hide('settings')
+            location.reload()
+          }, 2000)
         })
         .catch((error) => {
           console.error(error)
@@ -203,9 +232,11 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          this.$refs.c.showToast(['Info', 'Contraseña actualizada'])
-          this.$bvModal.hide('settings')
-          location.reload()
+          this.showToast(['Info', 'Contraseña actualizada'])
+          setTimeout(() => {
+            this.$bvModal.hide('settings')
+            location.reload()
+          }, 2000)
         })
         .catch((error) => {
           console.error(error)
@@ -226,10 +257,12 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          this.$refs.c.showToast(['Info', 'Correo electrónico actualizado'])
+          this.showToast(['Info', 'Correo electrónico actualizado'])
           this.changeLocalStorage(null, res.data.user.email, res.data.token)
-          this.$bvModal.hide('settings')
-          location.reload()
+          setTimeout(() => {
+            this.$bvModal.hide('settings')
+            location.reload()
+          }, 2000)
         })
         .catch((error) => {
           console.error(error)
@@ -309,10 +342,12 @@ export default {
         auth: {username: this.$props.user.token}
       })
         .then((res) => {
-          this.$refs.c.showToast(['Info', 'Su cuenta ha sido desactivada'])
-          this.$bvModal.hide('settings')
-          localStorage.removeItem('user_sesion')
-          setTimeout(() => this.$router.push({path: '/'}), 3000)
+          this.showToast(['Info', 'Su cuenta ha sido desactivada'])
+          setTimeout(() => {
+            this.$router.push({path: '/'})
+            this.$bvModal.hide('settings')
+            localStorage.removeItem('user_sesion')
+          }, 3000)
         })
         .catch((error) => {
           console.error(error)
