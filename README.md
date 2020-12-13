@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/UB-ES-2020-A/Grup-ES/badge.svg?branch=coverage)](https://coveralls.io/github/UB-ES-2020-A/Grup-ES?branch=coverage)
+[![Coverage Status](https://coveralls.io/repos/github/UB-ES-2020-A/Grup-ES/badge.svg?branch=main)](https://coveralls.io/github/UB-ES-2020-A/Grup-ES?branch=main)
 [![Build Status](https://travis-ci.com/UB-ES-2020-A/Grup-ES.svg?branch=main)](https://travis-ci.com/UB-ES-2020-A/Grup-ES)
 ![GitHub release](https://img.shields.io/github/v/release/UB-ES-2020-A/Grup-ES)
 
@@ -12,8 +12,12 @@
 
   <p align="center">
     An awesome web application to book and manage your favourite books.
-    <a href="https://grup-es-dev.herokuapp.com/">View Demo</a>
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <br />
+    <a href="https://grup-es.herokuapp.com/">View Demo</a>
+    ·
+    <a href="https://github.com/UB-ES-2020-A/Grup-ES/issues">Report Bug</a>
+    .
+    <a href="https://github.com/UB-ES-2020-A/Grup-ES/issues">Request Feature</a>
   </p>
 </p>
 
@@ -107,11 +111,11 @@ See the [open issues](https://github.com/UB-ES-2020-A/Grup-ES/issues) for a list
 <!-- CONTACT -->
 ## Contact
 
-Aarón Peruga Ortiga - aaronPeruga
-Francina Pons Llabrés - francinapons
-Pau Bernabe Constans - paubernabe
-Guillem Molina Galera - gmolinga
-Ferran Sanchez Llado - ferranSanchezUB
+- [Aarón Peruga Ortiga](https://github.com/aaronPeruga)
+- [Francina Pons Llabrés](https://github.com/francinaPons)
+- [Pau Bernabe Constans](https://github.com/paubernabe)
+- [Guillem Molina Galera](https://github.com/gmolinga)
+- [Ferran Sanchez Llado](https://github.com/ferranSanchezUB)
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
