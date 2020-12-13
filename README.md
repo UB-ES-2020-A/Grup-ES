@@ -65,7 +65,7 @@ The page will also be the place where users can comment on the books and rate th
 
 Bookshelter web is divided in two parts: Frontend and Backend.
 
-In the Backend part, the programming language used is [Python 3.8](https://www.python.org/). We have designed an API to manage all requests and data. So we used a popular light framework called [Flask](https://flask.palletsprojects.com/en/1.1.x/).
+In the Backend part, the programming language used is [Python 3.6](https://www.python.org/). We have designed an API to manage all requests and data. So we used a popular light framework called [Flask](https://flask.palletsprojects.com/en/1.1.x/).
 
 In the Frontend part, we have used web-oriented programming languages like [HTML](https://www.w3.org/html/) and [Javascript](https://www.javascript.com/). To make it easier, we've used [Vue.js](https://vuejs.org/) to design the user interface.
 If we talk about Bookshelter's web design and appeareance, we have used [Bootstrap](https://getbootstrap.com) along with [BootstrapVue](https://bootstrap-vue.org/).
@@ -75,17 +75,26 @@ If we talk about Bookshelter's web design and appeareance, we have used [Bootstr
 <!-- GETTING STARTED -->
 ## Getting Started
 
-TODO
+This project is build using PyCharm and Atom but these are not an actual requirement for running the project. You can just execute this project on localhost. In order to do that you will have to meet all the requirements described in this section and follow the instructions described in usage. 
 
 ### Prerequisites
 
-TODO
+- [python 3.6](https://www.python.org/) 
+- [node.js](https://nodejs.org/)
 
 ### Installation
 
-TODO
+Once you have an enviroment of python 3.6 running with pip installed. You can simply run the following command to install all the dependencies:
 
+`pip install -r deploy/requirements.txt`
 
+If you want to be able to test and avaluate metrics like coverage you will need to install also the requirements for testing. Run the following command:
+
+`pip install -r requirements_test.txt`
+
+Once you have node.js running you can use npm to install all the dependencies. Just run the following command:
+
+`npm run install` 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
