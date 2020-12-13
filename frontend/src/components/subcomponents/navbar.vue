@@ -164,7 +164,7 @@
            <hr/>
            <h5> Total : {{ calculate_total_price() }} $ </h5>
            <br>
-           <b-button style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
+           <b-button :disabled="cartItems.length === 0" style="width:100%" variant="danger" @click="finalizePurchase()">Finalitzar compra</b-button><br><br>
            </b-container>
          </b-col>
          <b-icon icon="arrow-left-circle-fill" variant="info" font-scale="3" @click="show_cart()"

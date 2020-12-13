@@ -232,8 +232,8 @@ export default {
     getBookTitle (isbn, array) {
       var i
       for (i = 0; i < array.length; i++) {
-        if (array[i].book.isbn === isbn) {
-          return array[i].book.titulo
+        if (array[i][0].book.isbn === isbn) {
+          return array[i][0].book.titulo
         }
       }
       return ''
