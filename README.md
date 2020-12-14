@@ -19,7 +19,7 @@
     .
     <a href="https://github.com/UB-ES-2020-A/Grup-ES/issues">Request Feature</a>
     .
-    <a href="https://app.swaggerhub.com/apis-docs/grup-es/bookshelter/1.0.0">API documentation</a>
+    <a href="https://app.swaggerhub.com/apis-docs/grup-es/bookshelter/1.0.0">API Documentation</a>
   </p>
 </p>
 
@@ -99,13 +99,31 @@ Once you have node.js running you can use npm to install all the dependencies. J
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-TODO
+As previously explained, the project is oriented to sell books where both users and administrators will mainly use the application through a web interface. However, there is a public API that would allow any user to create programs to interact with the database.
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+We will briefly explain how to use some of the features the product has.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+First, on entering the main website locally or through our [main demo](https://grup-es.herokuapp.com/), we are welcomed with:
 
+![portada](https://drive.google.com/uc?export=view&id=1pAkIN9BbcbIS8SXuUZprPaqpZPyK4CdA)
 
+On clicking on any book, we can see more details about it.
+
+![libro](https://drive.google.com/uc?export=view&id=1ynxVoRO1ExGkOTwmJoeEqKDWcDnLnjZb)
+
+We can also search a specific book, through a basic search or click the three dots near the search button, to do an advance search.
+
+![search](https://drive.google.com/uc?export=view&id=12htH2ouHhAkL_lmKhG7IuiFyXAvyDTU7)
+
+Furthermore, when logged in, you can access at any point your library through clicking your profile name on the top left and selecting the option Biblioteca.
+
+![biblioteca](https://drive.google.com/uc?export=view&id=1F-szYnHVsOXmimjjxxmyK2Jumw6JO1tD)
+
+In case you logged in an admin account, you should be able to access the webpage of stock, through a similar procedure as before, but selecting the option Stock.
+
+![stock](https://drive.google.com/uc?export=view&id=1jRpgz1fCDWqPBfke0xnVV6f4uTNMJzzK)
+
+For the usage of the public API, please refer to the [API Documentation](https://app.swaggerhub.com/apis-docs/grup-es/bookshelter/1.0.0).
 
 <!-- ROADMAP -->
 ## Roadmap
